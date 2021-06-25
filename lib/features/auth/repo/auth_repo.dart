@@ -13,7 +13,11 @@ class AuthenticationRepo {
       FirebaseFirestore.instance.collection('users');
 
   LoginUserModel? userFromFirestore(User? user) {
-    infoLog('User: ${user?.uid}');
+    infoLog(
+      'User: ${user?.uid}',
+      message: 'attemping to get user auth state',
+      title: 'auth state',
+    );
     return user != null ? LoginUserModel(user.uid) : null;
   }
 
@@ -136,5 +140,6 @@ class AuthenticationRepo {
 
   Future<void> addUserDataToFirestore(UserDetailsModel userDetails) async {
     await userCollectionRef.doc(userDetails.uid).set(userDetails.toMap());
+    infoLog('Added User database', title: 'Add user data To Db');
   }
 }

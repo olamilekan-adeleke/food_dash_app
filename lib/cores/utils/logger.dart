@@ -8,6 +8,6 @@ void errorLog(String error, String info, {String? trace, String? title}) {
 
 void infoLog(String info, {String? message, String? title}) {
   debugPrint('${':' * 10} Begin $title ${':' * 10}');
-  debugPrint('Info: $info \n message: $message');
+  debugPrint('Info: $info \n message: $message \n Title: $title');
   debugPrint('${':' * 10} End $title ${':' * 10}');
 }
