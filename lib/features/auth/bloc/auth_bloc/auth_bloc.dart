@@ -42,8 +42,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           number: event.number,
         );
         yield const AuthSignUpLoadedState(signUpSucessMessage);
-      } catch (e) {
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
         yield AuthSignUpErrorState(e.toString());
+      }
+    } else if (event is ForgotPasswordEvent) {
+      try {
+        yield AuthForgotPasswordLoadingState();
+        await authenticationRepo.resetPassword(event.email);
+        yield const AuthForgotPasswordLoadedState(forgotPasswordSucessMessage);
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield AuthForgotPasswordErrorState(e.toString());
+      }
+    } else if (event is ForgotPasswordEvent) {
+      try {
+        yield AuthLogOutUserLoadingState();
+        await authenticationRepo.signOut();
+        yield const AuthLoginLoadedState(logOutSuccessText);
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield AuthLogOutUserErrorState(e.toString());
       }
     }
   }

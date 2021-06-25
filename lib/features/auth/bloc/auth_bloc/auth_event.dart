@@ -41,3 +41,6 @@ class ForgotPasswordEvent extends AuthEvent {
 
   final String email;
 }
+
+// bloc event to log out user
+class LogOutEvent extends AuthEvent {}

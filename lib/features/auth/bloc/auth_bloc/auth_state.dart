@@ -59,3 +59,20 @@ class AuthForgotPasswordErrorState extends AuthState {
 
   final String message;
 }
+
+//log out user states
+class AuthLogOutUserIntialState extends AuthState {}
+
+class AuthLogOutUserLoadingState extends AuthState {}
+
+class AuthLogOutUserLoadedState extends AuthState {
+  const AuthLogOutUserLoadedState(this.message);
+
+  final String message;
+}
+
+class AuthLogOutUserErrorState extends AuthState {
+  const AuthLogOutUserErrorState(this.message);
+
+  final String message;
+}

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/utils/bloc_list.dart';
+import 'package:food_dash_app/cores/utils/navigator_service.dart';
+import 'package:get_it/get_it.dart';
+
+import 'cores/utils/route_name.dart';
 
 class MyApp extends StatelessWidget {
+  final NavigationService navigationService = GetIt.instance<NavigationService>();
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -12,19 +17,9 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const HomePage(),
+        navigatorKey: navigationService.navigatorKey,
+        initialRoute: RouteName.home,
       ),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Text('data'),
     );
   }
 }
