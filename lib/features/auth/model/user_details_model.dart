@@ -8,8 +8,8 @@ class UserDetailsModel {
     required this.email,
     required this.fullName,
     required this.phoneNumber,
-    required this.profilePicUrl,
-    required this.dateJoined,
+    this.profilePicUrl,
+    this.dateJoined,
   });
 
   factory UserDetailsModel.fromMap(Map<String, dynamic> map) {
@@ -30,8 +30,8 @@ class UserDetailsModel {
   final String email;
   final String fullName;
   final int phoneNumber;
-  final String profilePicUrl;
-  Timestamp dateJoined;
+  final String? profilePicUrl;
+  final Timestamp? dateJoined;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
