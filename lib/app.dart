@@ -5,20 +5,21 @@ import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:get_it/get_it.dart';
 
 import 'cores/utils/route_name.dart';
+import 'cores/utils/router.dart';
 
 class MyApp extends StatelessWidget {
-  final NavigationService navigationService = GetIt.instance<NavigationService>();
+  final NavigationService navigationService =
+      GetIt.instance<NavigationService>();
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: blocList(context),
       child: MaterialApp(
         title: 'Food Dash',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        theme: ThemeData(primarySwatch: Colors.blue),
         navigatorKey: navigationService.navigatorKey,
-        initialRoute: RouteName.home,
+        onGenerateRoute: generateRoute,
+        initialRoute: RouteName.inital,
       ),
     );
   }

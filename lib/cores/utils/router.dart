@@ -5,10 +5,15 @@ import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/features/auth/UI/pages/forgot_password_page.dart';
 import 'package:food_dash_app/features/auth/UI/pages/login.dart';
 import 'package:food_dash_app/features/auth/UI/pages/sig_up_page.dart';
+import 'package:food_dash_app/features/auth/UI/pages/wrapper_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/home_page.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
+    case RouteName.inital:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const WrapperPage());
+
     case RouteName.home:
       return MaterialPageRoute<Widget>(
           builder: (BuildContext context) => const HomePage());
