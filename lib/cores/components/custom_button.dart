@@ -12,27 +12,49 @@ class CustomButton extends StatelessWidget {
     this.busy = false,
     this.color,
     this.textColor,
+    this.textSize,
+    this.height,
+    this.width,
+    this.textFontWeight,
   });
 
   const CustomButton.loading({
     this.text,
     this.onTap,
-    this.busy = false,
     this.color,
     this.textColor,
-  });
+    this.textSize,
+    this.height,
+    this.width,
+    this.textFontWeight,
+  }) : busy = false;
+
+  const CustomButton.smallSized({
+    this.text,
+    this.onTap,
+    this.color,
+    this.textColor,
+    this.textSize,
+    this.height,
+    this.width,
+    this.textFontWeight,
+  }) : busy = false;
 
   final String? text;
   final void Function()? onTap;
   final bool busy;
   final Color? color;
   final Color? textColor;
+  final double? textSize;
+  final double? height;
+  final double? width;
+  final FontWeight? textFontWeight;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 50.0,
-      width: MediaQuery.of(context).size.width * 0.95,
+      height: height ?? 50.0,
+      width: width ?? MediaQuery.of(context).size.width * 0.95,
       child: TextButton(
         onPressed: () => onTap!(),
         style: ButtonStyle(
@@ -45,6 +67,8 @@ class CustomButton extends StatelessWidget {
             : CustomTextWidget(
                 text: text ?? 'no text',
                 textColor: textColor ?? Colors.white,
+                fontSize: textSize,
+                fontWeight: textFontWeight,
               ),
       ),
     );
