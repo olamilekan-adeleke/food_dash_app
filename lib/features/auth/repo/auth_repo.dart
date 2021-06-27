@@ -27,8 +27,8 @@ class AuthenticationRepo {
 
   Stream<LoginUserModel?> get userAuthState {
     /// emit a stream of user current state(e.g emit an event when the user
-    /// log out so the UI can be notify and update as needed or emit a event when
-    /// a user log in so the UI can also be updated
+    /// log out so the UI can be notify and update as needed or emit a event
+    ///  when a user log in so the UI can also be updated
 
     return _firebaseAuth
         .authStateChanges()
