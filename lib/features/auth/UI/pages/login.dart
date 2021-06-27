@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/components/custom_button.dart';
@@ -22,6 +23,10 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode) {
+      emailTextEditingController.text = 'ola100@gmail.com';
+      passwordTextEditingController.text = '123456';
+    }
     return CustomScaffoldWidget(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
@@ -85,7 +90,7 @@ class LoginPage extends StatelessWidget {
                 CustomButton(
                   text: 'Sign Up',
                   onTap: () => NavigationService()
-                      .navigateReplaceDefault(context, const SignUpPage()),
+                      .navigateToDefault(context, const SignUpPage()),
                 ),
                 const SizedBox(height: 10.0),
                 TextButton(

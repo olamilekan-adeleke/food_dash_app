@@ -43,4 +43,8 @@ class NavigationService {
   void goBack() {
     return navigatorKey.currentState?.pop();
   }
+
+  void goBackDefault(BuildContext context) {
+    return Navigator.pop(context);
+  }
 }

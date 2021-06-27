@@ -4,6 +4,7 @@ import 'package:food_dash_app/features/auth/model/login_user_model.dart';
 import 'package:food_dash_app/features/auth/repo/auth_repo.dart';
 import 'package:food_dash_app/features/food/UI/pages/home_page.dart';
 import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 
 class WrapperPage extends StatelessWidget {
   const WrapperPage({Key? key}) : super(key: key);
@@ -13,19 +14,29 @@ class WrapperPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<LoginUserModel?>(
-        stream: authenticationRepo.userAuthState,
-        builder:
-            (BuildContext context, AsyncSnapshot<LoginUserModel?> snapshot) {
-          final LoginUserModel? loginUserModel = snapshot.data;
-
-          if (loginUserModel == null) {
-            return const LoginPage();
-          } else {
-            return const HomePage();
-          }
+      body: StreamProvider<LoginUserModel?>.value(
+        initialData: null,
+        value: authenticationRepo.userAuthState,
+        builder: (BuildContext context, Widget? child) {
+          return const AuthStateWidget();
         },
       ),
     );
+  }
+}
+
+class AuthStateWidget extends StatelessWidget {
+  const AuthStateWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    final LoginUserModel? loginUserModel =
+        Provider.of<LoginUserModel?>(context, listen: true);
+
+    if (loginUserModel == null) {
+      return const LoginPage();
+    } else {
+      return const HomePage();
+    }
   }
 }
