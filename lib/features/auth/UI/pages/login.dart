@@ -4,7 +4,11 @@ import 'package:food_dash_app/cores/components/custom_button.dart';
 import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
 import 'package:food_dash_app/cores/components/custom_textfiled.dart';
 import 'package:food_dash_app/cores/components/snack_bar_service.dart';
+import 'package:food_dash_app/cores/utils/navigator_service.dart';
+
 import 'package:food_dash_app/cores/utils/validator.dart';
+import 'package:food_dash_app/features/auth/UI/pages/forgot_password_page.dart';
+import 'package:food_dash_app/features/auth/UI/pages/sig_up_page.dart';
 import 'package:food_dash_app/features/auth/bloc/auth_bloc/auth_bloc.dart';
 
 class LoginPage extends StatelessWidget {
@@ -58,10 +62,7 @@ class LoginPage extends StatelessWidget {
                   },
                   builder: (BuildContext context, AuthState state) {
                     if (state is AuthLoginLoadingState) {
-                      return const CustomButton(
-                        text: 'Log In',
-                        busy: true,
-                      );
+                      return const CustomButton.loading(busy: true);
                     }
 
                     return CustomButton(
@@ -79,6 +80,18 @@ class LoginPage extends StatelessWidget {
                       },
                     );
                   },
+                ),
+                const SizedBox(height: 20.0),
+                CustomButton(
+                  text: 'Sign Up',
+                  onTap: () => NavigationService()
+                      .navigateReplaceDefault(context, const SignUpPage()),
+                ),
+                const SizedBox(height: 10.0),
+                TextButton(
+                  onPressed: () => NavigationService()
+                      .navigateToDefault(context, const ForgotPasswordPage()),
+                  child: const Text('Forgot Password!?'),
                 ),
               ],
             ),
