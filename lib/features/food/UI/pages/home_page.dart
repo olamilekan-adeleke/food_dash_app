@@ -9,7 +9,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        
         children: <Widget>[
           const Center(child: Text('Home Page')),
           const SizedBox(height: 20),

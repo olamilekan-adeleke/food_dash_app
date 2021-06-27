@@ -106,7 +106,7 @@ class SignUpPage extends StatelessWidget {
                   },
                   builder: (BuildContext context, AuthState state) {
                     if (state is AuthSignUpLoadingState) {
-                      return const CustomButton.loading(busy: true);
+                      return const CustomButton.loading();
                     }
 
                     return CustomButton(

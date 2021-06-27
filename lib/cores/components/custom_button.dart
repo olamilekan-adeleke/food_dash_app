@@ -9,14 +9,13 @@ class CustomButton extends StatelessWidget {
   const CustomButton({
     required this.text,
     required this.onTap,
-    this.busy = false,
     this.color,
     this.textColor,
     this.textSize,
     this.height,
     this.width,
     this.textFontWeight,
-  });
+  }) : busy = false;
 
   const CustomButton.loading({
     this.text,
@@ -27,7 +26,7 @@ class CustomButton extends StatelessWidget {
     this.height,
     this.width,
     this.textFontWeight,
-  }) : busy = false;
+  }) : busy = true;
 
   const CustomButton.smallSized({
     this.text,
