@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Food Dash',
         theme: ThemeData(
+          
           primarySwatch: Colors.blue,
         ),
         navigatorKey: navigationService.navigatorKey,
