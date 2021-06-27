@@ -1,12 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_dash_app/cores/components/custom_button.dart';
+import 'package:food_dash_app/cores/components/custom_textfiled.dart';
+import 'package:food_dash_app/cores/components/snack_bar_service.dart';
+import 'package:food_dash_app/cores/utils/navigator_service.dart';
+import 'package:food_dash_app/cores/utils/validator.dart';
+import 'package:food_dash_app/features/auth/bloc/auth_bloc/auth_bloc.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
   const ForgotPasswordPage({Key? key}) : super(key: key);
 
+  static final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  static final TextEditingController emailTextEditingController =
+      TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('forgot pasword')),
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+        child: SingleChildScrollView(
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: <Widget>[
+                const SizedBox(
+                  height: 250.0,
+                  child: Placeholder(),
+                ),
+                const SizedBox(height: 50.0),
+                CustomTextField(
+                  textEditingController: emailTextEditingController,
+                  hintText: 'Enter email address',
+                  labelText: 'Email',
+                  validator: (String? text) =>
+                      formFieldValidator(text, 'Email', 3),
+                ),
+                const SizedBox(height: 80.0),
+                BlocConsumer<AuthBloc, AuthState>(
+                  listener: (BuildContext context, AuthState state) {
+                    if (state is AuthForgotPasswordLoadedState) {
+                      SnackBarService.showSuccessSnackBar(state.message);
+                    } else if (state is AuthForgotPasswordErrorState) {
+                      SnackBarService.showErrorSnackBar(state.message);
+                    }
+                  },
+                  builder: (BuildContext context, AuthState state) {
+                    if (state is AuthForgotPasswordLoadingState) {
+                      return const CustomButton.loading(busy: true);
+                    }
+
+                    return CustomButton(
+                      text: 'Forgot Password',
+                      onTap: () {
+                        if (formKey.currentState!.validate()) {
+                          BlocProvider.of<AuthBloc>(context).add(
+                            ForgotPasswordEvent(
+                                emailTextEditingController.text.trim()),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: 10.0),
+                TextButton(
+                  onPressed: () => NavigationService().goBack(),
+                  child: const Text('Log In'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
