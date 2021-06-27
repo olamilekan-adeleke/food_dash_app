@@ -8,13 +8,25 @@ import 'custom_text_widget.dart';
 class CustomButton extends StatelessWidget {
   const CustomButton({
     required this.text,
-    this.onTap,
+    required this.onTap,
     this.busy = false,
+    this.color,
+    this.textColor,
   });
 
-  final String text;
+  const CustomButton.loading({
+    this.text,
+    this.onTap,
+    this.busy = false,
+    this.color,
+    this.textColor,
+  });
+
+  final String? text;
   final void Function()? onTap;
   final bool busy;
+  final Color? color;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
@@ -26,13 +38,13 @@ class CustomButton extends StatelessWidget {
         style: ButtonStyle(
           backgroundColor: busy
               ? MaterialStateProperty.all(kcGrey100)
-              : MaterialStateProperty.all(kcPrimaryColor),
+              : MaterialStateProperty.all(color ?? kcPrimaryColor),
         ),
         child: busy
             ? const Center(child: CustomCircularProgressIndicator())
             : CustomTextWidget(
-                text: text,
-                textColor: Colors.white,
+                text: text ?? 'no text',
+                textColor: textColor ?? Colors.white,
               ),
       ),
     );
