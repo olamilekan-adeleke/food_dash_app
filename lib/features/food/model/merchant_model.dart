@@ -2,6 +2,7 @@ import 'dart:convert';
 
 class MerchantModel {
   const MerchantModel({
+    required this.id,
     required this.name,
     required this.image,
     required this.categories,
@@ -11,6 +12,7 @@ class MerchantModel {
 
   factory MerchantModel.fromMap(Map<String, dynamic> map) {
     return MerchantModel(
+      id: map['id'] as String,
       name: map['name'] as String,
       image: map['image'] as String,
       categories: List<String>.from(map['categories'] as List<String>),
@@ -22,6 +24,7 @@ class MerchantModel {
   factory MerchantModel.fromJson(String source) =>
       MerchantModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
+  final String id;
   final String name;
   final String image;
   final List<String> categories;
@@ -30,6 +33,7 @@ class MerchantModel {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'id': id,
       'name': name,
       'image': image,
       'categories': categories,
