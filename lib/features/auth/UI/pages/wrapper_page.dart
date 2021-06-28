@@ -13,14 +13,12 @@ class WrapperPage extends StatelessWidget {
       GetIt.instance<AuthenticationRepo>();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: StreamProvider<LoginUserModel?>.value(
-        initialData: null,
-        value: authenticationRepo.userAuthState,
-        builder: (BuildContext context, Widget? child) {
-          return const AuthStateWidget();
-        },
-      ),
+    return StreamProvider<LoginUserModel?>.value(
+      initialData: null,
+      value: authenticationRepo.userAuthState,
+      builder: (BuildContext context, Widget? child) {
+        return const AuthStateWidget();
+      },
     );
   }
 }
