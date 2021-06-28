@@ -2,6 +2,7 @@ import 'dart:convert';
 
 class FoodProductModel {
   const FoodProductModel({
+    required this.id,
     required this.name,
     required this.description,
     required this.image,
@@ -11,6 +12,7 @@ class FoodProductModel {
 
   factory FoodProductModel.fromMap(Map<String, dynamic> map) {
     return FoodProductModel(
+      id: map['id'] as String,
       name: map['name'] as String,
       description: map['description'] as String,
       image: map['image'] as String,
@@ -22,6 +24,7 @@ class FoodProductModel {
   factory FoodProductModel.fromJson(String source) =>
       FoodProductModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
+  final String id;
   final String name;
   final String description;
   final String image;
@@ -30,6 +33,7 @@ class FoodProductModel {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'id': id,
       'name': name,
       'description': description,
       'image': image,
