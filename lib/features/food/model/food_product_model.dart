@@ -10,9 +10,12 @@ class FoodProductModel {
     required this.price,
   });
 
-  factory FoodProductModel.fromMap(Map<String, dynamic> map) {
+  factory FoodProductModel.fromMap(
+    Map<String, dynamic> map,
+    String documentId,
+  ) {
     return FoodProductModel(
-      id: map['id'] as String,
+      id: documentId,
       name: map['name'] as String,
       description: map['description'] as String,
       image: map['image'] as String,
@@ -20,9 +23,6 @@ class FoodProductModel {
       price: map['price'] as int,
     );
   }
-
-  factory FoodProductModel.fromJson(String source) =>
-      FoodProductModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final String id;
   final String name;

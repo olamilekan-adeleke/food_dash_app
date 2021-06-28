@@ -10,19 +10,17 @@ class MerchantModel {
     required this.numberOfRating,
   });
 
-  factory MerchantModel.fromMap(Map<String, dynamic> map) {
+  factory MerchantModel.fromMap(Map<String, dynamic> map, String documentId) {
     return MerchantModel(
-      id: map['id'] as String,
+      id: documentId,
       name: map['name'] as String,
       image: map['image'] as String,
-      categories: List<String>.from(map['categories'] as List<String>),
-      rating: map['rating'] as double,
-      numberOfRating: map['numberOfRating'] as int,
+      categories: List<String>.from(map['categories'] as List<dynamic>),
+      // rating: map['rating'] as double,
+      rating: double.parse(map['rating'].toString()[0]),
+      numberOfRating: map['number_of_ratings'] as int,
     );
   }
-
-  factory MerchantModel.fromJson(String source) =>
-      MerchantModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final String id;
   final String name;
@@ -38,7 +36,7 @@ class MerchantModel {
       'image': image,
       'categories': categories,
       'rating': rating,
-      'numberOfRating': numberOfRating,
+      'number_of_ratings': numberOfRating,
     };
   }
 
