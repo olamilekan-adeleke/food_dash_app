@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-class NavigationService {
+
+//TODO: fix navigator serices
+class CustomNavigationService {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   Future<dynamic>? navigateTo(String routeName, {dynamic argument}) {
