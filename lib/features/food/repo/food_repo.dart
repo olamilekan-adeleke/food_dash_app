@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:food_dash_app/features/auth/repo/auth_repo.dart';
+import 'package:food_dash_app/features/food/model/cart_model.dart';
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
 import 'package:food_dash_app/features/food/model/merchant_model.dart';
 import 'package:get_it/get_it.dart';
@@ -87,7 +88,7 @@ class MerchantRepo {
         .delete();
   }
 
-  Future<void> addToCart(FoodProductModel foodProductModel) async {
+  Future<void> addToCart(CartModel foodProductModel) async {
     final String? userId = authenticationRepo.getUserUid();
 
     await userCollectionRef
@@ -115,5 +116,43 @@ class MerchantRepo {
         .collection('cart')
         .doc(foodProductId)
         .delete();
+  }
+
+  Future<List<CartModel>> getCart() async {
+    final List<CartModel> cartList = <CartModel>[];
+    final String? userUid = authenticationRepo.getUserUid();
+
+    final Query<Map<String, dynamic>> query =
+        userCollectionRef.doc(userUid).collection('cart').orderBy('name');
+
+    final QuerySnapshot<Map<String, dynamic>> querySnapshot = await query.get();
+
+    cartList.addAll(
+      querySnapshot.docs.map(
+        (QueryDocumentSnapshot<Map<String, dynamic>> data) =>
+            CartModel.fromMap(data.data(), data.id),
+      ),
+    );
+
+    return cartList;
+  }
+
+  Future<List<FoodProductModel>> getFavourites() async {
+    final List<FoodProductModel> cartList = <FoodProductModel>[];
+    final String? userUid = authenticationRepo.getUserUid();
+
+    final Query<Map<String, dynamic>> query =
+        userCollectionRef.doc(userUid).collection('favourites').orderBy('name');
+
+    final QuerySnapshot<Map<String, dynamic>> querySnapshot = await query.get();
+
+    cartList.addAll(
+      querySnapshot.docs.map(
+        (QueryDocumentSnapshot<Map<String, dynamic>> data) =>
+            FoodProductModel.fromMap(data.data(), data.id),
+      ),
+    );
+
+    return cartList;
   }
 }
