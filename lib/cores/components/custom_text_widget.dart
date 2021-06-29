@@ -10,6 +10,7 @@ class CustomTextWidget extends StatelessWidget {
     this.textColor = kcTextColor,
     this.fontWeight = FontWeight.w400,
     this.textAlign = TextAlign.center,
+    this.maxLines,
   }) : super(key: key);
 
   final String text;
@@ -17,6 +18,7 @@ class CustomTextWidget extends StatelessWidget {
   final Color? textColor;
   final FontWeight? fontWeight;
   final TextAlign? textAlign;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,11 @@ class CustomTextWidget extends StatelessWidget {
         fontWeight: fontWeight,
       ),
       textAlign: textAlign,
+      overflow: TextOverflow.ellipsis,
+      softWrap: true,
+      maxLines: maxLines,
+      
     );
+
   }
 }
