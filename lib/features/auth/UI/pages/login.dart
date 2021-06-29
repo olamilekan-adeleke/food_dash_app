@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/components/custom_button.dart';
 import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
 import 'package:food_dash_app/cores/components/custom_textfiled.dart';
-import 'package:food_dash_app/cores/components/snack_bar_service.dart';
+import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 
 import 'package:food_dash_app/cores/utils/validator.dart';
@@ -60,9 +60,9 @@ class LoginPage extends StatelessWidget {
                 BlocConsumer<AuthBloc, AuthState>(
                   listener: (BuildContext context, AuthState state) {
                     if (state is AuthLoginLoadedState) {
-                      SnackBarService.showSuccessSnackBar(state.message);
+                      CustomSnackBarService.showSuccessSnackBar(state.message);
                     } else if (state is AuthLoginErrorState) {
-                      SnackBarService.showErrorSnackBar(state.message);
+                      CustomSnackBarService.showErrorSnackBar(state.message);
                     }
                   },
                   builder: (BuildContext context, AuthState state) {
@@ -89,12 +89,12 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 20.0),
                 CustomButton(
                   text: 'Sign Up',
-                  onTap: () => NavigationService()
+                  onTap: () => CustomNavigationService()
                       .navigateToDefault(context, const SignUpPage()),
                 ),
                 const SizedBox(height: 10.0),
                 TextButton(
-                  onPressed: () => NavigationService()
+                  onPressed: () => CustomNavigationService()
                       .navigateToDefault(context, const ForgotPasswordPage()),
                   child: const Text('Forgot Password!?'),
                 ),

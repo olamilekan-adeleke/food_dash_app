@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/components/custom_button.dart';
 import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
 import 'package:food_dash_app/cores/components/custom_textfiled.dart';
-import 'package:food_dash_app/cores/components/snack_bar_service.dart';
+import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/validator.dart';
 import 'package:food_dash_app/features/auth/bloc/auth_bloc/auth_bloc.dart';
@@ -98,10 +98,10 @@ class SignUpPage extends StatelessWidget {
                 BlocConsumer<AuthBloc, AuthState>(
                   listener: (BuildContext context, AuthState state) {
                     if (state is AuthSignUpLoadedState) {
-                      SnackBarService.showSuccessSnackBar(state.message);
-                      NavigationService().goBackDefault(context);
+                      CustomSnackBarService.showSuccessSnackBar(state.message);
+                      CustomNavigationService().goBackDefault(context);
                     } else if (state is AuthSignUpErrorState) {
-                      SnackBarService.showErrorSnackBar(state.message);
+                      CustomSnackBarService.showErrorSnackBar(state.message);
                     }
                   },
                   builder: (BuildContext context, AuthState state) {
@@ -135,7 +135,7 @@ class SignUpPage extends StatelessWidget {
                 CustomButton(
                   color: Colors.grey[300],
                   text: 'Log In',
-                  onTap: () => NavigationService().goBackDefault(context),
+                  onTap: () => CustomNavigationService().goBackDefault(context),
                 )
               ],
             ),
