@@ -56,6 +56,46 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         yield GetFoodProductsErrorState(e.toString());
       }
       foodBusy = false;
+    } else if (event is AddFoodProductToFavouriteEvents) {
+      try {
+        yield AddFoodProductToFavouriteLoadingState();
+        await merchantRepo.addToFavourite(event.foodProduct);
+        yield const AddFoodProductToFavouriteLoadedState();
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield AddFoodProductToFavouriteErrorState(e.toString());
+      }
+    } else if (event is RemoveFoodProductToFavouriteEvents) {
+      try {
+        yield RemoveFoodProductToFavouriteLoadingState();
+        await merchantRepo.removeFromFavourite(event.foodProductId);
+        yield const RemoveFoodProductToFavouriteLoadedState();
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield RemoveFoodProductToFavouriteErrorState(e.toString());
+      }
+    } else if (event is AddFoodProductToCartEvents) {
+      try {
+        yield AddFoodProductToCartLoadingState();
+        await merchantRepo.addToCart(event.foodProduct);
+        yield const AddFoodProductToCartLoadedState();
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield AddFoodProductToCartErrorState(e.toString());
+      }
+    } else if (event is RemoveFoodProductToCartEvents) {
+      try {
+        yield RemoveFoodProductToCartLoadingState();
+        await merchantRepo.removeFromCart(event.foodProductId);
+        yield const RemoveFoodProductToCartLoadedState();
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield RemoveFoodProductToCartErrorState(e.toString());
+      }
     }
   }
 }

@@ -42,3 +42,63 @@ class GetFoodProductsErrorState extends MerchantState {
 
   final String message;
 }
+
+/// add food product to favourite state
+class AddFoodProductToFavouriteInitialState extends MerchantState {}
+
+class AddFoodProductToFavouriteLoadingState extends MerchantState {}
+
+class AddFoodProductToFavouriteLoadedState extends MerchantState {
+  const AddFoodProductToFavouriteLoadedState();
+}
+
+class AddFoodProductToFavouriteErrorState extends MerchantState {
+  const AddFoodProductToFavouriteErrorState(this.message);
+
+  final String message;
+}
+
+/// remove food product to favourite state
+class RemoveFoodProductToFavouriteInitialState extends MerchantState {}
+
+class RemoveFoodProductToFavouriteLoadingState extends MerchantState {}
+
+class RemoveFoodProductToFavouriteLoadedState extends MerchantState {
+  const RemoveFoodProductToFavouriteLoadedState();
+}
+
+class RemoveFoodProductToFavouriteErrorState extends MerchantState {
+  const RemoveFoodProductToFavouriteErrorState(this.message);
+
+  final String message;
+}
+
+/// add food product to cart state
+class FoodProductToCartInitialState extends MerchantState {}
+
+class AddFoodProductToCartLoadingState extends MerchantState {}
+
+class AddFoodProductToCartLoadedState extends MerchantState {
+  const AddFoodProductToCartLoadedState();
+}
+
+class AddFoodProductToCartErrorState extends MerchantState {
+  const AddFoodProductToCartErrorState(this.message);
+
+  final String message;
+}
+
+/// remove food product to cart state
+class RemoveFoodProductToCartInitialState extends MerchantState {}
+
+class RemoveFoodProductToCartLoadingState extends MerchantState {}
+
+class RemoveFoodProductToCartLoadedState extends MerchantState {
+  const RemoveFoodProductToCartLoadedState();
+}
+
+class RemoveFoodProductToCartErrorState extends MerchantState {
+  const RemoveFoodProductToCartErrorState(this.message);
+
+  final String message;
+}

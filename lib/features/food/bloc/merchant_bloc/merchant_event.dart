@@ -16,3 +16,32 @@ class GetFoodProductsEvents extends MerchantEvent {
 
   final String merchantId;
 }
+
+
+/// add food item to favourite
+class AddFoodProductToFavouriteEvents extends MerchantEvent {
+  const AddFoodProductToFavouriteEvents(this.foodProduct);
+
+  final FoodProductModel foodProduct;
+}
+
+/// remove food item to favourite
+class RemoveFoodProductToFavouriteEvents extends MerchantEvent {
+  const RemoveFoodProductToFavouriteEvents(this.foodProductId);
+
+  final String foodProductId;
+}
+
+/// add food item to cart
+class AddFoodProductToCartEvents extends MerchantEvent {
+  const AddFoodProductToCartEvents(this.foodProduct);
+
+  final FoodProductModel foodProduct;
+}
+
+/// remove food item to cart
+class RemoveFoodProductToCartEvents extends MerchantEvent {
+  const RemoveFoodProductToCartEvents(this.foodProductId);
+
+  final String foodProductId;
+}
