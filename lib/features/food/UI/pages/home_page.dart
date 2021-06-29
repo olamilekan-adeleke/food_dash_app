@@ -10,7 +10,9 @@ import 'package:food_dash_app/cores/constants/color.dart';
 import 'package:food_dash_app/cores/constants/font_size.dart';
 import 'package:food_dash_app/cores/utils/emums.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
+import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/features/auth/repo/auth_repo.dart';
+import 'package:food_dash_app/features/food/UI/pages/selected_merchant_page.dart';
 import 'package:food_dash_app/features/food/bloc/merchant_bloc/merchant_bloc.dart';
 import 'package:food_dash_app/features/food/model/merchant_model.dart';
 
@@ -169,8 +171,7 @@ class MerchantList extends StatelessWidget {
     Key? key,
     required this.controller,
     required this.merchants,
-  }) :
-        super(key: key);
+  }) : super(key: key);
 
   final ScrollController controller;
   final List<MerchantModel> merchants;
@@ -178,6 +179,7 @@ class MerchantList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+
     return ListView.builder(
       controller: controller,
       physics: const NeverScrollableScrollPhysics(),
@@ -187,8 +189,9 @@ class MerchantList extends StatelessWidget {
         final MerchantModel merchant = merchants[index];
 
         return InkWell(
-          // onTap: ()=> NavigationService().navigateToDefault(context, widget),
-                  child: Container(
+          onTap: () => CustomNavigationService()
+              .navigateTo(RouteName.selectedMerchantPage, argument: merchant),
+          child: Container(
             margin: const EdgeInsets.symmetric(
               horizontal: 10.0,
               vertical: 15.0,
