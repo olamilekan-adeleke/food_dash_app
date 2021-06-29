@@ -33,6 +33,7 @@ dependencies:
   flutter_bloc: ^7.0.1
   get_it: ^7.0.0
   google_fonts: ^2.1.0
+  paystack_flutter: ^0.0.2
   provider: ^5.0.0
   shimmer: ^2.0.0
   stacked_services: ^0.8.8
