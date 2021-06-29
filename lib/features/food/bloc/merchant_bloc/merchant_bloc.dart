@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
+import 'package:food_dash_app/features/food/model/cart_model.dart';
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
 import 'package:food_dash_app/features/food/model/merchant_model.dart';
 import 'package:food_dash_app/features/food/repo/food_repo.dart';
@@ -58,7 +59,7 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
       foodBusy = false;
     } else if (event is AddFoodProductToFavouriteEvents) {
       try {
-        yield AddFoodProductToFavouriteLoadingState();
+        yield AddFoodProductToFavouriteLoadingState(event.foodProduct.id);
         await merchantRepo.addToFavourite(event.foodProduct);
         yield const AddFoodProductToFavouriteLoadedState();
       } catch (e, s) {
@@ -68,7 +69,7 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
       }
     } else if (event is RemoveFoodProductToFavouriteEvents) {
       try {
-        yield RemoveFoodProductToFavouriteLoadingState();
+        yield RemoveFoodProductToFavouriteLoadingState(event.foodProductId);
         await merchantRepo.removeFromFavourite(event.foodProductId);
         yield const RemoveFoodProductToFavouriteLoadedState();
       } catch (e, s) {
@@ -78,9 +79,9 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
       }
     } else if (event is AddFoodProductToCartEvents) {
       try {
-        yield AddFoodProductToCartLoadingState();
+        yield AddFoodProductToCartLoadingState(event.foodProduct.id);
         await merchantRepo.addToCart(event.foodProduct);
-        yield const AddFoodProductToCartLoadedState();
+        yield AddFoodProductToCartLoadedState();
       } catch (e, s) {
         debugPrint(e.toString());
         debugPrint(s.toString());
@@ -88,7 +89,7 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
       }
     } else if (event is RemoveFoodProductToCartEvents) {
       try {
-        yield RemoveFoodProductToCartLoadingState();
+        yield RemoveFoodProductToCartLoadingState(event.foodProductId);
         await merchantRepo.removeFromCart(event.foodProductId);
         yield const RemoveFoodProductToCartLoadedState();
       } catch (e, s) {

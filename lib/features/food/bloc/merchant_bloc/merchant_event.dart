@@ -36,7 +36,7 @@ class RemoveFoodProductToFavouriteEvents extends MerchantEvent {
 class AddFoodProductToCartEvents extends MerchantEvent {
   const AddFoodProductToCartEvents(this.foodProduct);
 
-  final FoodProductModel foodProduct;
+  final CartModel foodProduct;
 }
 
 /// remove food item to cart

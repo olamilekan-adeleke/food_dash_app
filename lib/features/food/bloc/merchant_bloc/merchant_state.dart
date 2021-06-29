@@ -46,7 +46,11 @@ class GetFoodProductsErrorState extends MerchantState {
 /// add food product to favourite state
 class AddFoodProductToFavouriteInitialState extends MerchantState {}
 
-class AddFoodProductToFavouriteLoadingState extends MerchantState {}
+class AddFoodProductToFavouriteLoadingState extends MerchantState {
+  const AddFoodProductToFavouriteLoadingState(this.id);
+
+  final String id;
+}
 
 class AddFoodProductToFavouriteLoadedState extends MerchantState {
   const AddFoodProductToFavouriteLoadedState();
@@ -61,7 +65,10 @@ class AddFoodProductToFavouriteErrorState extends MerchantState {
 /// remove food product to favourite state
 class RemoveFoodProductToFavouriteInitialState extends MerchantState {}
 
-class RemoveFoodProductToFavouriteLoadingState extends MerchantState {}
+class RemoveFoodProductToFavouriteLoadingState extends MerchantState {
+  const RemoveFoodProductToFavouriteLoadingState(this.id);
+  final String id;
+}
 
 class RemoveFoodProductToFavouriteLoadedState extends MerchantState {
   const RemoveFoodProductToFavouriteLoadedState();
@@ -74,13 +81,14 @@ class RemoveFoodProductToFavouriteErrorState extends MerchantState {
 }
 
 /// add food product to cart state
-class FoodProductToCartInitialState extends MerchantState {}
+class AddFoodProductToCartInitialState extends MerchantState {}
 
-class AddFoodProductToCartLoadingState extends MerchantState {}
-
-class AddFoodProductToCartLoadedState extends MerchantState {
-  const AddFoodProductToCartLoadedState();
+class AddFoodProductToCartLoadingState extends MerchantState {
+  const AddFoodProductToCartLoadingState(this.id);
+  final String id;
 }
+
+class AddFoodProductToCartLoadedState extends MerchantState {}
 
 class AddFoodProductToCartErrorState extends MerchantState {
   const AddFoodProductToCartErrorState(this.message);
@@ -91,7 +99,10 @@ class AddFoodProductToCartErrorState extends MerchantState {
 /// remove food product to cart state
 class RemoveFoodProductToCartInitialState extends MerchantState {}
 
-class RemoveFoodProductToCartLoadingState extends MerchantState {}
+class RemoveFoodProductToCartLoadingState extends MerchantState {
+  const RemoveFoodProductToCartLoadingState(this.id);
+  final String id;
+}
 
 class RemoveFoodProductToCartLoadedState extends MerchantState {
   const RemoveFoodProductToCartLoadedState();
