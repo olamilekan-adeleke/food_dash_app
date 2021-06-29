@@ -113,3 +113,37 @@ class RemoveFoodProductToCartErrorState extends MerchantState {
 
   final String message;
 }
+
+/// get cart item state
+class GetCartItemInitialState extends MerchantState {}
+
+class GetCartItemLoadingState extends MerchantState {}
+
+class GetCartItemLoadedState extends MerchantState {
+  const GetCartItemLoadedState(this.cartList);
+
+  final List<CartModel> cartList;
+}
+
+class GetCartItemErrorState extends MerchantState {
+  const GetCartItemErrorState(this.message);
+
+  final String message;
+}
+
+/// get favourite item state
+class GetFavouriteInitialState extends MerchantState {}
+
+class GetFavouriteLoadingState extends MerchantState {}
+
+class GetFavouriteLoadedState extends MerchantState {
+  const GetFavouriteLoadedState(this.cartList);
+
+  final List<FoodProductModel> cartList;
+}
+
+class GetFavouriteErrorState extends MerchantState {
+  const GetFavouriteErrorState(this.message);
+
+  final String message;
+}

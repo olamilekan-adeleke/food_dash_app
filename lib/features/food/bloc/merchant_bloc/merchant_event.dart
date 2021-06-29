@@ -17,7 +17,6 @@ class GetFoodProductsEvents extends MerchantEvent {
   final String merchantId;
 }
 
-
 /// add food item to favourite
 class AddFoodProductToFavouriteEvents extends MerchantEvent {
   const AddFoodProductToFavouriteEvents(this.foodProduct);
@@ -45,3 +44,10 @@ class RemoveFoodProductToCartEvents extends MerchantEvent {
 
   final String foodProductId;
 }
+
+/// remove food item to cart
+class GetCartItemEvents extends MerchantEvent {}
+
+
+/// remove food item to cart
+class GetFavouritesItemEvents extends MerchantEvent {}

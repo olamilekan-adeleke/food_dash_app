@@ -97,6 +97,27 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         debugPrint(s.toString());
         yield RemoveFoodProductToCartErrorState(e.toString());
       }
+    } else if (event is GetCartItemEvents) {
+      try {
+        yield GetCartItemLoadingState();
+        final List<CartModel> cartList = await merchantRepo.getCart();
+        yield GetCartItemLoadedState(cartList);
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield GetCartItemErrorState(e.toString());
+      }
+    } else if (event is GetFavouritesItemEvents) {
+      try {
+        yield GetFavouriteLoadingState();
+        final List<FoodProductModel> foodList =
+            await merchantRepo.getFavourites();
+        yield GetFavouriteLoadedState(foodList);
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield GetFavouriteErrorState(e.toString());
+      }
     }
   }
 }
