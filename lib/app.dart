@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/utils/bloc_list.dart';
-import 'package:food_dash_app/cores/utils/navigator_service.dart';
-import 'package:get_it/get_it.dart';
-
+import 'package:stacked_services/stacked_services.dart';
 import 'cores/utils/route_name.dart';
 import 'cores/utils/router.dart';
 
 class MyApp extends StatelessWidget {
   
-  static final CustomNavigationService navigationService =
-      GetIt.instance<CustomNavigationService>();
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +15,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Food Dash',
         theme: ThemeData(
-          
           primarySwatch: Colors.blue,
         ),
-        navigatorKey: navigationService.navigatorKey,
+        navigatorKey: StackedService.navigatorKey,
         onGenerateRoute: generateRoute,
         initialRoute: RouteName.inital,
       ),
