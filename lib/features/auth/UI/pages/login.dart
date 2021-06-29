@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/components/custom_button.dart';
 import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
 import 'package:food_dash_app/cores/components/custom_textfiled.dart';
+import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 
@@ -89,13 +90,13 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 20.0),
                 CustomButton(
                   text: 'Sign Up',
-                  onTap: () => CustomNavigationService()
-                      .navigateToDefault(context, const SignUpPage()),
+                  onTap: () =>
+                      CustomNavigationService().navigateTo(RouteName.signup),
                 ),
                 const SizedBox(height: 10.0),
                 TextButton(
                   onPressed: () => CustomNavigationService()
-                      .navigateToDefault(context, const ForgotPasswordPage()),
+                      .navigateTo(RouteName.forgotPassword),
                   child: const Text('Forgot Password!?'),
                 ),
               ],

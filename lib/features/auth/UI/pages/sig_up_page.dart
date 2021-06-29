@@ -99,7 +99,7 @@ class SignUpPage extends StatelessWidget {
                   listener: (BuildContext context, AuthState state) {
                     if (state is AuthSignUpLoadedState) {
                       CustomSnackBarService.showSuccessSnackBar(state.message);
-                      CustomNavigationService().goBackDefault(context);
+                      CustomNavigationService().goBack();
                     } else if (state is AuthSignUpErrorState) {
                       CustomSnackBarService.showErrorSnackBar(state.message);
                     }
@@ -135,7 +135,7 @@ class SignUpPage extends StatelessWidget {
                 CustomButton(
                   color: Colors.grey[300],
                   text: 'Log In',
-                  onTap: () => CustomNavigationService().goBackDefault(context),
+                  onTap: () => CustomNavigationService().goBack(),
                 )
               ],
             ),
