@@ -1,52 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:food_dash_app/cores/utils/locator.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 
-//TODO: fix navigator serices
 class CustomNavigationService {
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final NavigationService _navigationService =
+      locator<NavigationService>();
 
   Future<dynamic>? navigateTo(String routeName, {dynamic argument}) {
     debugPrint(routeName);
-    return navigatorKey.currentState?.pushNamed(routeName, arguments: argument);
+
+    return _navigationService.navigateTo(routeName, arguments: argument);
   }
 
   Future<dynamic>? navigateRecplace(String routeName, {dynamic argument}) {
     debugPrint(routeName);
-    return navigatorKey.currentState
-        ?.pushReplacementNamed(routeName, arguments: argument);
+    return _navigationService.replaceWith(routeName, arguments: argument);
   }
 
-  Future<void>? navigateToUsingWidget(Widget widget) {
-    debugPrint('ll');
-    if (navigatorKey.currentState != null) {
-      debugPrint('ll3');
-      return navigatorKey.currentState?.push(
-          MaterialPageRoute<Widget>(builder: (BuildContext context) => widget));
-    }
-
-    // return null;
-  }
-
-  Future<dynamic>? navigateRepalceUsingWidget(Widget widget) {
-    return navigatorKey.currentState?.pushReplacement(
-        MaterialPageRoute<Widget>(builder: (BuildContext context) => widget));
-  }
-
-  Future<dynamic>? navigateToDefault(BuildContext context, Widget widget) {
-    return Navigator.of(context).push(
-        MaterialPageRoute<Widget>(builder: (BuildContext context) => widget));
-  }
-
-  Future<dynamic>? navigateReplaceDefault(BuildContext context, Widget widget) {
-    return Navigator.of(context).pushReplacement(
-        MaterialPageRoute<Widget>(builder: (BuildContext context) => widget));
-  }
-
-  void goBack() {
-    return navigatorKey.currentState?.pop();
-  }
-
-  void goBackDefault(BuildContext context) {
-    return Navigator.pop(context);
+  bool goBack() {
+    return _navigationService.back();
   }
 }
