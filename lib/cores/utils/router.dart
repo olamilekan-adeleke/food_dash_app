@@ -8,6 +8,7 @@ import 'package:food_dash_app/features/auth/UI/pages/sig_up_page.dart';
 import 'package:food_dash_app/features/auth/UI/pages/wrapper_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/cart_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/home_page.dart';
+import 'package:food_dash_app/features/food/UI/pages/payment_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/selected_food_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/selected_merchant_page.dart';
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
@@ -59,6 +60,10 @@ Route<dynamic>? generateRoute(RouteSettings settings) {
     case RouteName.cartPage:
       return MaterialPageRoute<Widget>(
           builder: (BuildContext context) => const CartPage());
+
+    case RouteName.paymentPage:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const PaymentPage());
 
     default:
       return MaterialPageRoute<Widget>(
