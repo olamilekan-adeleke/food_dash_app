@@ -16,7 +16,8 @@ class CustomButton extends StatelessWidget {
     this.width,
     this.textFontWeight,
   })  : busy = false,
-        iconData = null, iconSize = null,
+        iconData = null,
+        iconSize = null,
         iconColor = null;
 
   const CustomButton.loading({
@@ -29,7 +30,8 @@ class CustomButton extends StatelessWidget {
         text = null,
         textColor = null,
         textSize = null,
-        textFontWeight = null, iconSize = null,
+        textFontWeight = null,
+        iconSize = null,
         iconColor = null;
 
   const CustomButton.smallSized({
@@ -75,6 +77,9 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const double __defaultHeight = 50.0;
+    final double __defaultWidth = MediaQuery.of(context).size.width * 0.95;
+
     Widget child;
 
     if (text == null) {
@@ -85,7 +90,12 @@ class CustomButton extends StatelessWidget {
       );
     } else {
       if (busy) {
-        child = const Center(child: CustomCircularProgressIndicator());
+        child = Center(
+          child: SizedBox(
+            height: (height ?? __defaultHeight) / 2,
+            child: const CustomCircularProgressIndicator(),
+          ),
+        );
       } else {
         child = CustomTextWidget(
           text: text ?? 'no text',
@@ -97,8 +107,8 @@ class CustomButton extends StatelessWidget {
     }
 
     return SizedBox(
-      height: height ?? 50.0,
-      width: width ?? MediaQuery.of(context).size.width * 0.95,
+      height: height ?? __defaultHeight,
+      width: width ?? __defaultWidth,
       child: TextButton(
         onPressed: () => onTap!(),
         style: ButtonStyle(
