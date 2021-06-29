@@ -9,8 +9,8 @@ import 'cores/utils/router.dart';
 
 class MyApp extends StatelessWidget {
   
-  static final NavigationService navigationService =
-      GetIt.instance<NavigationService>();
+  static final CustomNavigationService navigationService =
+      GetIt.instance<CustomNavigationService>();
 
   @override
   Widget build(BuildContext context) {
