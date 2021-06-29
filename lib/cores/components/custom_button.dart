@@ -15,6 +15,7 @@ class CustomButton extends StatelessWidget {
     this.height,
     this.width,
     this.textFontWeight,
+    this.circular = false,
   })  : busy = false,
         iconData = null,
         iconSize = null,
@@ -32,7 +33,8 @@ class CustomButton extends StatelessWidget {
         textSize = null,
         textFontWeight = null,
         iconSize = null,
-        iconColor = null;
+        iconColor = null,
+        circular = false;
 
   const CustomButton.smallSized({
     this.text,
@@ -43,6 +45,7 @@ class CustomButton extends StatelessWidget {
     this.height,
     this.width,
     this.textFontWeight,
+    this.circular = false,
   })  : busy = false,
         iconData = null,
         iconSize = null,
@@ -56,6 +59,7 @@ class CustomButton extends StatelessWidget {
     this.color,
     this.iconColor,
     this.iconSize,
+    this.circular = false,
   })  : busy = false,
         text = null,
         textColor = null,
@@ -74,6 +78,7 @@ class CustomButton extends StatelessWidget {
   final FontWeight? textFontWeight;
   final Color? iconColor;
   final double? iconSize;
+  final bool circular;
 
   @override
   Widget build(BuildContext context) {
@@ -83,27 +88,22 @@ class CustomButton extends StatelessWidget {
     Widget child;
 
     if (text == null) {
-      child = Icon(
-        iconData,
-        color: iconColor ?? Colors.white,
-        size: iconSize ?? 20.0,
-      );
-    } else {
       if (busy) {
-        child = Center(
-          child: SizedBox(
-            height: (height ?? __defaultHeight) / 2,
-            child: const CustomCircularProgressIndicator(),
-          ),
-        );
+        child = const CustomCircularProgressIndicator(color: kcPrimaryColor);
       } else {
-        child = CustomTextWidget(
-          text: text ?? 'no text',
-          textColor: textColor ?? Colors.white,
-          fontSize: textSize,
-          fontWeight: textFontWeight,
+        child = Icon(
+          iconData,
+          color: iconColor ?? Colors.white,
+          size: iconSize ?? 20.0,
         );
       }
+    } else {
+      child = CustomTextWidget(
+        text: text ?? 'no text',
+        textColor: textColor ?? Colors.white,
+        fontSize: textSize,
+        fontWeight: textFontWeight,
+      );
     }
 
     return SizedBox(
@@ -112,6 +112,17 @@ class CustomButton extends StatelessWidget {
       child: TextButton(
         onPressed: () => onTap!(),
         style: ButtonStyle(
+          shape: circular
+              ? MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100.0),
+                  ),
+                )
+              : MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
           backgroundColor: busy
               ? MaterialStateProperty.all(kcGrey100)
               : MaterialStateProperty.all(color ?? kcPrimaryColor),

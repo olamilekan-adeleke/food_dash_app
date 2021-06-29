@@ -9,8 +9,9 @@ class CustomTextWidget extends StatelessWidget {
     this.fontSize = kfsMeduim,
     this.textColor = kcTextColor,
     this.fontWeight = FontWeight.w400,
-    this.textAlign = TextAlign.center,
+    this.textAlign = TextAlign.justify,
     this.maxLines,
+    this.overflow,
   }) : super(key: key);
 
   final String text;
@@ -19,6 +20,7 @@ class CustomTextWidget extends StatelessWidget {
   final FontWeight? fontWeight;
   final TextAlign? textAlign;
   final int? maxLines;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +32,9 @@ class CustomTextWidget extends StatelessWidget {
         fontWeight: fontWeight,
       ),
       textAlign: textAlign,
-      overflow: TextOverflow.ellipsis,
+      overflow: overflow,
       softWrap: true,
       maxLines: maxLines,
-      
     );
-
   }
 }
