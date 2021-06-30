@@ -7,10 +7,7 @@ import 'package:food_dash_app/cores/components/custom_textfiled.dart';
 import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
-
 import 'package:food_dash_app/cores/utils/validator.dart';
-import 'package:food_dash_app/features/auth/UI/pages/forgot_password_page.dart';
-import 'package:food_dash_app/features/auth/UI/pages/sig_up_page.dart';
 import 'package:food_dash_app/features/auth/bloc/auth_bloc/auth_bloc.dart';
 
 class LoginPage extends StatelessWidget {

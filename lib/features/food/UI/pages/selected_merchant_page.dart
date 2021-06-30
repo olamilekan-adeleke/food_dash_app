@@ -215,7 +215,7 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
     if (_controller.position.pixels >= _controller.position.maxScrollExtent) {
       // merchantBloc!.hasMoreMerchant == true &&
       // merchantBloc!.merchantBusy == false
-      print('got here');
+      // print('got here');
       // merchantBloc!.add(GetMerchantsEvents());
     }
   }

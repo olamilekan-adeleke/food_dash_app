@@ -12,7 +12,6 @@ import 'package:food_dash_app/cores/utils/emums.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/features/auth/repo/auth_repo.dart';
-import 'package:food_dash_app/features/food/UI/pages/selected_merchant_page.dart';
 import 'package:food_dash_app/features/food/bloc/merchant_bloc/merchant_bloc.dart';
 import 'package:food_dash_app/features/food/model/merchant_model.dart';
 
@@ -101,7 +100,7 @@ class _MerchantListViewState extends State<MerchantListView> {
     if (_controller.position.pixels >= _controller.position.maxScrollExtent) {
       // merchantBloc!.hasMoreMerchant == true &&
       // merchantBloc!.merchantBusy == false
-      print('got here');
+      // print('got here');
       // merchantBloc!.add(GetMerchantsEvents());
     }
   }
