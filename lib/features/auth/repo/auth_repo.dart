@@ -6,9 +6,13 @@ import 'package:food_dash_app/cores/constants/error_text.dart';
 import 'package:food_dash_app/cores/utils/logger.dart';
 import 'package:food_dash_app/features/auth/model/login_user_model.dart';
 import 'package:food_dash_app/features/auth/model/user_details_model.dart';
+import 'package:food_dash_app/features/food/repo/local_database_repo.dart';
+import 'package:get_it/get_it.dart';
 
 class AuthenticationRepo {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  static final LocaldatabaseRepo localdatabaseRepo =
+      GetIt.instance<LocaldatabaseRepo>();
   final CollectionReference<dynamic> userCollectionRef =
       FirebaseFirestore.instance.collection('users');
 
@@ -49,8 +53,10 @@ class AuthenticationRepo {
       final User? user = userCredential.user;
       infoLog('userCredential: ${user?.uid}', title: 'user log in');
 
-      // TODO: get user data
-      // TODO: save user data on device offline
+      final Map<String, dynamic> userData = await getLoggedInUser(email);
+      userData.remove('date_joined');
+      await localdatabaseRepo.saveUserDataToLocalDB(userData);
+
       // TODO: subscribe user to notifictaions
 
     } on SocketException {
@@ -79,7 +85,8 @@ class AuthenticationRepo {
 
       final User? user = userCredential.user;
 
-      // if for what ever reason the user object is null, then just return an exception
+      // if for what ever reason the user object is null, then just return
+      //an exception
       if (user == null) throw Exception('Opps, an error occured!');
 
       final UserDetailsModel userDetailsModel = UserDetailsModel(
@@ -96,8 +103,12 @@ class AuthenticationRepo {
       await addUserDataToFirestore(userDetailsModel);
 
       // TODO: subscribe user to notifications.
-      // TODO: save user data offline.
 
+      final UserDetailsModel userDetailsForLocalDb = UserDetailsModel(
+          uid: user.uid, email: email, fullName: fullName, phoneNumber: number);
+
+      await localdatabaseRepo
+          .saveUserDataToLocalDB(userDetailsForLocalDb.toMap());
     } catch (e, s) {
       errorLog(
         e.toString(),
@@ -141,5 +152,14 @@ class AuthenticationRepo {
   Future<void> addUserDataToFirestore(UserDetailsModel userDetails) async {
     await userCollectionRef.doc(userDetails.uid).set(userDetails.toMap());
     infoLog('Added User database', title: 'Add user data To Db');
+  }
+
+  Future<Map<String, dynamic>> getLoggedInUser(String email) async {
+    final QuerySnapshot<dynamic> querySnapshot =
+        await userCollectionRef.where('email', isEqualTo: email).get();
+
+    final DocumentSnapshot<dynamic> documentSnapshot = querySnapshot.docs.first;
+    
+    return documentSnapshot.data() as Map<String, dynamic>;
   }
 }
