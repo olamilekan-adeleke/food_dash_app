@@ -1,13 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:food_dash_app/features/auth/repo/auth_repo.dart';
 import 'package:food_dash_app/features/food/model/cart_model.dart';
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
 import 'package:food_dash_app/features/food/model/merchant_model.dart';
+import 'package:food_dash_app/features/food/repo/local_database_repo.dart';
 import 'package:get_it/get_it.dart';
 
 class MerchantRepo {
   static AuthenticationRepo authenticationRepo =
       GetIt.instance<AuthenticationRepo>();
+  static LocaldatabaseRepo localdatabaseRepo =
+      GetIt.instance<LocaldatabaseRepo>();
   static final CollectionReference<Map<String, dynamic>> foodCollectionRef =
       FirebaseFirestore.instance.collection('food');
   static final CollectionReference<Map<String, dynamic>> userCollectionRef =
@@ -89,50 +93,80 @@ class MerchantRepo {
   }
 
   Future<void> addToCart(CartModel foodProductModel) async {
-    final String? userId = authenticationRepo.getUserUid();
+    // final String? userId = authenticationRepo.getUserUid();
 
-    await userCollectionRef
-        .doc(userId)
-        .collection('cart')
-        .doc()
-        .set(foodProductModel.toMap());
+    // await userCollectionRef
+    //     .doc(userId)
+    //     .collection('cart')
+    //     .doc()
+    //     .set(foodProductModel.toMap());
+
+    try {
+      await localdatabaseRepo.saveItemToCart(foodProductModel);
+    } catch (e, s) {
+      debugPrint(s.toString());
+      throw Exception(e.toString());
+    }
   }
 
-  Future<void> updateCartItem(FoodProductModel foodProductModel) async {
-    final String? userId = authenticationRepo.getUserUid();
+  Future<void> updateCartItem(CartModel foodProductModel, int index) async {
+    // final String? userId = authenticationRepo.getUserUid();
 
-    await userCollectionRef
-        .doc(userId)
-        .collection('cart')
-        .doc(foodProductModel.id)
-        .update(foodProductModel.toMap());
+    // await userCollectionRef
+    //     .doc(userId)
+    //     .collection('cart')
+    //     .doc(foodProductModel.id)
+    //     .update(foodProductModel.toMap());
+
+    try {
+      await localdatabaseRepo.updateCartItem(index, foodProductModel);
+    } catch (e, s) {
+      debugPrint(s.toString());
+      throw Exception(e.toString());
+    }
   }
 
-  Future<void> removeFromCart(String foodProductId) async {
-    final String? userId = authenticationRepo.getUserUid();
+  Future<void> removeFromCart(int index) async {
+    // final String? userId = authenticationRepo.getUserUid();
 
-    await userCollectionRef
-        .doc(userId)
-        .collection('cart')
-        .doc(foodProductId)
-        .delete();
+    // await userCollectionRef
+    //     .doc(userId)
+    //     .collection('cart')
+    //     .doc(foodProductId)
+    //     .delete();
+
+    try {
+      await localdatabaseRepo.deleteCartItem(index);
+    } catch (e, s) {
+      debugPrint(s.toString());
+      throw Exception(e.toString());
+    }
   }
 
   Future<List<CartModel>> getCart() async {
     final List<CartModel> cartList = <CartModel>[];
-    final String? userUid = authenticationRepo.getUserUid();
+    // final String? userUid = authenticationRepo.getUserUid();
 
-    final Query<Map<String, dynamic>> query =
-        userCollectionRef.doc(userUid).collection('cart').orderBy('name');
+    // final Query<Map<String, dynamic>> query =
+    //     userCollectionRef.doc(userUid).collection('cart').orderBy('name');
 
-    final QuerySnapshot<Map<String, dynamic>> querySnapshot = await query.get();
+    //final QuerySnapshot<Map<String, dynamic>> querySnapshot = await query
+    //.get();
 
-    cartList.addAll(
-      querySnapshot.docs.map(
-        (QueryDocumentSnapshot<Map<String, dynamic>> data) =>
-            CartModel.fromMap(data.data(), data.id),
-      ),
-    );
+    // cartList.addAll(
+    //   querySnapshot.docs.map(
+    //     (QueryDocumentSnapshot<Map<String, dynamic>> data) =>
+    //         CartModel.fromMap(data.data(), data.id),
+    //   ),
+    // );
+
+
+    try {
+      await localdatabaseRepo.getAllItemInCart();
+    } catch (e, s) {
+      debugPrint(s.toString());
+      throw Exception(e.toString());
+    }
 
     return cartList;
   }
