@@ -1,37 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/components/custom_button.dart';
 import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
 import 'package:food_dash_app/cores/components/custom_text_widget.dart';
-import 'package:food_dash_app/cores/components/error_widget.dart';
 import 'package:food_dash_app/cores/components/image_widget.dart';
-import 'package:food_dash_app/cores/components/loading_indicator.dart';
+import 'package:food_dash_app/cores/constants/color.dart';
 import 'package:food_dash_app/cores/constants/font_size.dart';
+import 'package:food_dash_app/cores/utils/config.dart';
 import 'package:food_dash_app/cores/utils/emums.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
-import 'package:food_dash_app/features/food/UI/pages/selected_food_page.dart';
-import 'package:food_dash_app/features/food/UI/widgets/cart_button.dart';
-import 'package:food_dash_app/features/food/bloc/merchant_bloc/merchant_bloc.dart';
 import 'package:food_dash_app/features/food/model/cart_model.dart';
+import 'package:food_dash_app/features/food/repo/food_repo.dart';
+import 'package:food_dash_app/features/food/repo/local_database_repo.dart';
+import 'package:get_it/get_it.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-class CartPage extends StatefulWidget {
+class CartPage extends StatelessWidget {
   const CartPage({Key? key}) : super(key: key);
 
   @override
-  _CartPageState createState() => _CartPageState();
-}
-
-class _CartPageState extends State<CartPage> {
-  @override
-  void initState() {
-    BlocProvider.of<MerchantBloc>(context).add(GetCartItemEvents());
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-
     return CustomScaffoldWidget(
       appBar: AppBar(
         title: const CustomTextWidget(
@@ -47,29 +34,23 @@ class _CartPageState extends State<CartPage> {
           color: Colors.black,
         ),
       ),
-      body: BlocConsumer<MerchantBloc, MerchantState>(
-        listener: (BuildContext context, MerchantState state) {},
-        builder: (BuildContext context, MerchantState state) {
-          if (state is GetCartItemLoadingState) {
-            return const SizedBox(
-              height: 50,
-              width: 50,
-              child: CustomLoadingIndicatorWidget(),
-            );
-          } else if (state is GetCartItemErrorState) {
-            return SizedBox(
-              height: 150,
-              child: CustomErrorWidget(
-                message: state.message,
-                callback: () => BlocProvider.of<MerchantBloc>(context)
-                    .add(GetCartItemEvents()),
-              ),
-            );
-          } else if (state is GetCartItemLoadedState) {
-            return CartList(state.cartList);
-          }
+      body: ValueListenableBuilder<Box<Map<String, dynamic>>>(
+        valueListenable:
+            Hive.box<Map<String, dynamic>>(Config.cartDataBox).listenable(),
+        builder: (
+          BuildContext context,
+          Box<Map<String, dynamic>> value,
+          dynamic child,
+        ) {
+          final List<Map<String, dynamic>> valuesList =
+              value.values.map((Map<String, dynamic> data) => data).toList();
 
-          return Container();
+          final List<CartModel> _cartList = valuesList
+              .map((Map<String, dynamic> data) =>
+                  CartModel.fromMap(data, data['id'].toString()))
+              .toList();
+
+          return CartList(_cartList);
         },
       ),
     );
@@ -83,6 +64,9 @@ class CartList extends StatelessWidget {
   }) : super(key: key);
 
   final List<CartModel> cartList;
+  static final MerchantRepo merchantRepo = GetIt.instance<MerchantRepo>();
+  static final LocaldatabaseRepo localdatabaseRepo =
+      GetIt.instance<LocaldatabaseRepo>();
 
   @override
   Widget build(BuildContext context) {
@@ -92,9 +76,9 @@ class CartList extends StatelessWidget {
       children: <Widget>[
         Expanded(
           child: Container(
-            // height: size.height * 0.55,
             color: Colors.grey[50],
             child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
               itemCount: cartList.length,
               itemBuilder: (BuildContext context, int index) {
                 final CartModel cartItem = cartList[index];
@@ -138,21 +122,49 @@ class CartList extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 5.0),
                                     CustomTextWidget(
-                                      text: '\u20A6 ${cartItem.price}',
+                                      text: '\u20A6 '
+                                          '${cartItem.price * cartItem.count}',
                                       fontWeight: FontWeight.w300,
                                     ),
                                     Row(
                                       children: <Widget>[
-                                        ItemCountButton(
+                                        CartButton(
                                           iconData: Icons.remove,
-                                          callback: () {},
+                                          callback: () {
+                                            if (cartItem.count == 1) return;
+
+                                            final CartModel updatedCartItem =
+                                                cartItem.copyWith(
+                                              count: cartItem.count - 1,
+                                            );
+
+                                            merchantRepo.updateCartItem(
+                                              updatedCartItem,
+                                              index,
+                                            );
+                                          },
                                         ),
                                         const SizedBox(width: 10.0),
-                                        const CustomTextWidget(text: '1'),
+                                        CustomTextWidget(
+                                          text: cartItem.count.toString(),
+                                          fontWeight: FontWeight.w300,
+                                        ),
                                         const SizedBox(width: 10.0),
-                                        ItemCountButton(
+                                        CartButton(
                                           iconData: Icons.add,
-                                          callback: () {},
+                                          callback: () {
+                                            if (cartItem.count == 10) return;
+
+                                            final CartModel updatedCartItem =
+                                                cartItem.copyWith(
+                                              count: cartItem.count + 1,
+                                            );
+
+                                            merchantRepo.updateCartItem(
+                                              updatedCartItem,
+                                              index,
+                                            );
+                                          },
                                         ),
                                       ],
                                     ),
@@ -177,70 +189,138 @@ class CartList extends StatelessWidget {
             topLeft: Radius.circular(10),
             topRight: Radius.circular(10),
           ),
-          child: Expanded(
-            // width: size.width,
-            // height: size.height * 0.355,
+          child: ValueListenableBuilder<Box<Map<String, dynamic>>>(
+            valueListenable:
+                Hive.box<Map<String, dynamic>>(Config.cartDataBox).listenable(),
+            builder: (
+              BuildContext context,
+              Box<Map<String, dynamic>> value,
+              dynamic child,
+            ) {
+              final List<Map<String, dynamic>> valuesList = value.values
+                  .map((Map<String, dynamic> data) => data)
+                  .toList();
 
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: <Widget>[
-                  const SizedBox(height: 20.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const <Widget>[
-                      CustomTextWidget(
-                        text: 'SubTotal',
-                        fontSize: kfsLarge,
-                        fontWeight: FontWeight.bold,
+              int allProductPrice = 0;
+
+              for (final Map<String, dynamic> data in valuesList) {
+                final int currentItemPrice = data['price'] as int;
+                final int currentItemCount = data['count'] as int;
+
+                allProductPrice =
+                    allProductPrice + (currentItemPrice * currentItemCount);
+              }
+
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    children: <Widget>[
+                      const SizedBox(height: 20.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          const CustomTextWidget(
+                            text: 'SubTotal',
+                            fontSize: kfsLarge,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          CustomTextWidget(
+                            text: '\u20A6 $allProductPrice',
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ],
                       ),
-                      CustomTextWidget(
-                        text: '\u20A6 2,500',
-                        fontWeight: FontWeight.w300,
+                      const SizedBox(height: 10.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const <Widget>[
+                          CustomTextWidget(
+                            text: 'Delivery',
+                            fontSize: kfsLarge,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          CustomTextWidget(
+                            text: '\u20A6 500',
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ],
                       ),
+                      const SizedBox(height: 10.0),
+                      const Divider(thickness: 0.5),
+                      const SizedBox(height: 10.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          const CustomTextWidget(
+                            text: 'Total',
+                            fontSize: kfsSuperLarge,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          CustomTextWidget(
+                            text: '\u20A6 ${allProductPrice + 500}',
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 15.0),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: CustomButton(
+                              text: 'Clear Cart',
+                              onTap: () => localdatabaseRepo.clearCartItem(),
+                              color: Colors.grey[300],
+                              textColor: kcTextColor,
+                            ),
+                          ),
+                          const SizedBox(width: 10.0),
+                          Expanded(
+                            child: CustomButton(
+                              text: 'CHECKOUT',
+                              onTap: () {},
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20.0),
                     ],
                   ),
-                  const SizedBox(height: 10.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const <Widget>[
-                      CustomTextWidget(
-                        text: 'Delivery',
-                        fontSize: kfsLarge,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      CustomTextWidget(
-                        text: '\u20A6 500',
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10.0),
-                  const Divider(thickness: 0.5),
-                  const SizedBox(height: 10.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const <Widget>[
-                      CustomTextWidget(
-                        text: 'Total',
-                        fontSize: kfsSuperLarge,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      CustomTextWidget(
-                        text: '\u20A6 3,000',
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 15.0),
-                  CustomButton(text: 'CHECKOUT', onTap: () {}),
-                  const SizedBox(height: 20.0),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
         ),
       ],
+    );
+  }
+}
+
+class CartButton extends StatelessWidget {
+  const CartButton({Key? key, required this.iconData, required this.callback})
+      : super(key: key);
+
+  final IconData iconData;
+  final void Function() callback;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => callback(),
+      child: Container(
+        height: 30.0,
+        width: 30.0,
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: kcPrimaryColor,
+        ),
+        child: Icon(
+          iconData,
+          size: 13,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }
