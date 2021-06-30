@@ -45,6 +45,6 @@ class Config {
     ///
     await Hive.initFlutter();
     await Hive.openBox<Map<String, dynamic>>(userDataBox);
-    await Hive.openBox<List<Map<String, dynamic>>>(cartDataBox);
+    await Hive.openBox<Map<String, dynamic>>(cartDataBox);
   }
 }
