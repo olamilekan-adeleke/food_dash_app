@@ -12,7 +12,7 @@ class CartModel {
     required this.price,
     required this.count,
     this.timestamp,
-  }) ;
+  });
 
   factory CartModel.fromMap(
     Map<String, dynamic> map,
@@ -26,8 +26,8 @@ class CartModel {
       category: map['category'] as String,
       price: map['price'] as int,
       count: map['count'] as int,
-      timestamp: map['timestamp'] as Timestamp,
-      
+      timestamp:
+          map['timestamp'] != null ? map['timestamp'] as Timestamp : null,
     );
   }
 
@@ -54,4 +54,26 @@ class CartModel {
   }
 
   String toJson() => json.encode(toMap());
+
+  CartModel copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? image,
+    String? category,
+    int? price,
+    int? count,
+    Timestamp? timestamp,
+  }) {
+    return CartModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      image: image ?? this.image,
+      category: category ?? this.category,
+      price: price ?? this.price,
+      count: count ?? this.count,
+      timestamp: timestamp ?? this.timestamp,
+    );
+  }
 }
