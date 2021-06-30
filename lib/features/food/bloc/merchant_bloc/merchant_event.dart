@@ -40,14 +40,14 @@ class AddFoodProductToCartEvents extends MerchantEvent {
 
 /// remove food item to cart
 class RemoveFoodProductToCartEvents extends MerchantEvent {
-  const RemoveFoodProductToCartEvents(this.foodProductId);
+  const RemoveFoodProductToCartEvents(this.foodProductId, this.index);
 
   final String foodProductId;
+  final int index;
 }
 
 /// remove food item to cart
 class GetCartItemEvents extends MerchantEvent {}
-
 
 /// remove food item to cart
 class GetFavouritesItemEvents extends MerchantEvent {}

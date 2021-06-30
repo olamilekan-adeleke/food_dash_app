@@ -90,7 +90,7 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
     } else if (event is RemoveFoodProductToCartEvents) {
       try {
         yield RemoveFoodProductToCartLoadingState(event.foodProductId);
-        await merchantRepo.removeFromCart(event.foodProductId);
+        await merchantRepo.removeFromCart(event.index);
         yield const RemoveFoodProductToCartLoadedState();
       } catch (e, s) {
         debugPrint(e.toString());
