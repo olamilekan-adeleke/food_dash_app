@@ -18,8 +18,11 @@ class UserDetailsModel {
       email: map['email'] as String,
       fullName: map['full_name'] as String,
       phoneNumber: map['phone_number'] as int,
-      profilePicUrl: map['profile_pic_url'] as String,
-      dateJoined: map['date_joined'] as Timestamp,
+      profilePicUrl: map['profile_pic_url'] != null
+          ? map['profile_pic_url'] as String
+          : null,
+      dateJoined:
+          map['date_joined'] != null ? map['date_joined'] as Timestamp : null,
     );
   }
 
