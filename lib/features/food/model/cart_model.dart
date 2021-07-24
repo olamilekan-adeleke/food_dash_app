@@ -11,6 +11,8 @@ class CartModel {
     required this.category,
     required this.price,
     required this.count,
+    required this.fastFoodName,
+    required this.fastFoodId,
     this.timestamp,
   });
 
@@ -21,6 +23,10 @@ class CartModel {
     return CartModel(
       id: documentId,
       name: map['name'] as String,
+      fastFoodName: map['fast_food_name'] != null
+          ? map['fast_food_name'] as String
+          : null,
+      fastFoodId: map['fast_food_id'] as String,
       description: map['description'] as String,
       image: map['image'] as String,
       category: map['category'] as String,
@@ -33,6 +39,8 @@ class CartModel {
 
   final String id;
   final String name;
+  final String? fastFoodName;
+  final String? fastFoodId;
   final String description;
   final String image;
   final String category;
@@ -44,12 +52,28 @@ class CartModel {
     return <String, dynamic>{
       'id': id,
       'name': name,
+      'fast_food_name': fastFoodName,
       'description': description,
       'image': image,
       'category': category,
       'price': price,
       'count': count,
       'timestamp': timestamp ?? Timestamp.now(),
+      'fast_food_id': fastFoodId,
+    };
+  }
+
+  Map<String, dynamic> toMapForLocalDb() {
+    return <String, dynamic>{
+      'id': id,
+      'name': name,
+      'fast_food_name': fastFoodName,
+      'description': description,
+      'image': image,
+      'category': category,
+      'price': price,
+      'count': count,
+      'fast_food_id': fastFoodId,
     };
   }
 
@@ -64,16 +88,20 @@ class CartModel {
     int? price,
     int? count,
     Timestamp? timestamp,
+    String? fastFoodId,
+    String? fastFoodName,
   }) {
     return CartModel(
       id: id ?? this.id,
       name: name ?? this.name,
+      fastFoodName: fastFoodName ?? 'Restaurnat Name',
       description: description ?? this.description,
       image: image ?? this.image,
       category: category ?? this.category,
       price: price ?? this.price,
       count: count ?? this.count,
       timestamp: timestamp ?? this.timestamp,
+      fastFoodId: fastFoodId ?? this.fastFoodId,
     );
   }
 }

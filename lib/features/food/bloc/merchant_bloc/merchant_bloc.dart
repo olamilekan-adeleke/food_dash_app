@@ -33,8 +33,8 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         yield GetMerchantLoadingState();
         final List<MerchantModel> merchants =
             await merchantRepo.getMerchant(lastMerchant: lastmerchant);
-        lastmerchant = merchants.last;
-        hasMoreMerchant = merchants.length == merchantRepo.limit;
+        // if (merchants.isNotEmpty) lastmerchant = merchants.last;
+        // hasMoreMerchant = merchants.length == merchantRepo.limit;
         yield GetMerchantLoadedState(merchants);
       } catch (e, s) {
         debugPrint(e.toString());
@@ -48,8 +48,8 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         yield GetFoodProductsLoadingState();
         final List<FoodProductModel> foodProducts = await merchantRepo
             .getFoodProduct(event.merchantId, lastFoodProduct: lastFoodProduct);
-        lastFoodProduct = foodProducts.last;
-        hasMoreFoodProduct = foodProducts.length == merchantRepo.limit;
+        // if (foodProducts.isNotEmpty) lastFoodProduct = foodProducts.last;
+        // hasMoreFoodProduct = foodProducts.length == merchantRepo.limit;
         yield GetFoodProductsLoadedState(foodProducts);
       } catch (e, s) {
         debugPrint(e.toString());
@@ -57,6 +57,21 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         yield GetFoodProductsErrorState(e.toString());
       }
       foodBusy = false;
+    } else if (event is GetPopularFoodEvents) {
+      // foodBusy = true;
+      try {
+        yield GetPopularFoodLoadingState();
+        final List<FoodProductModel> foodProducts = await merchantRepo
+            .getTopFoodProduct(lastFoodProduct: lastFoodProduct);
+        // if (foodProducts.isNotEmpty) lastFoodProduct = foodProducts.last;
+        // hasMoreFoodProduct = foodProducts.length == merchantRepo.limit;
+        yield GetPopularFoodLoadedState(foodProducts);
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield GetPopularFoodErrorState(e.toString());
+      }
+      // foodBusy = false;
     } else if (event is AddFoodProductToFavouriteEvents) {
       try {
         yield AddFoodProductToFavouriteLoadingState(event.foodProduct.id);
@@ -117,6 +132,30 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         debugPrint(e.toString());
         debugPrint(s.toString());
         yield GetFavouriteErrorState(e.toString());
+      }
+    } else if (event is MakePaymentEvent) {
+      try {
+        yield MakePaymentLoadingState();
+        final String id = await merchantRepo.makePayment(event.password);
+        yield MakePaymentLoadedState(id);
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield MakePaymentErrorState(e.toString());
+      }
+    } else if (event is RateRiderEvent) {
+      try {
+        yield RateRiderLoadingState();
+        await merchantRepo.rateRider(
+          event.orderId,
+          event.riderId,
+          event.rating,
+        );
+        yield RateRiderLoadedState();
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield RateRiderErrorState(e.toString());
       }
     }
   }

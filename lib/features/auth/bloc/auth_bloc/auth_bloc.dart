@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:food_dash_app/cores/constants/success_text.dart';
+import 'package:food_dash_app/features/auth/model/user_details_model.dart';
 import 'package:food_dash_app/features/auth/repo/auth_repo.dart';
 import 'package:get_it/get_it.dart';
 
@@ -57,7 +58,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         debugPrint(s.toString());
         yield AuthForgotPasswordErrorState(e.toString());
       }
-    } else if (event is ForgotPasswordEvent) {
+    } else if (event is LogOutEvent) {
       try {
         yield AuthLogOutUserLoadingState();
         await authenticationRepo.signOut();
@@ -66,6 +67,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         debugPrint(e.toString());
         debugPrint(s.toString());
         yield AuthLogOutUserErrorState(e.toString());
+      }
+    } else if (event is UpdateUserDataEvent) {
+      try {
+        yield UpdateUserDataLoadingState();
+        await authenticationRepo.updateUserData(event.userDetailsModel);
+        yield UpdateUserDataLoadedState();
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield UpdateUserDataErrorState(e.toString());
       }
     }
   }

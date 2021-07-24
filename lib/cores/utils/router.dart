@@ -7,8 +7,19 @@ import 'package:food_dash_app/features/auth/UI/pages/login.dart';
 import 'package:food_dash_app/features/auth/UI/pages/sig_up_page.dart';
 import 'package:food_dash_app/features/auth/UI/pages/wrapper_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/cart_page.dart';
+import 'package:food_dash_app/features/food/UI/pages/change_password_screen.dart';
+import 'package:food_dash_app/features/food/UI/pages/edit_address_page.dart';
+import 'package:food_dash_app/features/food/UI/pages/edit_profile_screen.dart';
 import 'package:food_dash_app/features/food/UI/pages/home_page.dart';
-import 'package:food_dash_app/features/food/UI/pages/payment_page.dart';
+import 'package:food_dash_app/features/food/UI/pages/home_tab_pages.dart';
+import 'package:food_dash_app/features/food/UI/pages/order_history_screen.dart';
+import 'package:food_dash_app/features/food/UI/pages/order_status_screen.dart';
+import 'package:food_dash_app/features/food/UI/pages/payment_history_screen.dart';
+import 'package:food_dash_app/features/food/UI/pages/profile_screen.dart';
+import 'package:food_dash_app/features/food/UI/pages/restaurant_screen.dart';
+import 'package:food_dash_app/features/food/UI/pages/reveiw_screem.dart';
+import 'package:food_dash_app/features/food/UI/pages/search_page.dart';
+import 'package:food_dash_app/features/payment/Ui/pages/payment_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/selected_food_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/selected_merchant_page.dart';
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
@@ -23,6 +34,14 @@ Route<dynamic>? generateRoute(RouteSettings settings) {
     case RouteName.home:
       return MaterialPageRoute<Widget>(
           builder: (BuildContext context) => const HomePage());
+
+    case RouteName.hometab:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const HomeTabScreen());
+
+    case RouteName.restaurantPage:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const RestaurantScreen());
 
     case RouteName.login:
       return MaterialPageRoute<Widget>(
@@ -64,6 +83,61 @@ Route<dynamic>? generateRoute(RouteSettings settings) {
     case RouteName.paymentPage:
       return MaterialPageRoute<Widget>(
           builder: (BuildContext context) => const PaymentPage());
+
+    case RouteName.editAddress:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const EditAddressScreen());
+
+    case RouteName.profileScreen:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const ProfileScreen());
+
+    case RouteName.editProfileScreen:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const EditprofileScreen());
+
+    case RouteName.oderHistoryScreen:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const OrderHistoryScreen());
+
+    case RouteName.changePasswordScreen:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const ChangePasswordScreen());
+
+    case RouteName.searchScreen:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const SearchScreen());
+
+    case RouteName.paymentHistoryScreen:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const PaymentHistoryScreen());
+
+    case RouteName.orderStatus:
+      if (settings.arguments is String) {
+        // ignore: cast_nullable_to_non_nullable
+        final String id = settings.arguments as String;
+
+        return MaterialPageRoute<Widget>(
+            builder: (BuildContext context) => OrderStatusScreen(id));
+      }
+      break;
+
+    case RouteName.reviewScreen:
+      if (settings.arguments is Map<String, dynamic>) {
+        // ignore: cast_nullable_to_non_nullable
+        final Map<String, dynamic>? data =
+            settings.arguments as Map<String, dynamic>?;
+        final String orderId = data!['orderId'] as String;
+        final String riderId = data['riderId'] as String;
+
+        return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => ReviewScreen(
+            orderId: orderId,
+            riderId: riderId,
+          ),
+        );
+      }
+      break;
 
     default:
       return MaterialPageRoute<Widget>(

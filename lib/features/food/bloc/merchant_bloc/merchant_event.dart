@@ -10,6 +10,9 @@ abstract class MerchantEvent extends Equatable {
 /// get merchants list event
 class GetMerchantsEvents extends MerchantEvent {}
 
+/// get popular food
+class GetPopularFoodEvents extends MerchantEvent {}
+
 /// get food product list  event
 class GetFoodProductsEvents extends MerchantEvent {
   const GetFoodProductsEvents(this.merchantId);
@@ -51,3 +54,18 @@ class GetCartItemEvents extends MerchantEvent {}
 
 /// remove food item to cart
 class GetFavouritesItemEvents extends MerchantEvent {}
+
+// make payment for food order event
+class MakePaymentEvent extends MerchantEvent {
+  const MakePaymentEvent(this.password);
+  final String password;
+}
+
+// rate rider
+class RateRiderEvent extends MerchantEvent {
+  const RateRiderEvent(this.orderId, this.riderId, this.rating);
+
+  final String orderId;
+  final String riderId;
+  final double rating;
+}

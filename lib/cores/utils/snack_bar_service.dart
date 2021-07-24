@@ -6,30 +6,31 @@ class CustomSnackBarService {
   static final SnackbarService _snackbarService =
       GetIt.instance<SnackbarService>();
 
-  static void showErrorSnackBar(String message) {
+  static void showErrorSnackBar(String message, {Duration? duration}) {
     _snackbarService.showCustomSnackBar(
-      variant: SnackBarType.success,
+      variant: SnackBarType.error,
       message: message,
       title: 'Error',
-      duration: const Duration(seconds: 3),
+      duration: duration ?? const Duration(seconds: 3),
+      
     );
   }
 
-  static void showSuccessSnackBar(String message) {
+  static void showSuccessSnackBar(String message, {Duration? duration}) {
     _snackbarService.showCustomSnackBar(
       variant: SnackBarType.success,
       message: message,
       title: 'Success',
-      duration: const Duration(milliseconds: 2000),
+      duration: duration ?? const Duration(milliseconds: 2000),
     );
   }
 
-  static void showWarningSnackBar(String message) {
+  static void showWarningSnackBar(String message, {Duration? duration}) {
     _snackbarService.showCustomSnackBar(
       variant: SnackBarType.warning,
       message: message,
       title: 'Warning',
-      duration: const Duration(milliseconds: 2000),
+      duration: duration ?? const Duration(milliseconds: 2000),
     );
   }
 }

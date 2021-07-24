@@ -1,22 +1,26 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/components/custom_button.dart';
 import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
 import 'package:food_dash_app/cores/components/custom_text_widget.dart';
 import 'package:food_dash_app/cores/components/image_widget.dart';
+import 'package:food_dash_app/cores/constants/color.dart';
 import 'package:food_dash_app/cores/constants/font_size.dart';
 import 'package:food_dash_app/cores/utils/emums.dart';
-import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
+import 'package:food_dash_app/cores/utils/navigator_service.dart';
+import 'package:food_dash_app/cores/utils/sizer_utils.dart';
 import 'package:food_dash_app/features/food/UI/widgets/favourite_button.dart';
 import 'package:food_dash_app/features/food/bloc/merchant_bloc/merchant_bloc.dart';
 import 'package:food_dash_app/features/food/model/cart_model.dart';
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
 
 class SelectedFoodPage extends StatelessWidget {
-  SelectedFoodPage({Key? key, required this.foodProduct}) : super(key: key);
+  const SelectedFoodPage({Key? key, required this.foodProduct})
+      : super(key: key);
 
   final FoodProductModel? foodProduct;
-  final ValueNotifier<int> _foodCount = ValueNotifier<int>(1);
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +48,30 @@ class SelectedFoodPage extends StatelessWidget {
                   ),
                 ),
                 Align(
-                  alignment: Alignment.topRight,
-                  child: FavouriteButtonWidget(foodProduct!),
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        InkWell(
+                          onTap: () => CustomNavigationService().goBack(),
+                          child: CircleAvatar(
+                            radius: sizerSp(12),
+                            backgroundColor: kcPrimaryColor,
+                            child: Center(
+                              child: Icon(
+                                Icons.arrow_back_ios,
+                                size: sizerSp(11),
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        FavouriteButtonWidget(foodProduct),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -61,76 +87,40 @@ class SelectedFoodPage extends StatelessWidget {
                   fontSize: kfsSuperLarge,
                   fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 10.0),
+                SizedBox(height: sizerSp(10.0)),
+                CustomTextWidget(
+                  text: 'Price: \u20A6 ${foodProduct!.price}',
+                  fontWeight: FontWeight.bold,
+                  fontSize: kfsExtraLarge,
+                  textColor: kcPrimaryColor,
+                ),
+                SizedBox(height: sizerSp(10.0)),
                 CustomTextWidget(
                   text: foodProduct!.description * 6,
                   fontWeight: FontWeight.w300,
                 ),
-                const SizedBox(height: 20.0),
-                Row(
-                  children: <Widget>[
-                    CustomTextWidget(
-                      text: 'Price: \u20A6 ${foodProduct!.price}',
-                      fontWeight: FontWeight.bold,
-                      fontSize: kfsLarge,
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: <Widget>[
-                        ItemCountButton(
-                          callback: () {
-                            if (_foodCount.value > 1) {
-                              _foodCount.value--;
-                            } else {
-                              CustomSnackBarService.showWarningSnackBar(
-                                '1 item is the minmimun allowed number',
-                              );
-                            }
-                          },
-                          iconData: Icons.remove,
-                        ),
-                        const SizedBox(width: 10.0),
-                        ValueListenableBuilder<int>(
-                          valueListenable: _foodCount,
-                          builder: (
-                            BuildContext context,
-                            int value,
-                            dynamic child,
-                          ) {
-                            return CustomTextWidget(
-                              text: '$value',
-                              fontSize: kfsLarge,
-                              fontWeight: FontWeight.bold,
-                            );
-                          },
-                        ),
-                        const SizedBox(width: 10.0),
-                        ItemCountButton(
-                          callback: () {
-                            if (_foodCount.value < 10) {
-                              _foodCount.value++;
-                            } else {
-                              CustomSnackBarService.showWarningSnackBar(
-                                '10 items is the maximun allowed number',
-                              );
-                            }
-                          },
-                          iconData: Icons.add,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 40.0),
-                BlocConsumer<MerchantBloc, MerchantState>(
-                  listener: (BuildContext context, MerchantState state) {},
-                  builder: (BuildContext context, MerchantState state) {
-                    if (state is AddFoodProductToCartLoadingState) {
-                      return const CustomButton.loading();
-                    }
+                SizedBox(height: sizerSp(20.0)),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              BlocConsumer<MerchantBloc, MerchantState>(
+                listener: (BuildContext context, MerchantState state) {},
+                builder: (BuildContext context, MerchantState state) {
+                  if (state is AddFoodProductToCartLoadingState) {
+                    return const CustomButton.loading();
+                  }
 
-                    return CustomButton(
+                  return ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(sizerSp(20)),
+                      bottomLeft: Radius.circular(sizerSp(20)),
+                    ),
+                    child: CustomButton.smallSized(
                       text: 'Add To Cart',
+                      width: sizerWidth(45),
                       onTap: () {
                         final CartModel cart = CartModel(
                           category: foodProduct!.category,
@@ -140,16 +130,18 @@ class SelectedFoodPage extends StatelessWidget {
                           image: foodProduct!.image,
                           name: foodProduct!.name,
                           price: foodProduct!.price,
+                          fastFoodName: foodProduct!.fastFoodname,
+                          fastFoodId: foodProduct!.fastFoodId,
                         );
 
                         BlocProvider.of<MerchantBloc>(context)
                             .add(AddFoodProductToCartEvents(cart));
                       },
-                    );
-                  },
-                ),
-              ],
-            ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),

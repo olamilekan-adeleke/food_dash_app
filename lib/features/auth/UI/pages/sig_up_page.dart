@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/components/custom_button.dart';
 import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
+import 'package:food_dash_app/cores/components/custom_text_widget.dart';
 import 'package:food_dash_app/cores/components/custom_textfiled.dart';
+import 'package:food_dash_app/cores/constants/color.dart';
+import 'package:food_dash_app/cores/utils/sizer_utils.dart';
 import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/validator.dart';
@@ -33,41 +36,41 @@ class SignUpPage extends StatelessWidget {
       lastNameTextEditingController.text = 'kod';
       numberTextEditingController.text = '09088776655';
     }
+
     return CustomScaffoldWidget(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+        padding: EdgeInsets.symmetric(
+          horizontal: sizerSp(15),
+          vertical: sizerSp(10),
+        ),
         child: SingleChildScrollView(
           child: Form(
             key: formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                const SizedBox(
-                  height: 250.0,
-                  child: Placeholder(),
+                const SizedBox(height: 50.0),
+                CustomTextWidget(
+                  text: 'Create your \naccount',
+                  fontSize: sizerSp(28),
+                  textColor: kcPrimaryColor,
+                  fontWeight: FontWeight.w600,
                 ),
                 const SizedBox(height: 50.0),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: CustomTextField(
-                        textEditingController: firstNameTextEditingController,
-                        hintText: 'Enter first name',
-                        labelText: 'First Name',
-                        validator: (String? text) =>
-                            formFieldValidator(text, 'First Name', 2),
-                      ),
-                    ),
-                    const SizedBox(width: 5.0),
-                    Expanded(
-                      child: CustomTextField(
-                        textEditingController: lastNameTextEditingController,
-                        hintText: 'Enter last name',
-                        labelText: 'Last Name',
-                        validator: (String? text) =>
-                            formFieldValidator(text, 'Last Name', 2),
-                      ),
-                    ),
-                  ],
+                CustomTextField(
+                  textEditingController: firstNameTextEditingController,
+                  hintText: 'Enter first name',
+                  labelText: 'First Name',
+                  validator: (String? text) =>
+                      formFieldValidator(text, 'First Name', 2),
+                ),
+                const SizedBox(height: 20.0),
+                CustomTextField(
+                  textEditingController: lastNameTextEditingController,
+                  hintText: 'Enter last name',
+                  labelText: 'Last Name',
+                  validator: (String? text) =>
+                      formFieldValidator(text, 'Last Name', 2),
                 ),
                 const SizedBox(height: 20.0),
                 CustomTextField(
@@ -94,7 +97,23 @@ class SignUpPage extends StatelessWidget {
                   validator: (String? text) =>
                       formFieldValidator(text, 'Password', 5),
                 ),
-                const SizedBox(height: 80.0),
+                const SizedBox(height: 20.0),
+                Row(
+                  children: <Widget>[
+                    CustomTextWidget(
+                      text: 'By signing up, you agree to our ',
+                      fontSize: sizerSp(11),
+                      fontWeight: FontWeight.w600,
+                    ),
+                    CustomTextWidget(
+                      text: 'Terms And Conditions',
+                      fontSize: sizerSp(11),
+                      fontWeight: FontWeight.w600,
+                      textColor: Colors.red,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 50.0),
                 BlocConsumer<AuthBloc, AuthState>(
                   listener: (BuildContext context, AuthState state) {
                     if (state is AuthSignUpLoadedState) {
@@ -132,11 +151,25 @@ class SignUpPage extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 20.0),
-                CustomButton(
-                  color: Colors.grey[300],
-                  text: 'Log In',
+                InkWell(
                   onTap: () => CustomNavigationService().goBack(),
-                )
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      CustomTextWidget(
+                        text: 'Already have an account? ',
+                        fontSize: sizerSp(12),
+                        fontWeight: FontWeight.w600,
+                      ),
+                      CustomTextWidget(
+                        text: 'Login',
+                        fontSize: sizerSp(12),
+                        fontWeight: FontWeight.w600,
+                        textColor: Colors.red,
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

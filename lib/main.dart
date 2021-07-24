@@ -9,7 +9,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setUpLocator();
   Config.setUpSnackBarConfig();
-  await Config.setUpHiveLocalDB();
   await Firebase.initializeApp();
+  await Config.setUpHiveLocalDB();
   runApp(MyApp());
 }

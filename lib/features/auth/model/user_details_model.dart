@@ -9,14 +9,20 @@ class UserDetailsModel {
     required this.fullName,
     required this.phoneNumber,
     this.profilePicUrl,
+    this.address,
     this.dateJoined,
+    required this.walletBalance,
   });
 
-  factory UserDetailsModel.fromMap(Map<String, dynamic> map) {
+  factory UserDetailsModel.fromMap(Map<String, dynamic>? map) {
     return UserDetailsModel(
-      uid: map['uid'] as String,
+      uid: map!['uid'] as String,
       email: map['email'] as String,
       fullName: map['full_name'] as String,
+      address: map['address'] != null ? map['address'] as String : null,
+      walletBalance: map['wallet_balance'] != null
+          ? double.parse(map['wallet_balance'].toString())
+          : 0.0,
       phoneNumber: map['phone_number'] as int,
       profilePicUrl: map['profile_pic_url'] != null
           ? map['profile_pic_url'] as String
@@ -32,9 +38,11 @@ class UserDetailsModel {
   final String uid;
   final String email;
   final String fullName;
+  String? address;
   final int phoneNumber;
   final String? profilePicUrl;
   final Timestamp? dateJoined;
+  final double? walletBalance;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -44,8 +52,40 @@ class UserDetailsModel {
       'phone_number': phoneNumber,
       'profile_pic_url': profilePicUrl,
       'date_joined': dateJoined,
+      'address': address,
+    };
+  }
+
+  Map<String, dynamic> toMapForLocalDb() {
+    return <String, dynamic>{
+      'uid': uid,
+      'email': email,
+      'full_name': fullName,
+      'phone_number': phoneNumber,
+      'profile_pic_url': profilePicUrl,
+      'address': address,
     };
   }
 
   String toJson() => json.encode(toMap());
+
+  UserDetailsModel copyWith({
+    String? uid,
+    String? email,
+    String? fullName,
+    int? phoneNumber,
+    String? profilePicUrl,
+    Timestamp? dateJoined,
+    double? walletBalance,
+  }) {
+    return UserDetailsModel(
+      uid: uid ?? this.uid,
+      email: email ?? this.email,
+      fullName: fullName ?? this.fullName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      profilePicUrl: profilePicUrl ?? this.profilePicUrl,
+      dateJoined: dateJoined ?? this.dateJoined,
+      walletBalance: walletBalance ?? this.walletBalance,
+    );
+  }
 }

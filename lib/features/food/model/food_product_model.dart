@@ -8,6 +8,8 @@ class FoodProductModel {
     required this.image,
     required this.category,
     required this.price,
+    required this.fastFoodname,
+    required this.fastFoodId,
   });
 
   factory FoodProductModel.fromMap(
@@ -20,7 +22,9 @@ class FoodProductModel {
       description: map['description'] as String,
       image: map['image'] as String,
       category: map['category'] as String,
+      fastFoodname: map['fast_food_name'] as String,
       price: map['price'] as int,
+      fastFoodId: map['fast_food_id'] as String,
     );
   }
 
@@ -30,6 +34,8 @@ class FoodProductModel {
   final String image;
   final String category;
   final int price;
+  final String fastFoodname;
+  final String fastFoodId;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -39,6 +45,8 @@ class FoodProductModel {
       'image': image,
       'category': category,
       'price': price,
+      'fast_food_name': fastFoodname,
+      'fast_food_id': fastFoodId
     };
   }
 

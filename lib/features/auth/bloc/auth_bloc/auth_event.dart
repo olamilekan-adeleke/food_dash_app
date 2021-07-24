@@ -19,9 +19,9 @@ class LoginUserEvent extends AuthEvent {
   final String password;
 }
 
-/// bloc event for siging up a new user, it requires 4 arguments, email, 
+/// bloc event for siging up a new user, it requires 4 arguments, email,
 /// password
-/// and full name with are all of type <String> excpet number 
+/// and full name with are all of type <String> excpet number
 /// which is a type of Int
 class SignUpUserEvent extends AuthEvent {
   const SignUpUserEvent({
@@ -46,3 +46,11 @@ class ForgotPasswordEvent extends AuthEvent {
 
 // bloc event to log out user
 class LogOutEvent extends AuthEvent {}
+
+// update User data
+class UpdateUserDataEvent extends AuthEvent {
+  const UpdateUserDataEvent(this.userDetailsModel);
+  final UserDetailsModel userDetailsModel;
+
+  
+}

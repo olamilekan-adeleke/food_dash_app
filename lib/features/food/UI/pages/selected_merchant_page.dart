@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_dash_app/cores/components/custom_button.dart';
 import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
 import 'package:food_dash_app/cores/components/custom_text_widget.dart';
 import 'package:food_dash_app/cores/components/error_widget.dart';
 import 'package:food_dash_app/cores/components/image_widget.dart';
 import 'package:food_dash_app/cores/components/loading_indicator.dart';
 import 'package:food_dash_app/cores/constants/color.dart';
-import 'package:food_dash_app/cores/constants/font_size.dart';
+import 'package:food_dash_app/cores/utils/currency_formater.dart';
 import 'package:food_dash_app/cores/utils/emums.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/route_name.dart';
-import 'package:food_dash_app/features/food/UI/widgets/cart_button.dart';
+import 'package:food_dash_app/cores/utils/sizer_utils.dart';
+import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
+import 'package:food_dash_app/features/food/UI/widgets/header_widget.dart';
 import 'package:food_dash_app/features/food/bloc/merchant_bloc/merchant_bloc.dart';
+import 'package:food_dash_app/features/food/model/cart_model.dart';
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
 import 'package:food_dash_app/features/food/model/merchant_model.dart';
 
@@ -26,169 +28,27 @@ class SelectedMerchantPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-
     return CustomScaffoldWidget(
-      body: ListView(
-        children: <Widget>[
-          SizedBox(
-            height: size.height * 0.30,
-            child: Stack(
-              children: <Widget>[
-                SizedBox(
-                  height: size.height * 0.25,
-                  width: double.infinity,
-                  child: CustomImageWidget(
-                    imageUrl: merchant.image,
-                    imageTypes: ImageTypes.network,
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Container(
-                    margin: const EdgeInsets.all(8.0),
-                    child: CustomButton.icon(
-                      iconData: Icons.shopping_cart_rounded,
-                      height: 50,
-                      width: 50.0,
-                      circular: true,
-                      color: Colors.grey[200],
-                      iconColor: Colors.grey[700],
-                      onTap: ()=> CustomNavigationService()
-                          .navigateTo(RouteName.cartPage),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Card(
-                    child: Container(
-                      height: size.height * 0.1,
-                      width: size.width * 0.80,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          const SizedBox(height: 5.0),
-                          CustomTextWidget(
-                            text: merchant.name,
-                            fontSize: kfsLarge,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          const SizedBox(height: 2.0),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              const CustomTextWidget(
-                                text: '\$\$',
-                                fontSize: kfsLarge,
-                                fontWeight: FontWeight.w300,
-                              ),
-                              ...merchant.categories
-                                  .map(
-                                    (String category) => CustomTextWidget(
-                                      text: '    $category    ',
-                                      fontSize: kfsLarge,
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                  )
-                                  .toList(),
-                            ],
-                          ),
-                          const SizedBox(height: 2.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  CustomTextWidget(
-                                    text: '${merchant.rating}',
-                                    fontSize: kfsLarge,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  const Icon(
-                                    Icons.star,
-                                    color: kcPrimaryColor,
-                                    size: 18,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(width: 10.0),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  CustomTextWidget(
-                                    text: '${merchant.numberOfRating}+',
-                                    fontSize: kfsLarge,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  const CustomTextWidget(
-                                    text: ' Ratings',
-                                    fontSize: kfsLarge,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(width: 10.0),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: const <Widget>[
-                                  Icon(
-                                    Icons.timelapse,
-                                    color: Colors.grey,
-                                    size: 18,
-                                  ),
-                                  CustomTextWidget(
-                                    text: ' 25 Mins',
-                                    fontSize: kfsLarge,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(width: 10.0),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: const <Widget>[
-                                  Icon(
-                                    Icons.monetization_on,
-                                    color: Colors.grey,
-                                    size: 18,
-                                  ),
-                                  CustomTextWidget(
-                                    text: '  Free',
-                                    fontSize: kfsLarge,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: sizerSp(10)),
+        child: ListView(
+          children: <Widget>[
+            SizedBox(height: sizerSp(10)),
+            HeaderWidget.appbar(merchant.name),
+            SizedBox(height: sizerSp(10)),
+            SizedBox(
+              height: sizerHeight(20),
+              width: sizerWidth(50),
+              child: CustomImageWidget(
+                imageUrl: merchant.image,
+                imageTypes: ImageTypes.network,
+              ),
             ),
-          ),
-          const SizedBox(height: 10.0),
-          const CustomTextWidget(
-            text: 'Food Items',
-            fontSize: kfsSuperLarge,
-            fontWeight: FontWeight.bold,
-            textAlign: TextAlign.center,
-          ),
-          const Divider(),
-          FoodProductsListView(merchantId: merchant.id),
-        ],
+            SizedBox(height: sizerSp(10)),
+            const Divider(),
+            FoodProductsListView(merchantId: merchant.id),
+          ],
+        ),
       ),
     );
   }
@@ -241,11 +101,12 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
       builder: (BuildContext context, MerchantState state) {
         if (state is GetFoodProductsLoadingState) {
           if (foodProducts.isEmpty) {
-            return Column(
-              children: const <Widget>[
-                SizedBox(height: 100),
-                Center(child: CustomLoadingIndicatorWidget()),
-              ],
+            return Center(
+              child: SizedBox(
+                height: sizerSp(50),
+                width: sizerSp(50),
+                child: const CustomLoadingIndicatorWidget(),
+              ),
             );
           } else {
             return ListView(
@@ -260,7 +121,6 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
           }
         } else if (state is GetMerchantErrorState) {
           return SizedBox(
-            height: 400,
             child: CustomErrorWidget(
               message: state.message,
               callback: () => merchantBloc!.add(GetMerchantsEvents()),
@@ -274,9 +134,11 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
   }
 
   Widget foodItemWidget() {
-    final Size size = MediaQuery.of(context).size;
-
-    return ListView.builder(
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: sizerSp(260),
+        childAspectRatio: 0.68,
+      ),
       controller: _controller,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -289,60 +151,105 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
             RouteName.selectedFoodPage,
             argument: foodProduct,
           ),
-          child: Card(
-            child: Container(
-              height: size.height * 0.12,
-              width: size.width,
-              margin: const EdgeInsets.symmetric(
-                horizontal: 10.0,
-                vertical: 15.0,
-              ),
-              child: Row(
-                children: <Widget>[
-                  SizedBox(
-                    height: size.height * 0.12,
-                    width: 120,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5.0),
-                      child: CustomImageWidget(
-                        imageUrl: foodProduct.image,
-                        imageTypes: ImageTypes.network,
+          child: Stack(
+            children: <Widget>[
+              Card(
+                elevation: 5.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 150,
+                      width: double.infinity,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5.0),
+                        child: CustomImageWidget(
+                          imageUrl: foodProduct.image,
+                          imageTypes: ImageTypes.network,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10.0),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        CustomTextWidget(
-                          text: foodProduct.name,
-                          fontSize: kfsLarge,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        const SizedBox(height: 5.0),
-                        CustomTextWidget(
-                          text: foodProduct.description * 4,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            CustomTextWidget(
-                              text: '\u20A6 ${foodProduct.price}',
-                              fontWeight: FontWeight.w300,
-                            ),
-                            CartButtonWidget(foodProduct),
-                          ],
-                        ),
-                      ],
+                    SizedBox(height: sizerSp(5)),
+                    CustomTextWidget(
+                      text: foodProduct.name,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                ],
+                    SizedBox(height: sizerSp(2)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
+                      child: CustomTextWidget(
+                        text: foodProduct.description,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w300,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(height: sizerSp(5)),
+                    CustomTextWidget(
+                      text: '\u20A6 ${currencyFormatter(foodProduct.price)}',
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      textColor: kcPrimaryColor,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: sizerSp(12)),
+                  ],
+                ),
               ),
-            ),
+              Positioned(
+                bottom: sizerSp(2),
+                left: 0,
+                right: 0,
+                child: CircleAvatar(
+                  radius: 25,
+                  backgroundColor: kcPrimaryColor,
+                  child: BlocConsumer<MerchantBloc, MerchantState>(
+                    listener: (BuildContext context, MerchantState state) {
+                      if (state is AddFoodProductToCartLoadedState) {
+                        CustomSnackBarService.showSuccessSnackBar(
+                            'Added To Cart!');
+                      } else if (state is AddFoodProductToCartErrorState) {
+                        CustomSnackBarService.showErrorSnackBar(state.message);
+                      }
+                    },
+                    builder: (BuildContext context, MerchantState state) {
+                      if (state is AddFoodProductToCartLoadingState) {
+                        return const CustomLoadingIndicatorWidget();
+                      }
+
+                      return InkWell(
+                        onTap: () {
+                          final CartModel cart = CartModel(
+                            category: foodProduct.category,
+                            id: foodProduct.id,
+                            count: 1,
+                            description: foodProduct.description,
+                            image: foodProduct.image,
+                            name: foodProduct.name,
+                            price: foodProduct.price,
+                            fastFoodName: foodProduct.fastFoodname,
+                            fastFoodId: foodProduct.fastFoodId,
+                          );
+
+                          BlocProvider.of<MerchantBloc>(context)
+                              .add(AddFoodProductToCartEvents(cart));
+                        },
+                        child: const Icon(
+                          Icons.shopping_cart,
+                          color: Colors.white,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },

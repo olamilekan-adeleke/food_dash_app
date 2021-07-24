@@ -49,6 +49,8 @@ class CartButtonWidget extends StatelessWidget {
               image: foodProduct.image,
               name: foodProduct.name,
               price: foodProduct.price,
+              fastFoodName: foodProduct.fastFoodname,
+              fastFoodId: foodProduct.fastFoodId,
             );
             BlocProvider.of<MerchantBloc>(context)
                 .add(AddFoodProductToCartEvents(cart));

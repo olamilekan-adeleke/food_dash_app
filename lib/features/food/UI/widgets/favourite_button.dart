@@ -9,16 +9,18 @@ import 'package:food_dash_app/features/food/model/food_product_model.dart';
 class FavouriteButtonWidget extends StatelessWidget {
   const FavouriteButtonWidget(
     this.foodProduct, {
+    this.small = false,
     Key? key,
   }) : super(key: key);
 
-  final FoodProductModel foodProduct;
+  final FoodProductModel? foodProduct;
+  final bool small;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50,
-      width: 60,
+      height: small ? 40 : 50,
+      width: small ? 50 : 60,
       decoration: BoxDecoration(
         color: Colors.grey[300],
         shape: BoxShape.circle,
@@ -36,11 +38,12 @@ class FavouriteButtonWidget extends StatelessWidget {
         },
         builder: (BuildContext context, MerchantState state) {
           if (state is AddFoodProductToFavouriteLoadingState &&
-              state.id == foodProduct.id) {
-            return const SizedBox(
-              height: 30,
-              width: 30,
-              child: CustomCircularProgressIndicator(color: kcPrimaryColor),
+              state.id == foodProduct?.id) {
+            return SizedBox(
+              height: small ? 20 : 30,
+              width: small ? 20 : 30,
+              child:
+                  const CustomCircularProgressIndicator(color: kcPrimaryColor),
             );
           }
 
@@ -48,9 +51,14 @@ class FavouriteButtonWidget extends StatelessWidget {
             icon: Icon(
               Icons.favorite_border_rounded,
               color: Colors.grey[700],
+              size: small ? 15 : 25,
             ),
-            onPressed: () => BlocProvider.of<MerchantBloc>(context)
-                .add(AddFoodProductToFavouriteEvents(foodProduct)),
+            onPressed: () {
+              if (foodProduct != null) {
+                BlocProvider.of<MerchantBloc>(context)
+                    .add(AddFoodProductToFavouriteEvents(foodProduct!));
+              }
+            },
           );
         },
       ),

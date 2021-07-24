@@ -26,6 +26,24 @@ class GetMerchantErrorState extends MerchantState {
   final String message;
 }
 
+/// get merchants state
+class GetPopularFoodInitialState extends MerchantState {}
+
+class GetPopularFoodLoadingState extends MerchantState {}
+
+class GetPopularFoodLoadedState extends MerchantState {
+  const GetPopularFoodLoadedState(this.foodList);
+
+  final List<FoodProductModel> foodList;
+}
+
+class GetPopularFoodErrorState extends MerchantState {
+  const GetPopularFoodErrorState(this.message);
+
+  final String message;
+}
+
+
 /// get food product state
 class GetFoodProductsInitialState extends MerchantState {}
 
@@ -144,6 +162,36 @@ class GetFavouriteLoadedState extends MerchantState {
 
 class GetFavouriteErrorState extends MerchantState {
   const GetFavouriteErrorState(this.message);
+
+  final String message;
+}
+
+/// make payment for order state
+class MakePaymentInitialState extends MerchantState {}
+
+class MakePaymentLoadingState extends MerchantState {}
+
+class MakePaymentLoadedState extends MerchantState {
+  const MakePaymentLoadedState(this.id);
+
+  final String id;
+}
+
+class MakePaymentErrorState extends MerchantState {
+  const MakePaymentErrorState(this.message);
+
+  final String message;
+}
+
+/// rate rider
+class RateRiderInitialState extends MerchantState {}
+
+class RateRiderLoadingState extends MerchantState {}
+
+class RateRiderLoadedState extends MerchantState {}
+
+class RateRiderErrorState extends MerchantState {
+  const RateRiderErrorState(this.message);
 
   final String message;
 }

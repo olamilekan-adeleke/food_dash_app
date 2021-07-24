@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:food_dash_app/features/auth/UI/pages/login.dart';
 import 'package:food_dash_app/features/auth/model/login_user_model.dart';
 import 'package:food_dash_app/features/auth/repo/auth_repo.dart';
-import 'package:food_dash_app/features/food/UI/pages/home_page.dart';
+import 'package:food_dash_app/features/food/UI/pages/home_tab_pages.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
@@ -28,13 +28,16 @@ class AuthStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget widget;
     final LoginUserModel? loginUserModel =
         Provider.of<LoginUserModel?>(context, listen: true);
 
     if (loginUserModel == null) {
-      return const LoginPage();
+      widget = const LoginPage();
     } else {
-      return const HomePage();
+      widget = const HomeTabScreen();
     }
+
+    return Scaffold(body: widget);
   }
 }

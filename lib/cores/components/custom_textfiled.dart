@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:food_dash_app/cores/constants/color.dart';
+import 'package:food_dash_app/cores/utils/sizer_utils.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CustomTextField extends StatefulWidget {
   const CustomTextField({
@@ -10,6 +13,7 @@ class CustomTextField extends StatefulWidget {
     this.validator,
     this.textInputType = TextInputType.text,
     this.isPassword = false,
+    this.maxLine = 1,
   }) : super(key: key);
 
   final TextEditingController textEditingController;
@@ -19,6 +23,7 @@ class CustomTextField extends StatefulWidget {
   final String? Function(String?)? validator;
   final TextInputType textInputType;
   final bool isPassword;
+  final int? maxLine;
 
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
@@ -32,17 +37,18 @@ class _CustomTextFieldState extends State<CustomTextField> {
       valueListenable: obscureText,
       builder: (BuildContext context, bool value, dynamic child) {
         return TextFormField(
+          maxLines: widget.maxLine,
+          cursorColor: kcPrimaryColor,
+          style: GoogleFonts.raleway(),
           controller: widget.textEditingController,
           autocorrect: widget.autoCorrect,
           decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.grey[200],
             border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(5.0),
+              borderSide: const BorderSide(color: Colors.red),
+              borderRadius: BorderRadius.circular(sizerSp(5.0)),
             ),
             hintText: widget.hintText,
-            labelText: widget.labelText,
+            // labelText: widget.labelText,
             suffixIcon: widget.isPassword == false
                 ? const SizedBox()
                 : IconButton(

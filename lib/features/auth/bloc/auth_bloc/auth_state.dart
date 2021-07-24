@@ -76,3 +76,16 @@ class AuthLogOutUserErrorState extends AuthState {
 
   final String message;
 }
+
+// edit user data
+class UpdateUserDataIntialState extends AuthState {}
+
+class UpdateUserDataLoadingState extends AuthState {}
+
+class UpdateUserDataLoadedState extends AuthState {}
+
+class UpdateUserDataErrorState extends AuthState {
+  const UpdateUserDataErrorState(this.message);
+
+  final String message;
+}

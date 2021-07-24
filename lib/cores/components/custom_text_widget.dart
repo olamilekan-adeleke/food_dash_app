@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food_dash_app/cores/constants/color.dart';
 import 'package:food_dash_app/cores/constants/font_size.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CustomTextWidget extends StatelessWidget {
   const CustomTextWidget({
@@ -26,7 +27,7 @@ class CustomTextWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(
+      style: GoogleFonts.raleway(
         fontSize: fontSize,
         color: textColor,
         fontWeight: fontWeight,
