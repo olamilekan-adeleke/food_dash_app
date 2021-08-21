@@ -40,12 +40,12 @@ class WalletScreen extends StatelessWidget {
               ),
               color: Colors.white,
             ),
-            SizedBox(height: sizerSp(10)),
-            WalletOptionItemWidget(
-              title: 'Top card to Wallet',
-              callback: () {},
-              // color: Colors,
-            ),
+            // SizedBox(height: sizerSp(10)),
+            // WalletOptionItemWidget(
+            //   title: 'Top card to Wallet',
+            //   callback: () {},
+            //   // color: Colors,
+            // ),
             SizedBox(height: sizerSp(10)),
             WalletOptionItemWidget(
               title: 'Payment history',

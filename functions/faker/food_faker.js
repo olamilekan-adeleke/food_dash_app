@@ -1,80 +1,95 @@
-/* eslint-disable valid-jsdoc */
+// /* eslint-disable valid-jsdoc */
 
-const faker = require("faker");
-const admin = require("firebase-admin");
-const serviceAccount = require("../src/key.json");
+// const faker = require("faker");
+// const admin = require("firebase-admin");
+// const uuid = require("uuid");
+// const serviceAccount = require("../src/key.json");
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+// });
 
-const firestoreDatabse = admin.firestore();
+// const firestoreDatabse = admin.firestore();
 
-function log(message) {
-  console.log(`FakeDataPoPulator | ${message}`);
-}
+// function log(message) {
+//   console.log(`FakeDataPoPulator | ${message}`);
+// }
 
-async function generateFakeData() {
-  log("generate fake data");
+// async function generateFakeData() {
+//   log("generate fake data");
 
-  await generateMerchant();
+//   await generateMerchant();
 
-  log("generate fake data");
-}
+//   log("generate fake data");
+// }
 
-async function createMerchantDocument(merchant) {
-  const documentRefeence = await firestoreDatabse
-    .collection("restaurants")
-    .add(merchant);
-  return documentRefeence.id;
-}
+// async function createMerchantDocument(merchant) {
+//   const documentRefeence = await firestoreDatabse
+//     .collection("restaurants")
+//     .doc(merchant.id)
+//     .set(merchant);
+//   return documentRefeence.id;
+// }
 
-async function generateMerchant() {
-  log("generating mutiple merchants...");
+// async function generateMerchant() {
+//   log("generating mutiple merchants...");
 
-  for (let index = 0; index < 30; index++) {
-    const merchantName = faker.commerce.productName();
+//   for (let index = 0; index < 30; index++) {
+//     const merchantName = faker.commerce.productName();
+//     const merchantId = uuid.v4();
 
-    const merchant = {
-      name: merchantName,
-      image: faker.image.imageUrl(640, 640, "food"),
-      categories: [faker.commerce.department(), faker.commerce.department()],
-      rating: faker.datatype.float(2),
-      number_of_ratings: faker.datatype.number(200),
-    };
+//     const merchant = {
+//       id: merchantId,
+//       name: merchantName,
+//       image: faker.image.imageUrl(640, 640, "food"),
+//       categories: [faker.commerce.department(), faker.commerce.department()],
+//       rating: faker.datatype.float(2),
+//       number_of_ratings: faker.datatype.number(200),
+//     };
 
-    log(`generating ${index} merchants...`);
+//     log(`generating ${index} merchants...`);
 
-    const merchantId = await createMerchantDocument(merchant);
-    await generateMerchantProduct(merchantId, merchantName);
-  }
-}
+//     await createMerchantDocument(merchant);
+//     await generateMerchantProduct(merchantId, merchantName);
+//   }
+// }
 
-async function generateMerchantProduct(merchantId, marchantName) {
-  log(`generating mutiple product for ${merchantId}...`);
+// async function generateMerchantProduct(merchantId, marchantName) {
+//   log(`generating mutiple product for ${merchantId}...`);
 
-  for (let index = 0; index < 30; index++) {
-    const product = {
-      name: faker.commerce.productName(),
-      description: faker.lorem.paragraph(2),
-      image: faker.image.imageUrl(640, 640, "food"),
-      category: faker.commerce.department(),
-      price: faker.datatype.number(8999),
-      fast_food_name: marchantName,
-        fast_food_id: merchantId,
-      likes_count: 1,
-    };
+//   for (let index = 0; index < 30; index++) {
+//     const productName = faker.commerce.productName();
+//     const productId = uuid.v4();
 
-    log(`generating ${index} product...`);
+//     let searchKey = [];
+//     let currentSearchKey = "";
 
-    await createMerchantProduct( product);
-  }
-}
+//     productName.split("").forEach((element) => {
+//       currentSearchKey += element.toLowerCase();
+//       searchKey.push(currentSearchKey);
+//     });
 
-async function createMerchantProduct( product) {
-  await firestoreDatabse
-    .collection("food_items")
-    .add(product);
-}
+//     const product = {
+//       name: productName,
+//       id: productId,
+//       search_key: searchKey,
+//       description: faker.lorem.paragraph(2),
+//       image: faker.image.imageUrl(640, 640, "food"),
+//       category: faker.commerce.department(),
+//       price: faker.datatype.number(8999),
+//       fast_food_name: marchantName,
+//       fast_food_id: merchantId,
+//       likes_count: 1,
+//     };
 
-generateFakeData();
+//     log(`generating ${index} product...`);
+
+//     await createMerchantProduct(product);
+//   }
+// }
+
+// async function createMerchantProduct(product) {
+//   await firestoreDatabse.collection("food_items").doc(product.id).set(product);
+// }
+
+// // generateFakeData();

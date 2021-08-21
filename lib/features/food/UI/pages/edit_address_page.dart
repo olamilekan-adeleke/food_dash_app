@@ -1,9 +1,11 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/components/custom_button.dart';
 import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
 import 'package:food_dash_app/cores/components/custom_text_widget.dart';
 import 'package:food_dash_app/cores/components/custom_textfiled.dart';
+import 'package:food_dash_app/cores/constants/location_list.dart';
 import 'package:food_dash_app/cores/utils/locator.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/sizer_utils.dart';
@@ -19,6 +21,7 @@ class EditAddressScreen extends StatelessWidget {
   static final TextEditingController address = TextEditingController(text: '');
   static final LocaldatabaseRepo localdatabaseRepo =
       locator<LocaldatabaseRepo>();
+  static final ValueNotifier<String> selectedVal = ValueNotifier<String>('');
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +64,52 @@ class EditAddressScreen extends StatelessWidget {
                 );
               },
             ),
+
+            SizedBox(height: sizerSp(20.0)),
+            CustomTextWidget(
+              text: 'Select Region',
+              fontWeight: FontWeight.bold,
+              fontSize: sizerSp(15),
+            ),
+            SizedBox(height: sizerSp(10.0)),
+            ValueListenableBuilder<String>(
+              valueListenable: selectedVal,
+              builder: (
+                BuildContext context,
+                String value,
+                Widget? child,
+              ) {
+                // return SearchableDropdown<String>.single(
+                //   items: locationList
+                //       .map(
+                //         (String e) => DropdownMenuItem<String>(
+                //           child: CustomTextWidget(
+                //             text: e,
+                //             fontWeight: FontWeight.w200,
+                //             fontSize: sizerSp(13),
+                //           ),
+                //         ),
+                //       )
+                //       .toList(),
+                //   value: value,
+                //   hint: 'Select one',
+                //   searchHint: 'Select one',
+                //   onChanged: (String value) => selectedVal.value = value,
+                //   isExpanded: true,
+                // );
+
+                return DropdownSearch<String>(
+                  mode: Mode.BOTTOM_SHEET,
+                  showSelectedItem: true,
+                  items: locationList,
+                  // label: 'Menu mode',
+                  hint: 'Select Region',
+                  onChanged: (String? val) => selectedVal.value = val ?? '',
+                  selectedItem: value != '' ? value : null,
+                );
+              },
+            ),
+
             const Spacer(),
             BlocConsumer<AuthBloc, AuthState>(
               listener: (BuildContext context, AuthState state) {
@@ -77,12 +126,23 @@ class EditAddressScreen extends StatelessWidget {
                 }
 
                 return CustomButton(
-                  text: 'Edit',
+                  text: 'Save',
                   onTap: () async {
-                    final UserDetailsModel? userDetails =
+                    print(selectedVal.value);
+
+                    if (selectedVal.value.isEmpty || address.text.isEmpty) {
+                      CustomSnackBarService.showWarningSnackBar(
+                          'Enter Address and Select a Region');
+
+                      return;
+                    }
+                    UserDetailsModel? userDetails =
                         await localdatabaseRepo.getUserDataFromLocalDB();
 
-                    userDetails!.address = address.text.trim();
+                    userDetails = userDetails!.copyWith(
+                      address: address.text.trim(),
+                      region: selectedVal.value,
+                    );
 
                     BlocProvider.of<AuthBloc>(context)
                         .add(UpdateUserDataEvent(userDetails));

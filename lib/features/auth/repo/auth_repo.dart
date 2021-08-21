@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:food_dash_app/cores/constants/error_text.dart';
 import 'package:food_dash_app/cores/utils/firebase_messaging_utils.dart';
 import 'package:food_dash_app/cores/utils/logger.dart';
+import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/features/auth/model/login_user_model.dart';
 import 'package:food_dash_app/features/auth/model/user_details_model.dart';
 import 'package:food_dash_app/features/food/repo/local_database_repo.dart';
@@ -159,6 +160,7 @@ class AuthenticationRepo {
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
+      CustomNavigationService().goBack();
       infoLog('user loging out', title: 'log out');
     } catch (e, s) {
       errorLog(

@@ -40,7 +40,7 @@ class _PopularRestaurantWidgetsState extends State<PopularRestaurantWidgets> {
           children: <Widget>[
             CustomTextWidget(
               text: 'Popular Restaurant',
-              fontSize: sizerSp(16),
+              fontSize: sizerSp(14),
               fontWeight: FontWeight.bold,
             ),
             InkWell(

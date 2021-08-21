@@ -93,6 +93,7 @@ class OrderHistoryScreen extends StatelessWidget {
               itemBuilderType: PaginateBuilderType.listView,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
+              itemsPerPage: 10,
             ),
           ],
         ),

@@ -10,6 +10,7 @@ class UserDetailsModel {
     required this.phoneNumber,
     this.profilePicUrl,
     this.address,
+    this.region,
     this.dateJoined,
     required this.walletBalance,
   });
@@ -20,6 +21,7 @@ class UserDetailsModel {
       email: map['email'] as String,
       fullName: map['full_name'] as String,
       address: map['address'] != null ? map['address'] as String : null,
+      region: map['region'] != null ? map['region'] as String : null,
       walletBalance: map['wallet_balance'] != null
           ? double.parse(map['wallet_balance'].toString())
           : 0.0,
@@ -38,7 +40,8 @@ class UserDetailsModel {
   final String uid;
   final String email;
   final String fullName;
-  String? address;
+  final String? address;
+  final String? region;
   final int phoneNumber;
   final String? profilePicUrl;
   final Timestamp? dateJoined;
@@ -53,6 +56,7 @@ class UserDetailsModel {
       'profile_pic_url': profilePicUrl,
       'date_joined': dateJoined,
       'address': address,
+      'region': region,
     };
   }
 
@@ -64,6 +68,7 @@ class UserDetailsModel {
       'phone_number': phoneNumber,
       'profile_pic_url': profilePicUrl,
       'address': address,
+      'region': region,
     };
   }
 
@@ -73,6 +78,8 @@ class UserDetailsModel {
     String? uid,
     String? email,
     String? fullName,
+    String? address,
+    String? region,
     int? phoneNumber,
     String? profilePicUrl,
     Timestamp? dateJoined,
@@ -86,6 +93,8 @@ class UserDetailsModel {
       profilePicUrl: profilePicUrl ?? this.profilePicUrl,
       dateJoined: dateJoined ?? this.dateJoined,
       walletBalance: walletBalance ?? this.walletBalance,
+      address: address ?? this.address,
+      region: region ?? this.region,
     );
   }
 }

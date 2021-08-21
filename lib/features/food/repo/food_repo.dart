@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:food_dash_app/cores/utils/currency_formater.dart';
@@ -33,7 +32,11 @@ class MerchantRepo {
   static final CollectionReference<Map<String, dynamic>> riderCollectionRef =
       FirebaseFirestore.instance.collection('riders');
 
-  final int limit = 10;
+  static final CollectionReference<Map<String, dynamic>>
+      constantsCollectionRef =
+      FirebaseFirestore.instance.collection('constants');
+
+  final int limit = 7;
 
   Future<List<MerchantModel>> getMerchant({MerchantModel? lastMerchant}) async {
     final List<MerchantModel> merchants = <MerchantModel>[];
@@ -209,17 +212,20 @@ class MerchantRepo {
     yield* userCollectionRef.doc(userUid).snapshots();
   }
 
-  Future<String> sendOrder() async {
+  Future<String> sendOrder(int deliveryFee) async {
     final String id = const Uuid().v1();
     final UserDetailsModel? userDetails =
         await localdatabaseRepo.getUserDataFromLocalDB();
     final List<CartModel> items = await localdatabaseRepo.getAllItemInCart();
+    final int totalPrice = await localdatabaseRepo.getTotalCartItemPrice();
 
     final OrderModel order = OrderModel(
       id: id,
       items: items,
       userDetails: userDetails!,
       timestamp: Timestamp.now(),
+      deliveryFee: deliveryFee,
+      itemsFee: totalPrice,
     );
 
     await orderCollectionRef.doc(id).set(order.toMap());
@@ -266,15 +272,16 @@ class MerchantRepo {
     }
   }
 
-  Future<String> makePayment(String password) async {
+  Future<String> makePayment(String password, int deliveryFee) async {
     String id = '';
 
     try {
       final bool isAuthenticated =
           await authenticationRepo.authenticateUser(password);
+
       if (isAuthenticated) {
         await checkUserWalletBalance();
-        id = await sendOrder();
+        id = await sendOrder(deliveryFee);
         await localdatabaseRepo.clearCartItem();
         CustomSnackBarService.showSuccessSnackBar(
             'Paymennt Successful, Order has been placed!');
@@ -318,6 +325,7 @@ class MerchantRepo {
         throw Exception('Rider Has Already Been Rated By You!');
       }
 
+      log(riderId);
       final DocumentSnapshot<Map<String, dynamic>> riderDocumentSnapshot =
           await riderCollectionRef
               .doc(riderId)
@@ -364,5 +372,45 @@ class MerchantRepo {
       debugPrint(s.toString());
       throw Exception(e.toString());
     }
+  }
+
+  Future<List<FoodProductModel>> search(String query,
+      {FoodProductModel? foodProduct}) async {
+    List<FoodProductModel> foods;
+
+    final Query<Map<String, dynamic>> _query = foodCollectionRef
+        .where('search_key', arrayContains: query)
+        .orderBy('fast_food_id', descending: true)
+        .limit(limit);
+
+    try {
+      if (foodProduct != null) {
+        _query.startAfter(<String>[foodProduct.fastFoodId]);
+      }
+
+      final QuerySnapshot<Map<String, dynamic>> queryDocumentSnapshot =
+          await _query.get();
+
+      foods = queryDocumentSnapshot.docs
+          .map((QueryDocumentSnapshot<Map<String, dynamic>> e) =>
+              FoodProductModel.fromMap(e.data(), e.id))
+          .toList();
+    } on Exception catch (e, s) {
+      debugPrint(e.toString());
+      debugPrint(s.toString());
+      throw Exception(e.toString());
+    }
+
+    return foods;
+  }
+
+  Future<int> getDeliveryFee() async {
+    await Future.delayed(Duration(seconds: 2));
+    final DocumentSnapshot<Map<String, dynamic>> data =
+        await constantsCollectionRef.doc('delivery_fee').get();
+
+    final int fee = (data.data()?['fee'] ?? 100) as int;
+
+    return fee;
   }
 }

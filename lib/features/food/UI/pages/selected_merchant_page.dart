@@ -31,17 +31,20 @@ class SelectedMerchantPage extends StatelessWidget {
     return CustomScaffoldWidget(
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: sizerSp(10)),
-        child: ListView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: sizerSp(10)),
             HeaderWidget.appbar(merchant.name),
             SizedBox(height: sizerSp(10)),
-            SizedBox(
-              height: sizerHeight(20),
-              width: sizerWidth(50),
-              child: CustomImageWidget(
-                imageUrl: merchant.image,
-                imageTypes: ImageTypes.network,
+            Center(
+              child: SizedBox(
+                height: sizerHeight(20),
+                width: sizerWidth(50),
+                child: CustomImageWidget(
+                  imageUrl: merchant.image,
+                  imageTypes: ImageTypes.network,
+                ),
               ),
             ),
             SizedBox(height: sizerSp(10)),
@@ -73,10 +76,10 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
     debugPrint(_controller.position.atEdge.toString());
     debugPrint('dddd');
     if (_controller.position.pixels >= _controller.position.maxScrollExtent) {
-      // merchantBloc!.hasMoreMerchant == true &&
-      // merchantBloc!.merchantBusy == false
-      // print('got here');
-      // merchantBloc!.add(GetMerchantsEvents());
+      if (merchantBloc!.hasMoreMerchant == true &&
+          merchantBloc!.merchantBusy == false) {
+        merchantBloc!.add(GetFoodProductsEvents(widget.merchantId));
+      }
     }
   }
 
@@ -92,15 +95,15 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<MerchantBloc, MerchantState>(
-      listener: (BuildContext context, MerchantState state) {
-        if (state is GetFoodProductsLoadedState) {
-          foodProducts.addAll(state.merchants);
-        }
-      },
-      builder: (BuildContext context, MerchantState state) {
-        if (state is GetFoodProductsLoadingState) {
-          if (foodProducts.isEmpty) {
+    return Expanded(
+      child: BlocConsumer<MerchantBloc, MerchantState>(
+        listener: (BuildContext context, MerchantState state) {
+          if (state is GetFoodProductsLoadedState) {
+            foodProducts.addAll(state.merchants);
+          }
+        },
+        builder: (BuildContext context, MerchantState state) {
+          if (state is GetFoodProductsLoadingState && foodProducts.isEmpty) {
             return Center(
               child: SizedBox(
                 height: sizerSp(50),
@@ -108,28 +111,56 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
                 child: const CustomLoadingIndicatorWidget(),
               ),
             );
-          } else {
-            return ListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: <Widget>[
-                foodItemWidget(),
-                const SizedBox(height: 10.0),
-                const Center(child: CustomLoadingIndicatorWidget()),
-              ],
+          } else if (state is GetFoodProductsErrorState) {
+            return SizedBox(
+              child: CustomErrorWidget(
+                message: state.message,
+                callback: () =>
+                    merchantBloc!.add(GetFoodProductsEvents(widget.merchantId)),
+              ),
             );
           }
-        } else if (state is GetMerchantErrorState) {
-          return SizedBox(
-            child: CustomErrorWidget(
-              message: state.message,
-              callback: () => merchantBloc!.add(GetMerchantsEvents()),
-            ),
-          );
-        }
 
-        return foodItemWidget();
-      },
+          return Stack(
+            children: <Widget>[
+              foodItemWidget(),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: BlocConsumer<MerchantBloc, MerchantState>(
+                  listener: (BuildContext context, MerchantState state) {},
+                  builder: (BuildContext context, MerchantState state) {
+                    if (state is GetFoodProductsLoadingState) {
+                      return Container(
+                        padding: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(10),
+                        color: Colors.grey.shade600,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const <Widget>[
+                            SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CustomLoadingIndicatorWidget(),
+                            ),
+                            SizedBox(width: 20),
+                            CustomTextWidget(
+                              text: 'Loading More...',
+                              textColor: Colors.white,
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return Container();
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -140,7 +171,7 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
         childAspectRatio: 0.68,
       ),
       controller: _controller,
-      physics: const NeverScrollableScrollPhysics(),
+      // physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: foodProducts.length,
       itemBuilder: (BuildContext context, int index) {

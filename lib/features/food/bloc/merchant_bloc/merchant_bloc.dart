@@ -16,12 +16,21 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
   MerchantBloc() : super(MerchantInitial());
 
   MerchantRepo merchantRepo = GetIt.instance<MerchantRepo>();
+
   MerchantModel? lastmerchant;
   FoodProductModel? lastFoodProduct;
+  FoodProductModel? search;
+  FoodProductModel? lastFavFoodProduct;
+
   bool merchantBusy = false;
   bool foodBusy = false;
+  bool foodFavBusy = false;
+  bool searchBusy = false;
+
   bool hasMoreMerchant = true;
+  bool hasMoreFavFood = true;
   bool hasMoreFoodProduct = true;
+  bool hasMoreSearch = true;
 
   @override
   Stream<MerchantState> mapEventToState(
@@ -33,8 +42,8 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         yield GetMerchantLoadingState();
         final List<MerchantModel> merchants =
             await merchantRepo.getMerchant(lastMerchant: lastmerchant);
-        // if (merchants.isNotEmpty) lastmerchant = merchants.last;
-        // hasMoreMerchant = merchants.length == merchantRepo.limit;
+        if (merchants.isNotEmpty) lastmerchant = merchants.last;
+        hasMoreMerchant = merchants.length == merchantRepo.limit;
         yield GetMerchantLoadedState(merchants);
       } catch (e, s) {
         debugPrint(e.toString());
@@ -48,8 +57,8 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         yield GetFoodProductsLoadingState();
         final List<FoodProductModel> foodProducts = await merchantRepo
             .getFoodProduct(event.merchantId, lastFoodProduct: lastFoodProduct);
-        // if (foodProducts.isNotEmpty) lastFoodProduct = foodProducts.last;
-        // hasMoreFoodProduct = foodProducts.length == merchantRepo.limit;
+        if (foodProducts.isNotEmpty) lastFoodProduct = foodProducts.last;
+        hasMoreFoodProduct = foodProducts.length == merchantRepo.limit;
         yield GetFoodProductsLoadedState(foodProducts);
       } catch (e, s) {
         debugPrint(e.toString());
@@ -58,20 +67,35 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
       }
       foodBusy = false;
     } else if (event is GetPopularFoodEvents) {
-      // foodBusy = true;
+      foodFavBusy = true;
       try {
         yield GetPopularFoodLoadingState();
         final List<FoodProductModel> foodProducts = await merchantRepo
             .getTopFoodProduct(lastFoodProduct: lastFoodProduct);
-        // if (foodProducts.isNotEmpty) lastFoodProduct = foodProducts.last;
-        // hasMoreFoodProduct = foodProducts.length == merchantRepo.limit;
+        if (foodProducts.isNotEmpty) lastFavFoodProduct = foodProducts.last;
+        hasMoreFavFood = foodProducts.length == merchantRepo.limit;
         yield GetPopularFoodLoadedState(foodProducts);
       } catch (e, s) {
         debugPrint(e.toString());
         debugPrint(s.toString());
         yield GetPopularFoodErrorState(e.toString());
       }
-      // foodBusy = false;
+      foodFavBusy = false;
+    } else if (event is SearchEvent) {
+      searchBusy = true;
+      try {
+        yield SearchLoadingState();
+        final List<FoodProductModel> foodProducts =
+            await merchantRepo.search(event.query, foodProduct: search);
+        if (foodProducts.isNotEmpty) search = foodProducts.last;
+        hasMoreSearch = foodProducts.length == merchantRepo.limit;
+        yield SearchLoadedState(foodProducts);
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield SearchErrorState(e.toString());
+      }
+      searchBusy = false;
     } else if (event is AddFoodProductToFavouriteEvents) {
       try {
         yield AddFoodProductToFavouriteLoadingState(event.foodProduct.id);
@@ -136,7 +160,8 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
     } else if (event is MakePaymentEvent) {
       try {
         yield MakePaymentLoadingState();
-        final String id = await merchantRepo.makePayment(event.password);
+        final String id =
+            await merchantRepo.makePayment(event.password, event.devlieryFee);
         yield MakePaymentLoadedState(id);
       } catch (e, s) {
         debugPrint(e.toString());

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/components/custom_button.dart';
 import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
 import 'package:food_dash_app/cores/components/custom_text_widget.dart';
@@ -12,6 +13,7 @@ import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/sizer_utils.dart';
 import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
+import 'package:food_dash_app/features/auth/bloc/bloc/getdeliveryfee_bloc.dart';
 import 'package:food_dash_app/features/auth/model/user_details_model.dart';
 import 'package:food_dash_app/features/food/UI/pages/authentication_dialog.dart';
 import 'package:food_dash_app/features/food/model/cart_model.dart';
@@ -243,7 +245,7 @@ class AddressWidget extends StatelessWidget {
   }
 }
 
-class CartItemPriceWidget extends StatelessWidget {
+class CartItemPriceWidget extends StatefulWidget {
   const CartItemPriceWidget({
     Key? key,
     required this.callback,
@@ -253,6 +255,19 @@ class CartItemPriceWidget extends StatelessWidget {
       GetIt.instance<LocaldatabaseRepo>();
 
   final Function() callback;
+
+  @override
+  _CartItemPriceWidgetState createState() => _CartItemPriceWidgetState();
+}
+
+class _CartItemPriceWidgetState extends State<CartItemPriceWidget> {
+  int? fee;
+
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<GetdeliveryfeeBloc>(context).add(GetFeeEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -279,7 +294,7 @@ class CartItemPriceWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               InkWell(
-                onTap: () => callback(),
+                onTap: () => widget.callback(),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
@@ -312,15 +327,48 @@ class CartItemPriceWidget extends StatelessWidget {
               const SizedBox(height: 10.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const <Widget>[
-                  CustomTextWidget(
+                children: <Widget>[
+                  const CustomTextWidget(
                     text: 'Delivery',
                     fontSize: kfsLarge,
                     fontWeight: FontWeight.bold,
                   ),
-                  CustomTextWidget(
-                    text: '\u20A6 500',
-                    fontWeight: FontWeight.w300,
+                  BlocConsumer<GetdeliveryfeeBloc, GetdeliveryfeeState>(
+                    listener:
+                        (BuildContext context, GetdeliveryfeeState state) {
+                      if (state is GetdeliveryfeeError) {
+                        CustomSnackBarService.showErrorSnackBar(state.message);
+                      } else if (state is GetdeliveryfeeLoaded) {
+                        fee = state.fee;
+                        setState(() {});
+                      }
+                    },
+                    builder: (BuildContext context, GetdeliveryfeeState state) {
+                      if (state is GetdeliveryfeeError) {
+                        return InkWell(
+                          onTap: () =>
+                              BlocProvider.of<GetdeliveryfeeBloc>(context)
+                                  .add(GetFeeEvent()),
+                          child: CustomTextWidget(
+                            text: '\u20A6 Error! Click to Re-try.',
+                            fontWeight: FontWeight.w300,
+                            fontSize: sizerSp(12),
+                          ),
+                        );
+                      } else if (state is GetdeliveryfeeLoaded) {
+                        return CustomTextWidget(
+                          text: '\u20A6 ${state.fee}',
+                          fontWeight: FontWeight.w300,
+                          // fontSize: sizerSp(12),
+                        );
+                      }
+
+                      return CustomTextWidget(
+                        text: '\u20A6 Calculating...',
+                        fontWeight: FontWeight.w200,
+                        fontSize: sizerSp(12),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -336,7 +384,7 @@ class CartItemPriceWidget extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                   CustomTextWidget(
-                    text: '\u20A6 ${allProductPrice + 500}',
+                    text: '\u20A6 ${allProductPrice + (fee ?? 0)}',
                     fontWeight: FontWeight.bold,
                   ),
                 ],
@@ -347,7 +395,8 @@ class CartItemPriceWidget extends StatelessWidget {
                   Expanded(
                     child: CustomButton(
                       text: 'Clear Cart',
-                      onTap: () => localdatabaseRepo.clearCartItem(),
+                      onTap: () =>
+                          CartItemPriceWidget.localdatabaseRepo.clearCartItem(),
                       color: Colors.grey[300],
                       textColor: kcTextColor,
                     ),
@@ -358,8 +407,14 @@ class CartItemPriceWidget extends StatelessWidget {
                       text: 'CHECKOUT',
                       onTap: () {
                         if (cartList.isNotEmpty) {
+                          if (fee == null) {
+                            CustomSnackBarService.showWarningSnackBar(
+                                'Still loading delivery fee');
+                            return;
+                          }
+
                           CustomButtomModalService.showModal(
-                              const AuthenticateUserScreen());
+                              AuthenticateUserScreen(fee!));
                         }
                       },
                     ),
@@ -451,12 +506,12 @@ class CartItemWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     CartButton(
-                      iconData: Icons.remove,
+                      iconData: Icons.add,
                       callback: () {
-                        if (cartItem.count == 1) return;
+                        if (cartItem.count == 10) return;
 
                         final CartModel updatedCartItem = cartItem.copyWith(
-                          count: cartItem.count - 1,
+                          count: cartItem.count + 1,
                         );
 
                         merchantRepo.updateCartItem(
@@ -473,12 +528,12 @@ class CartItemWidget extends StatelessWidget {
                     ),
                     const SizedBox(width: 10.0),
                     CartButton(
-                      iconData: Icons.add,
+                      iconData: Icons.remove,
                       callback: () {
-                        if (cartItem.count == 10) return;
+                        if (cartItem.count == 1) return;
 
                         final CartModel updatedCartItem = cartItem.copyWith(
-                          count: cartItem.count + 1,
+                          count: cartItem.count - 1,
                         );
 
                         merchantRepo.updateCartItem(

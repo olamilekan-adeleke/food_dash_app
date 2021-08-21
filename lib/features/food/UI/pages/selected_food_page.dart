@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/components/custom_button.dart';
@@ -10,6 +8,7 @@ import 'package:food_dash_app/cores/constants/color.dart';
 import 'package:food_dash_app/cores/constants/font_size.dart';
 import 'package:food_dash_app/cores/utils/emums.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
+import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/sizer_utils.dart';
 import 'package:food_dash_app/features/food/UI/widgets/favourite_button.dart';
 import 'package:food_dash_app/features/food/bloc/merchant_bloc/merchant_bloc.dart';
@@ -104,8 +103,48 @@ class SelectedFoodPage extends StatelessWidget {
             ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
+              BlocConsumer<MerchantBloc, MerchantState>(
+                listener: (BuildContext context, MerchantState state) {
+                  if (state is AddFoodProductToCartLoadedState) {
+                    CustomNavigationService().navigateTo(RouteName.cartPage);
+                  }
+                },
+                builder: (BuildContext context, MerchantState state) {
+                  if (state is AddFoodProductToCartLoadingState) {
+                    return const CustomButton.loading();
+                  }
+
+                  return ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(sizerSp(20)),
+                      bottomRight: Radius.circular(sizerSp(20)),
+                    ),
+                    child: CustomButton.smallSized(
+                      text: 'Add And Proceed To Check Out',
+                      width: sizerWidth(45),
+                      onTap: () {
+                        final CartModel cart = CartModel(
+                          category: foodProduct!.category,
+                          id: foodProduct!.id,
+                          count: 1,
+                          description: foodProduct!.description,
+                          image: foodProduct!.image,
+                          name: foodProduct!.name,
+                          price: foodProduct!.price,
+                          fastFoodName: foodProduct!.fastFoodname,
+                          fastFoodId: foodProduct!.fastFoodId,
+                        );
+
+                        BlocProvider.of<MerchantBloc>(context)
+                            .add(AddFoodProductToCartEvents(cart));
+                      },
+                    ),
+                  );
+                },
+              ),
+              //
               BlocConsumer<MerchantBloc, MerchantState>(
                 listener: (BuildContext context, MerchantState state) {},
                 builder: (BuildContext context, MerchantState state) {

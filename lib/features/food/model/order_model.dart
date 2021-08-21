@@ -11,6 +11,9 @@ class OrderModel {
     this.timestamp,
     required this.userDetails,
     required this.id,
+    required this.itemsFee,
+    required this.deliveryFee,
+
     this.orderStatus,
     this.restaurantsList,
     this.riderDetails,
@@ -45,6 +48,8 @@ class OrderModel {
             )
           : null,
       hasRated: map['has_rated'] as bool,
+      itemsFee: map['items_fee'] as int,
+      deliveryFee: map['delivery_fee'] as int,
     );
   }
 
@@ -57,6 +62,8 @@ class OrderModel {
   final OrderStatusEunm? orderStatus;
   final UserDetailsModel? riderDetails;
   final bool? hasRated;
+  final int itemsFee;
+  final int deliveryFee;
 
   Map<String, dynamic> toMap() {
     final Set<String> _restaurantsList = <String>{};
@@ -77,6 +84,8 @@ class OrderModel {
       ),
       'rider_details': null,
       'has_rated': hasRated ?? false,
+      'items_fee': itemsFee,
+      'delivery_fee': deliveryFee,
     };
   }
 }

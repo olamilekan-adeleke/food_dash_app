@@ -57,8 +57,9 @@ class GetFavouritesItemEvents extends MerchantEvent {}
 
 // make payment for food order event
 class MakePaymentEvent extends MerchantEvent {
-  const MakePaymentEvent(this.password);
+  const MakePaymentEvent(this.password, this.devlieryFee);
   final String password;
+  final int devlieryFee;
 }
 
 // rate rider
@@ -68,4 +69,10 @@ class RateRiderEvent extends MerchantEvent {
   final String orderId;
   final String riderId;
   final double rating;
+}
+
+// serach
+class SearchEvent extends MerchantEvent {
+  const SearchEvent(this.query);
+  final String query;
 }

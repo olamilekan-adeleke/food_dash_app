@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:food_dash_app/cores/components/custom_text_widget.dart';
 import 'package:food_dash_app/cores/components/error_widget.dart';
 import 'package:food_dash_app/cores/components/image_widget.dart';
@@ -25,10 +26,28 @@ class FavouriteFoodListWidget extends StatefulWidget {
 
 class _FavouriteFoodListWidgetState extends State<FavouriteFoodListWidget> {
   final List<FoodProductModel> foodList = <FoodProductModel>[];
+  MerchantBloc? merchantBloc;
+  late ScrollController _controller;
+
+  void _scrollListener() {
+    debugPrint(_controller.position.atEdge.toString());
+    debugPrint('dddd');
+    if (_controller.position.pixels >= _controller.position.maxScrollExtent) {
+      if (merchantBloc!.hasMoreMerchant == true &&
+          merchantBloc!.merchantBusy == false) {
+        merchantBloc!.add(GetFavouritesItemEvents());
+      }
+    }
+  }
 
   @override
   void initState() {
     BlocProvider.of<MerchantBloc>(context).add(GetFavouritesItemEvents());
+
+    merchantBloc = BlocProvider.of<MerchantBloc>(context);
+
+    _controller = ScrollController();
+    _controller.addListener(() => _scrollListener());
     super.initState();
   }
 
@@ -59,7 +78,44 @@ class _FavouriteFoodListWidgetState extends State<FavouriteFoodListWidget> {
           );
         }
 
-        return FavouriteFoodItemWidget(foodList);
+        return Stack(
+          children: <Widget>[
+            FavouriteFoodItemWidget(foodList),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: BlocConsumer<MerchantBloc, MerchantState>(
+                listener: (BuildContext context, MerchantState state) {},
+                builder: (BuildContext context, MerchantState state) {
+                  if (state is GetFavouriteLoadingState) {
+                    return Container(
+                      padding: const EdgeInsets.all(5),
+                      margin: const EdgeInsets.all(10),
+                      color: Colors.grey.shade600,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const <Widget>[
+                          SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CustomLoadingIndicatorWidget(),
+                          ),
+                          SizedBox(width: 20),
+                          CustomTextWidget(
+                            text: 'Loading More...',
+                            textColor: Colors.white,
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return Container();
+                },
+              ),
+            ),
+          ],
+        );
       },
     );
   }
@@ -73,6 +129,25 @@ class FavouriteFoodItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (foodProducts.isEmpty) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          SizedBox(width: double.infinity, height: sizerHeight(20)),
+          SvgPicture.asset(
+            'assets/images/empty.svg',
+            height: sizerSp(100),
+            width: sizerSp(150),
+          ),
+          SizedBox(height: sizerSp(20)),
+          const CustomTextWidget(
+            text: 'No Item Was Found!',
+            fontWeight: FontWeight.bold,
+          ),
+        ],
+      );
+    }
+
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: sizerSp(260),

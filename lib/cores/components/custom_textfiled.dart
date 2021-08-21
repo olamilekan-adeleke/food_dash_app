@@ -14,6 +14,8 @@ class CustomTextField extends StatefulWidget {
     this.textInputType = TextInputType.text,
     this.isPassword = false,
     this.maxLine = 1,
+    this.textInputAction,
+    this.onDone,
   }) : super(key: key);
 
   final TextEditingController textEditingController;
@@ -21,9 +23,11 @@ class CustomTextField extends StatefulWidget {
   final String hintText;
   final String labelText;
   final String? Function(String?)? validator;
+  final Function()? onDone;
   final TextInputType textInputType;
   final bool isPassword;
   final int? maxLine;
+  final TextInputAction? textInputAction;
 
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
@@ -59,6 +63,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
           keyboardType: widget.textInputType,
           obscureText: value,
           validator: (String? val) => widget.validator!(val?.trim()),
+          textInputAction: widget.textInputAction,
+          onFieldSubmitted: (_) {
+            if (widget.onDone != null) {
+              widget.onDone!();
+            }
+          },
         );
       },
     );

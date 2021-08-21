@@ -21,8 +21,8 @@ class LocaldatabaseRepo {
   }
 
   Future<void> updateAddress(String address) async {
-    final UserDetailsModel? userDetails = await getUserDataFromLocalDB();
-    userDetails!.address = address;
+    UserDetailsModel? userDetails = await getUserDataFromLocalDB();
+    userDetails = userDetails!.copyWith(address: address);
 
     await saveUserDataToLocalDB(userDetails.toMapForLocalDb());
   }
@@ -31,7 +31,7 @@ class LocaldatabaseRepo {
     final Map<String, dynamic>? _userData =
         box.read(userDataBoxName) as Map<String, dynamic>?;
 
-        if (_userData == null) {
+    if (_userData == null) {
       return null;
     }
 
@@ -40,13 +40,13 @@ class LocaldatabaseRepo {
 
   Future<List<CartModel>> getAllItemInCart() async {
     List<CartModel> _cartList = <CartModel>[];
-    final List<dynamic>? _cartListMap = box.read(cartName);
+    final List<dynamic> _cartListMap = box.read(cartName) ?? <dynamic>[];
 
     // _cartListMap ??= <List<Object>>[];
 
     // ignore: join_return_with_assignment
 
-    if (_cartListMap!.isNotEmpty) {
+    if (_cartListMap.isNotEmpty) {
       _cartList = _cartListMap
           .map((dynamic data) => CartModel.fromMap(
                 data as Map<String, dynamic>,

@@ -43,7 +43,6 @@ class GetPopularFoodErrorState extends MerchantState {
   final String message;
 }
 
-
 /// get food product state
 class GetFoodProductsInitialState extends MerchantState {}
 
@@ -192,6 +191,24 @@ class RateRiderLoadedState extends MerchantState {}
 
 class RateRiderErrorState extends MerchantState {
   const RateRiderErrorState(this.message);
+
+  final String message;
+}
+
+/// rate rider
+class SearchInitialState extends MerchantState {}
+
+class SearchLoadingState extends MerchantState {}
+
+class SearchLoadedState extends MerchantState {
+  const SearchLoadedState(this.search);
+  final List<FoodProductModel> search;
+
+  
+}
+
+class SearchErrorState extends MerchantState {
+  const SearchErrorState(this.message);
 
   final String message;
 }

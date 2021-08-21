@@ -12,9 +12,11 @@ import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/features/food/bloc/merchant_bloc/merchant_bloc.dart';
 
 class AuthenticateUserScreen extends StatelessWidget {
-  const AuthenticateUserScreen({Key? key}) : super(key: key);
+  const AuthenticateUserScreen(this.fee, {Key? key}) : super(key: key);
   static final TextEditingController textEditingController =
       TextEditingController(text: '');
+
+  final int fee;
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +102,7 @@ class AuthenticateUserScreen extends StatelessWidget {
                     final String password = textEditingController.text.trim();
                     if (password.isNotEmpty) {
                       BlocProvider.of<MerchantBloc>(context)
-                          .add(MakePaymentEvent(password));
+                          .add(MakePaymentEvent(password, fee));
                     } else {
                       CustomSnackBarService.showWarningSnackBar(
                         'Please Input Password',

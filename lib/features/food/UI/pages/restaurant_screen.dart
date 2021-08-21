@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -28,8 +30,8 @@ class RestaurantScreen extends StatelessWidget {
           horizontal: sizerSp(10),
           // vertical: sizerSp(10),
         ),
-        child: ListView(
-          shrinkWrap: true,
+        child: Column(
+          // shrinkWrap: true,
           children: <Widget>[
             SizedBox(height: sizerSp(10)),
             const HeaderWidget.appbar('Restaurants'),
@@ -60,10 +62,10 @@ class _MerchantListViewState extends State<MerchantListView> {
     debugPrint(_controller.position.atEdge.toString());
     debugPrint('dddd');
     if (_controller.position.pixels >= _controller.position.maxScrollExtent) {
-      // merchantBloc!.hasMoreMerchant == true &&
-      // merchantBloc!.merchantBusy == false
-      // print('got here');
-      // merchantBloc!.add(GetMerchantsEvents());
+      if (merchantBloc!.hasMoreMerchant == true &&
+          merchantBloc!.merchantBusy == false) {
+        merchantBloc!.add(GetMerchantsEvents());
+      }
     }
   }
 
@@ -79,50 +81,75 @@ class _MerchantListViewState extends State<MerchantListView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<MerchantBloc, MerchantState>(
-      listener: (BuildContext context, MerchantState state) {
-        if (state is GetMerchantLoadedState) {
-          merchants.addAll(state.merchants);
-        }
-      },
-      builder: (BuildContext context, MerchantState state) {
-        if (state is GetMerchantLoadingState) {
-          if (merchants.isEmpty) {
+    return Expanded(
+      child: BlocConsumer<MerchantBloc, MerchantState>(
+        listener: (BuildContext context, MerchantState state) {
+          if (state is GetMerchantLoadedState) {
+            merchants.addAll(state.merchants);
+            log(merchants.toString());
+          }
+        },
+        builder: (BuildContext context, MerchantState state) {
+          if (state is GetMerchantLoadingState && merchants.isEmpty) {
             return Column(
               children: const <Widget>[
                 SizedBox(height: 100),
                 Center(child: CustomLoadingIndicatorWidget()),
               ],
             );
-          } else {
-            return ListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: <Widget>[
-                MerchantList(
-                  controller: _controller,
-                  merchants: merchants,
-                ),
-                const SizedBox(height: 10.0),
-                const Center(child: CustomLoadingIndicatorWidget()),
-              ],
+          } else if (state is GetMerchantErrorState) {
+            return SizedBox(
+              height: 400,
+              child: CustomErrorWidget(
+                message: state.message,
+                callback: () => merchantBloc!.add(GetMerchantsEvents()),
+              ),
             );
           }
-        } else if (state is GetMerchantErrorState) {
-          return SizedBox(
-            height: 400,
-            child: CustomErrorWidget(
-              message: state.message,
-              callback: () => merchantBloc!.add(GetMerchantsEvents()),
-            ),
-          );
-        }
 
-        return MerchantList(
-          controller: _controller,
-          merchants: merchants,
-        );
-      },
+          return Stack(
+            children: <Widget>[
+              MerchantList(
+                controller: _controller,
+                merchants: merchants,
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: BlocConsumer<MerchantBloc, MerchantState>(
+                  listener: (BuildContext context, MerchantState state) {},
+                  builder: (BuildContext context, MerchantState state) {
+                    if (state is GetPopularFoodLoadingState) {
+                      return Container(
+                        padding: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(10),
+                        color: Colors.grey.shade600,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const <Widget>[
+                            SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CustomLoadingIndicatorWidget(),
+                            ),
+                            SizedBox(width: 20),
+                            CustomTextWidget(
+                              text: 'Loading More...',
+                              textColor: Colors.white,
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return Container();
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
@@ -145,7 +172,7 @@ class MerchantList extends StatelessWidget {
         childAspectRatio: 0.8,
       ),
       controller: controller,
-      physics: const NeverScrollableScrollPhysics(),
+      // physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: merchants.length,
       itemBuilder: (BuildContext context, int index) {

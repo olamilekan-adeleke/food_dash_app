@@ -65,10 +65,7 @@ class HeaderWidget extends StatelessWidget {
             child: SizedBox(
               height: sizerSp(15),
               width: sizerSp(15),
-              child: const CustomImageWidget(
-                imageUrl: Assets.person,
-                imageTypes: ImageTypes.asset,
-              ),
+              child: Icon(Icons.person, color: Colors.white, size: sizerSp(12)),
             ),
           )
         else

@@ -21,8 +21,6 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
   cached_network_image: ^3.0.0
   cloud_firestore: ^2.2.2
   cupertino_icons: ^1.0.2
@@ -31,6 +29,8 @@ dependencies:
   firebase_auth: ^1.4.1
   firebase_core: ^1.3.0
   firebase_messaging: ^10.0.2
+  flutter:
+    sdk: flutter
   flutter_bloc: ^7.0.1
   flutter_local_notifications: ^6.0.0
   flutter_paystack: ^1.0.5+1
@@ -41,6 +41,7 @@ dependencies:
   google_fonts: ^2.1.0
   paginate_firestore: ^1.0.2
   provider: ^5.0.0
+  dropdown_search: ^0.6.3
   shimmer: ^2.0.0
   sizer: ^2.0.13
   stacked_services: ^0.8.8
@@ -49,7 +50,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  lint: ^1.5.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
