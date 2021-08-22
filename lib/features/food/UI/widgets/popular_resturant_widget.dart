@@ -69,7 +69,7 @@ class _PopularRestaurantWidgetsState extends State<PopularRestaurantWidgets> {
                 return const Center(child: CustomLoadingIndicatorWidget());
               } else if (state is GetMerchantErrorState) {
                 return CustomErrorWidget(
-                  message: state.message,
+                  message: 'Opps, an error occurred!',
                   callback: () => BlocProvider.of<MerchantBloc>(context)
                       .add(GetMerchantsEvents()),
                 );

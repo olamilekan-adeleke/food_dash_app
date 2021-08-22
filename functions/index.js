@@ -63,10 +63,68 @@ exports.OnNewOrderCreated = functions.firestore
       await addDataToPopular(id, dataTo);
     });
 
-    return null;
+    return Promise.resolve();
   });
 
-  // exports.OnOrderSta
+exports.OnOrderStatusChange = functions.firestore
+  .document("orders/{ordersID}")
+  .onUpdate(async (snapshot, context) => {
+    console.log(context);
+    const data = snapshot.after.data();
+    const orderStatus = data.order_status;
+
+    const userId = data.user_details.uid;
+    const orderId = data.id;
+    const docId = uuidv4();
+    const items = data.items;
+
+    let body;
+
+    const sendToCustomer = {
+      data_to_send: "msg_from_the_cloud",
+      click_action: "FLUTTER_NOTIFICATION_CLICK",
+      order_id: `${orderId}`,
+    };
+
+    if (orderStatus === "accepted") {
+      body = "Your order has been accepted by a rider!";
+    } else if (orderStatus === "processing") {
+      body =
+        "Resturant's has received your order and have started working " +
+        " on it. \nRider is on his way to pick up your order!";
+    } else if (orderStatus === "enroute") {
+      body =
+        "Your order has been pickup by the rider. Rider has " +
+        "picked up your order and is now enroute to your location";
+    } else if (orderStatus === "completed") {
+      body = "Your order has been completed. Have a great meal!";
+    }
+
+    const dataToSave = {
+      body: body,
+      orderId: `${orderId}`,
+      timestamp: admin.firestore.Timestamp.now(),
+      userId: `${userId}`,
+      id: `${docId}`,
+      items: items,
+    };
+
+    // send out notifications
+    await sendNotificationToUser(userId, body, sendToCustomer);
+
+    // update user noticfication
+    await saveDataToUserNotification(userId, docId, dataToSave)
+      .then(() => {
+        console.info("succesfully: saved notification data");
+      })
+      .catch((error) => {
+        console.info("error in execution: notification not saved");
+        console.log(error);
+        return { msg: "error in execution: notification not saved" };
+      });
+
+    return Promise.resolve();
+  });
 
 /**
  * Add two numbers.

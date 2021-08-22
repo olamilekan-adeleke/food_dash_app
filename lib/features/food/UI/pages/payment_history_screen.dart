@@ -84,7 +84,8 @@ class PaymentHistoryScreen extends StatelessWidget {
               },
               query: MerchantRepo.userCollectionRef
                   .doc(authenticationRepo.getUserUid().toString())
-                  .collection('payment_history'),
+                  .collection('payment_history')
+                  .orderBy('dateTime', descending: true),
               itemBuilderType: PaginateBuilderType.listView,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),

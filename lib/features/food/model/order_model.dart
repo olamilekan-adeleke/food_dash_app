@@ -13,7 +13,6 @@ class OrderModel {
     required this.id,
     required this.itemsFee,
     required this.deliveryFee,
-
     this.orderStatus,
     this.restaurantsList,
     this.riderDetails,
@@ -48,8 +47,8 @@ class OrderModel {
             )
           : null,
       hasRated: map['has_rated'] as bool,
-      itemsFee: map['items_fee'] as int,
-      deliveryFee: map['delivery_fee'] as int,
+      itemsFee: (map['items_fee'] ?? 0) as int,
+      deliveryFee: (map['delivery_fee'] ?? 0) as int,
     );
   }
 

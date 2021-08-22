@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:food_dash_app/cores/components/custom_text_widget.dart';
 import 'package:food_dash_app/cores/components/error_widget.dart';
@@ -148,15 +149,19 @@ class FavouriteFoodItemWidget extends StatelessWidget {
       );
     }
 
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: sizerSp(260),
-        childAspectRatio: 0.68,
-      ),
+    return StaggeredGridView.countBuilder(
+      // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+      //   maxCrossAxisExtent: sizerSp(260),
+      //   childAspectRatio: 0.68,
+      // ),
       // controller: _controller,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
+      staggeredTileBuilder: (int index) {
+        return StaggeredTile.fit(2);
+      },
       itemCount: foodProducts.length,
+      crossAxisCount: 4,
       itemBuilder: (BuildContext context, int index) {
         final FoodProductModel foodProduct = foodProducts[index];
 
@@ -165,105 +170,109 @@ class FavouriteFoodItemWidget extends StatelessWidget {
             RouteName.selectedFoodPage,
             argument: foodProduct,
           ),
-          child: Stack(
-            children: <Widget>[
-              Card(
-                elevation: 5.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 150,
-                      width: double.infinity,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5.0),
-                        child: CustomImageWidget(
-                          imageUrl: foodProduct.image,
-                          imageTypes: ImageTypes.network,
+          child: SizedBox(
+            height: sizerSp(205),
+            child: Stack(
+              children: <Widget>[
+                Card(
+                  elevation: 5.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      SizedBox(
+                        height: sizerSp(100),
+                        width: double.infinity,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5.0),
+                          child: CustomImageWidget(
+                            imageUrl: foodProduct.image,
+                            imageTypes: ImageTypes.network,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: sizerSp(5)),
-                    CustomTextWidget(
-                      text: foodProduct.name,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    SizedBox(height: sizerSp(2)),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
-                      child: CustomTextWidget(
-                        text: foodProduct.description,
+                      SizedBox(height: sizerSp(5)),
+                      CustomTextWidget(
+                        text: foodProduct.name,
                         fontSize: 14,
-                        fontWeight: FontWeight.w300,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      SizedBox(height: sizerSp(2)),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
+                        child: CustomTextWidget(
+                          text: foodProduct.description,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w300,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      SizedBox(height: sizerSp(5)),
+                      CustomTextWidget(
+                        text: '\u20A6 ${currencyFormatter(foodProduct.price)}',
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        textColor: kcPrimaryColor,
                         maxLines: 2,
                         textAlign: TextAlign.center,
                       ),
-                    ),
-                    SizedBox(height: sizerSp(5)),
-                    CustomTextWidget(
-                      text: '\u20A6 ${currencyFormatter(foodProduct.price)}',
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      textColor: kcPrimaryColor,
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: sizerSp(12)),
-                  ],
-                ),
-              ),
-              Positioned(
-                bottom: sizerSp(2),
-                left: 0,
-                right: 0,
-                child: CircleAvatar(
-                  radius: 25,
-                  backgroundColor: kcPrimaryColor,
-                  child: BlocConsumer<MerchantBloc, MerchantState>(
-                    listener: (BuildContext context, MerchantState state) {
-                      if (state is AddFoodProductToCartLoadedState) {
-                        CustomSnackBarService.showSuccessSnackBar(
-                            'Added To Cart!');
-                      } else if (state is AddFoodProductToCartErrorState) {
-                        CustomSnackBarService.showErrorSnackBar(state.message);
-                      }
-                    },
-                    builder: (BuildContext context, MerchantState state) {
-                      if (state is AddFoodProductToCartLoadingState) {
-                        return const CustomLoadingIndicatorWidget();
-                      }
-
-                      return InkWell(
-                        onTap: () {
-                          final CartModel cart = CartModel(
-                            category: foodProduct.category,
-                            id: foodProduct.id,
-                            count: 1,
-                            description: foodProduct.description,
-                            image: foodProduct.image,
-                            name: foodProduct.name,
-                            price: foodProduct.price,
-                            fastFoodName: foodProduct.fastFoodname,
-                            fastFoodId: foodProduct.fastFoodId,
-                          );
-
-                          BlocProvider.of<MerchantBloc>(context)
-                              .add(AddFoodProductToCartEvents(cart));
-                        },
-                        child: const Icon(
-                          Icons.shopping_cart,
-                          color: Colors.white,
-                        ),
-                      );
-                    },
+                      SizedBox(height: sizerSp(12)),
+                    ],
                   ),
                 ),
-              ),
-            ],
+                Positioned(
+                  bottom: sizerSp(2),
+                  left: 0,
+                  right: 0,
+                  child: CircleAvatar(
+                    radius: 25,
+                    backgroundColor: kcPrimaryColor,
+                    child: BlocConsumer<MerchantBloc, MerchantState>(
+                      listener: (BuildContext context, MerchantState state) {
+                        if (state is AddFoodProductToCartLoadedState) {
+                          CustomSnackBarService.showSuccessSnackBar(
+                              'Added To Cart!');
+                        } else if (state is AddFoodProductToCartErrorState) {
+                          CustomSnackBarService.showErrorSnackBar(
+                              state.message);
+                        }
+                      },
+                      builder: (BuildContext context, MerchantState state) {
+                        if (state is AddFoodProductToCartLoadingState) {
+                          return const CustomLoadingIndicatorWidget();
+                        }
+
+                        return InkWell(
+                          onTap: () {
+                            final CartModel cart = CartModel(
+                              category: foodProduct.category,
+                              id: foodProduct.id,
+                              count: 1,
+                              description: foodProduct.description,
+                              image: foodProduct.image,
+                              name: foodProduct.name,
+                              price: foodProduct.price,
+                              fastFoodName: foodProduct.fastFoodname,
+                              fastFoodId: foodProduct.fastFoodId,
+                            );
+
+                            BlocProvider.of<MerchantBloc>(context)
+                                .add(AddFoodProductToCartEvents(cart));
+                          },
+                          child: const Icon(
+                            Icons.shopping_cart,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

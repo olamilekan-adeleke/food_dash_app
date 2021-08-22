@@ -182,6 +182,7 @@ class SelectedFoodPage extends StatelessWidget {
               ),
             ],
           ),
+          SizedBox(height: sizerSp(20.0)),
         ],
       ),
     );

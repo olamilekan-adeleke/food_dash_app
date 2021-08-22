@@ -19,17 +19,20 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
 
   MerchantModel? lastmerchant;
   FoodProductModel? lastFoodProduct;
+  FoodProductModel? lastMerchantFoodProduct;
   FoodProductModel? search;
   FoodProductModel? lastFavFoodProduct;
 
   bool merchantBusy = false;
   bool foodBusy = false;
+  bool merchantFoodBusy = false;
   bool foodFavBusy = false;
   bool searchBusy = false;
 
   bool hasMoreMerchant = true;
   bool hasMoreFavFood = true;
   bool hasMoreFoodProduct = true;
+  bool hasMoreMerchantFoodProduct = true;
   bool hasMoreSearch = true;
 
   @override
@@ -52,20 +55,22 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
       }
       merchantBusy = false;
     } else if (event is GetFoodProductsEvents) {
-      foodBusy = true;
+      merchantFoodBusy = true;
       try {
         yield GetFoodProductsLoadingState();
-        final List<FoodProductModel> foodProducts = await merchantRepo
-            .getFoodProduct(event.merchantId, lastFoodProduct: lastFoodProduct);
-        if (foodProducts.isNotEmpty) lastFoodProduct = foodProducts.last;
-        hasMoreFoodProduct = foodProducts.length == merchantRepo.limit;
+        final List<FoodProductModel> foodProducts =
+            await merchantRepo.getFoodProduct(event.merchantId,
+                lastFoodProduct: lastMerchantFoodProduct);
+        if (foodProducts.isNotEmpty)
+          lastMerchantFoodProduct = foodProducts.last;
+        hasMoreMerchantFoodProduct = foodProducts.length == merchantRepo.limit;
         yield GetFoodProductsLoadedState(foodProducts);
       } catch (e, s) {
         debugPrint(e.toString());
         debugPrint(s.toString());
         yield GetFoodProductsErrorState(e.toString());
       }
-      foodBusy = false;
+      merchantFoodBusy = false;
     } else if (event is GetPopularFoodEvents) {
       foodFavBusy = true;
       try {

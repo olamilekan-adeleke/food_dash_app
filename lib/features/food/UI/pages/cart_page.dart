@@ -195,6 +195,8 @@ class AddressWidget extends StatelessWidget {
                 text: userDetails!.address ?? 'No Address Was Found! ',
                 fontSize: sizerSp(12),
                 fontWeight: FontWeight.w300,
+                maxLines: 6,
+                overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: sizerSp(5)),
               InkWell(
