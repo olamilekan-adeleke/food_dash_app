@@ -16,6 +16,7 @@ import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/sizer_utils.dart';
 import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
+import 'package:food_dash_app/features/food/UI/widgets/favourite_button.dart';
 import 'package:food_dash_app/features/food/bloc/merchant_bloc/merchant_bloc.dart';
 import 'package:food_dash_app/features/food/model/cart_model.dart';
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
@@ -138,7 +139,13 @@ class _PopularFoodWidgetsState extends State<PopularFoodWidgets> {
       itemBuilder: (BuildContext context, int index) {
         final FoodProductModel foodProduct = foodList[index];
 
-        return ItemWidget(foodProduct: foodProduct);
+        return ItemWidget(
+          foodProduct: foodProduct,
+          callback: () => CustomNavigationService().navigateTo(
+            RouteName.selectedFoodPage,
+            argument: foodProduct,
+          ),
+        );
       },
     );
   }
@@ -148,119 +155,134 @@ class ItemWidget extends StatelessWidget {
   const ItemWidget({
     Key? key,
     required this.foodProduct,
+    required this.callback,
   }) : super(key: key);
 
   final FoodProductModel foodProduct;
+  final Function callback;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => CustomNavigationService().navigateTo(
-        RouteName.selectedFoodPage,
-        argument: foodProduct,
+    return Card(
+      elevation: 5.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
       ),
-      child: SizedBox(
-        height: sizerSp(203),
-        child: Stack(
-          children: <Widget>[
-            Card(
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  SizedBox(
-                    height: sizerSp(100),
-                    width: double.infinity,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5.0),
-                      child: CustomImageWidget(
-                        imageUrl: foodProduct.image,
-                        imageTypes: ImageTypes.network,
-                      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          InkWell(
+            onTap: () => callback(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(
+                  height: sizerSp(100),
+                  width: double.infinity,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5.0),
+                    child: CustomImageWidget(
+                      imageUrl: foodProduct.image,
+                      imageTypes: ImageTypes.network,
                     ),
                   ),
-                  SizedBox(height: sizerSp(5)),
-                  CustomTextWidget(
-                    text: foodProduct.name,
+                ),
+                SizedBox(height: sizerSp(5)),
+                CustomTextWidget(
+                  text: foodProduct.name,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+                SizedBox(height: sizerSp(2)),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
+                  child: CustomTextWidget(
+                    text: foodProduct.description,
                     fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  SizedBox(height: sizerSp(2)),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
-                    child: CustomTextWidget(
-                      text: foodProduct.description,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w300,
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  SizedBox(height: sizerSp(5)),
-                  CustomTextWidget(
-                    text: '\u20A6 ${currencyFormatter(foodProduct.price)}',
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    textColor: kcPrimaryColor,
+                    fontWeight: FontWeight.w300,
                     maxLines: 2,
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: sizerSp(12)),
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: sizerSp(2),
-              left: 0,
-              right: 0,
-              child: CircleAvatar(
-                radius: 25,
-                backgroundColor: kcPrimaryColor,
-                child: BlocConsumer<MerchantBloc, MerchantState>(
-                  listener: (BuildContext context, MerchantState state) {
-                    if (state is AddFoodProductToCartLoadedState) {
-                      CustomSnackBarService.showSuccessSnackBar(
-                          'Added To Cart!');
-                    } else if (state is AddFoodProductToCartErrorState) {
-                      CustomSnackBarService.showErrorSnackBar(state.message);
-                    }
-                  },
-                  builder: (BuildContext context, MerchantState state) {
-                    if (state is AddFoodProductToCartLoadingState) {
-                      return const CustomLoadingIndicatorWidget();
-                    }
-
-                    return InkWell(
-                      onTap: () {
-                        final CartModel cart = CartModel(
-                          category: foodProduct.category,
-                          id: foodProduct.id,
-                          count: 1,
-                          description: foodProduct.description,
-                          image: foodProduct.image,
-                          name: foodProduct.name,
-                          price: foodProduct.price,
-                          fastFoodName: foodProduct.fastFoodname,
-                          fastFoodId: foodProduct.fastFoodId,
-                        );
-
-                        BlocProvider.of<MerchantBloc>(context)
-                            .add(AddFoodProductToCartEvents(cart));
-                      },
-                      child: const Icon(
-                        Icons.shopping_cart,
-                        color: Colors.white,
-                      ),
-                    );
-                  },
                 ),
-              ),
+                SizedBox(height: sizerSp(5)),
+                CustomTextWidget(
+                  text: '\u20A6 ${currencyFormatter(foodProduct.price)}',
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  textColor: kcPrimaryColor,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+
+          ///
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: sizerSp(5.0)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                FavouriteButtonWidget(
+                  foodProduct,
+                  square: true,
+                  small: true,
+                  margin: EdgeInsets.symmetric(vertical: sizerSp(5.0)),
+                  padding: EdgeInsets.symmetric(vertical: sizerSp(5.0)),
+                ),
+                Container(
+                  height: sizerSp(23),
+                  width: sizerSp(50),
+                  margin: EdgeInsets.symmetric(vertical: sizerSp(5.0)),
+                  padding: EdgeInsets.symmetric(vertical: sizerSp(5.0)),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(sizerSp(5.0)),
+                    color: kcPrimaryColor,
+                  ),
+                  child: BlocConsumer<MerchantBloc, MerchantState>(
+                    listener: (BuildContext context, MerchantState state) {
+                      if (state is AddFoodProductToCartLoadedState) {
+                        CustomSnackBarService.showSuccessSnackBar(
+                            'Added To Cart!');
+                      } else if (state is AddFoodProductToCartErrorState) {
+                        CustomSnackBarService.showErrorSnackBar(state.message);
+                      }
+                    },
+                    builder: (BuildContext context, MerchantState state) {
+                      if (state is AddFoodProductToCartLoadingState) {
+                        return const CustomLoadingIndicatorWidget();
+                      }
+
+                      return InkWell(
+                        onTap: () {
+                          final CartModel cart = CartModel(
+                            category: foodProduct.category,
+                            id: foodProduct.id,
+                            count: 1,
+                            description: foodProduct.description,
+                            image: foodProduct.image,
+                            name: foodProduct.name,
+                            price: foodProduct.price,
+                            fastFoodName: foodProduct.fastFoodname,
+                            fastFoodId: foodProduct.fastFoodId,
+                          );
+
+                          BlocProvider.of<MerchantBloc>(context)
+                              .add(AddFoodProductToCartEvents(cart));
+                        },
+                        child: Icon(
+                          Icons.shopping_cart,
+                          color: Colors.white,
+                          size: sizerSp(12),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

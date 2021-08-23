@@ -405,7 +405,6 @@ class MerchantRepo {
   }
 
   Future<int> getDeliveryFee() async {
-    await Future.delayed(Duration(seconds: 2));
     final DocumentSnapshot<Map<String, dynamic>> data =
         await constantsCollectionRef.doc('delivery_fee').get();
 

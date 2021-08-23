@@ -100,6 +100,7 @@ class NotificationScreen extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemsPerPage: 10,
+              isLive: true,
             ),
           ],
         ),

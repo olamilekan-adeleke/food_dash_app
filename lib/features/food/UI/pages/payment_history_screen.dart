@@ -88,6 +88,7 @@ class PaymentHistoryScreen extends StatelessWidget {
                   .orderBy('dateTime', descending: true),
               itemBuilderType: PaginateBuilderType.listView,
               shrinkWrap: true,
+              isLive: true,
               physics: const NeverScrollableScrollPhysics(),
             ),
           ],

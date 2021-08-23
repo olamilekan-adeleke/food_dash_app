@@ -13,8 +13,8 @@ class FavouriteScreen extends StatelessWidget {
     return CustomScaffoldWidget(
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: sizerSp(10)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
+          // crossAxisAlignment: CrossAxisAlignment.start,
           // shrinkWrap: true,
           children: <Widget>[
             SizedBox(height: sizerSp(10)),
