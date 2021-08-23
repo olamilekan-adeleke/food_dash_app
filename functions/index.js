@@ -126,6 +126,32 @@ exports.OnOrderStatusChange = functions.firestore
     return Promise.resolve();
   });
 
+exports.sendOutNotificationToEveryOne = functions.https.onRequest(
+  (req, res) => {
+    const { heading, body } = req.body;
+
+    const payloadSetting = {
+      data_to_send: "msg_from_the_cloud",
+      click_action: "FLUTTER_NOTIFICATION_CLICK",
+    };
+
+    try {
+      await sendNotificationToAll(heading, body, payloadSetting);
+      res
+        .status(200)
+        .json({ status: "success", msg: "Notification Sent to all users" });
+    } catch (error) {
+      console.log(error);
+      res
+        .status(400)
+        .json({
+          status: "fail",
+          msg: " Error Occurred!, Notification  Not Sent to all users",
+        });
+    }
+  }
+);
+
 /**
  * Add two numbers.
  * @param {userId} userId id.
@@ -183,6 +209,43 @@ async function sendNotificationToUser(userId, body, data) {
     .sendToTopic(`${userId}`, payload, options)
     .then(() => {
       console.info("function executed succesfully: sent notification");
+      // return {msg: "function executed succesfully"};
+    })
+    .catch((error) => {
+      console.info("error in execution: notification not sent");
+      console.log(error);
+      return { msg: "error in execution: notification not sent" };
+    });
+}
+
+/**
+ * Add two numbers.
+ * @param {userId} userId id.
+ * @param {heading} heading heading.
+ * @param {data} data data.
+ * @return {any} any.
+ */
+async function sendNotificationToAll(heading, body, data) {
+  const payload = {
+    notification: {
+      title: heading,
+      body: `${body}`,
+    },
+    data: data,
+  };
+
+  const options = {
+    priority: "high",
+    timeToLive: 60 * 60 * 24,
+  };
+
+  return admin
+    .messaging()
+    .sendToTopic("users", payload, options)
+    .then(() => {
+      console.info(
+        "function executed succesfully: sent notification to all user"
+      );
       // return {msg: "function executed succesfully"};
     })
     .catch((error) => {

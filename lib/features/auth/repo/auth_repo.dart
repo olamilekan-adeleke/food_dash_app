@@ -7,6 +7,7 @@ import 'package:food_dash_app/cores/constants/error_text.dart';
 import 'package:food_dash_app/cores/utils/firebase_messaging_utils.dart';
 import 'package:food_dash_app/cores/utils/logger.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
+import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/features/auth/model/login_user_model.dart';
 import 'package:food_dash_app/features/auth/model/user_details_model.dart';
 import 'package:food_dash_app/features/food/repo/local_database_repo.dart';
@@ -53,6 +54,11 @@ class AuthenticationRepo {
         password: password,
       );
 
+      if (await userCredential.user!.emailVerified == false) {
+        throw 'Eamil not verified! \n'
+            'Chek your email account and verify your account.';
+      }
+
       final User? user = userCredential.user;
       infoLog('userCredential: ${user?.uid}', title: 'user log in');
 
@@ -60,6 +66,7 @@ class AuthenticationRepo {
       userData.remove('date_joined');
       await localdatabaseRepo.saveUserDataToLocalDB(userData);
       await NotificationMethods.subscribeToTopice(user!.uid);
+      await NotificationMethods.subscribeToTopice('users');
     } on SocketException {
       throw Exception(noInternetConnectionText);
     } catch (e, s) {
@@ -99,6 +106,8 @@ class AuthenticationRepo {
       final UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
 
+      await userCredential.user!.sendEmailVerification();
+
       final User? user = userCredential.user;
 
       // if for what ever reason the user object is null, then just return
@@ -121,17 +130,18 @@ class AuthenticationRepo {
 
       //subscribe user to notifications.
       await NotificationMethods.subscribeToTopice(user.uid);
+      await NotificationMethods.subscribeToTopice('users');
 
-      final UserDetailsModel userDetailsForLocalDb = UserDetailsModel(
-        uid: user.uid,
-        email: email,
-        fullName: fullName,
-        phoneNumber: number,
-        walletBalance: 0.0,
-      );
+      // final UserDetailsModel userDetailsForLocalDb = UserDetailsModel(
+      //   uid: user.uid,
+      //   email: email,
+      //   fullName: fullName,
+      //   phoneNumber: number,
+      //   walletBalance: 0.0,
+      // );
 
-      await localdatabaseRepo
-          .saveUserDataToLocalDB(userDetailsForLocalDb.toMap());
+      // await localdatabaseRepo
+      //     .saveUserDataToLocalDB(userDetailsForLocalDb.toMap());
     } catch (e, s) {
       errorLog(
         e.toString(),
@@ -160,6 +170,7 @@ class AuthenticationRepo {
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
+      localdatabaseRepo.deleteUserDataToLocalDB();
       CustomNavigationService().goBack();
       infoLog('user loging out', title: 'log out');
     } catch (e, s) {

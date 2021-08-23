@@ -118,7 +118,12 @@ class SignUpPage extends StatelessWidget {
                   listener: (BuildContext context, AuthState state) {
                     if (state is AuthSignUpLoadedState) {
                       CustomSnackBarService.showSuccessSnackBar(state.message);
+                      
+                      
                       CustomNavigationService().goBack();
+                      CustomSnackBarService.showSuccessSnackBar(
+                          'A verification link has been sent to your email, '
+                          'check your email to verify your account');
                     } else if (state is AuthSignUpErrorState) {
                       CustomSnackBarService.showErrorSnackBar(state.message);
                     }

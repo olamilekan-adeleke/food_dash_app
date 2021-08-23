@@ -20,6 +20,11 @@ class LocaldatabaseRepo {
     await box.write(userDataBoxName, data);
   }
 
+  Future<void> deleteUserDataToLocalDB() async {
+    await box.remove(userDataBoxName);
+    userDetail.value = null;
+  }
+
   Future<void> updateAddress(String address) async {
     UserDetailsModel? userDetails = await getUserDataFromLocalDB();
     userDetails = userDetails!.copyWith(address: address);
@@ -122,11 +127,15 @@ class LocaldatabaseRepo {
     userDetail.value = await getUserDataFromLocalDB();
 
     box.listenKey(userDataBoxName, (dynamic userdata) {
-      Map<String, dynamic> _userDataInMap = <String, dynamic>{};
+      Map<String, dynamic>? _userDataInMap;
 
-      _userDataInMap = userdata as Map<String, dynamic>;
+      if (userdata != null) {
+        _userDataInMap = userdata as Map<String, dynamic>?;
 
-      userDetail.value = UserDetailsModel.fromMap(_userDataInMap);
+        userDetail.value = _userDataInMap == null
+            ? null
+            : UserDetailsModel.fromMap(_userDataInMap);
+      }
     });
   }
 
