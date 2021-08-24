@@ -412,4 +412,10 @@ class MerchantRepo {
 
     return fee;
   }
+
+  Future<void> completeOrder(String id, bool status) async {
+    await orderCollectionRef
+        .doc(id)
+        .update(<String, dynamic>{'pay_status': status ? 'confrim' : 'cancel'});
+  }
 }

@@ -33,4 +33,6 @@ class CustomSnackBarService {
       duration: duration ?? const Duration(milliseconds: 2000),
     );
   }
+
+  
 }
