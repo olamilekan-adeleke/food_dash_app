@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/components/custom_button.dart';
@@ -42,17 +44,61 @@ class CartPage extends StatelessWidget {
           onPressed: () => CustomNavigationService().goBack(),
           color: Colors.black,
         ),
+        actions: <Widget>[
+          ValueListenableBuilder<bool>(
+            valueListenable: localdatabaseRepo.showFood,
+            builder: (_, bool value, __) {
+              return IconButton(
+                icon: Icon(
+                  value == false
+                      ? Icons.fastfood_outlined
+                      : Icons.shopping_bag_outlined,
+                ),
+                onPressed: () => localdatabaseRepo.showFood.value =
+                    !localdatabaseRepo.showFood.value,
+                color: Colors.black,
+              );
+            },
+          ),
+        ],
       ),
-      body: ValueListenableBuilder<List<CartModel>>(
-        valueListenable: LocaldatabaseRepo.cartList,
-        builder: (
-          BuildContext context,
-          List<CartModel> cartList,
-          Widget? child,
-        ) {
-          return CartList(cartList);
+      body: ValueListenableBuilder<bool>(
+        valueListenable: localdatabaseRepo.showFood,
+        builder: (_, bool value, __) {
+          log(value.toString());
+          if (value == true) {
+            return foodCartWidget();
+          } else {
+            return marketCartWidget();
+          }
         },
       ),
+    );
+  }
+
+  ValueListenableBuilder<List<CartModel>> foodCartWidget() {
+    return ValueListenableBuilder<List<CartModel>>(
+      valueListenable: LocaldatabaseRepo.cartList,
+      builder: (
+        BuildContext context,
+        List<CartModel> cartList,
+        Widget? child,
+      ) {
+        return CartList(cartList);
+      },
+    );
+  }
+
+  ValueListenableBuilder<List<CartModel>> marketCartWidget() {
+    return ValueListenableBuilder<List<CartModel>>(
+      valueListenable: LocaldatabaseRepo.marketCartList,
+      builder: (
+        BuildContext context,
+        List<CartModel> cartList,
+        Widget? child,
+      ) {
+        return CartList(cartList);
+      },
     );
   }
 }
@@ -273,159 +319,184 @@ class _CartItemPriceWidgetState extends State<CartItemPriceWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<List<CartModel>>(
-      valueListenable: LocaldatabaseRepo.cartList,
-      builder: (
-        BuildContext context,
-        List<CartModel> cartList,
-        Widget? child,
-      ) {
-        int allProductPrice = 0;
+    return ValueListenableBuilder<bool>(
+      valueListenable: CartItemPriceWidget.localdatabaseRepo.showFood,
+      builder: (_, bool value, __) {
+        ValueNotifier<List<CartModel>> valueNotifier =
+            LocaldatabaseRepo.cartList;
 
-        for (final CartModel cart in cartList) {
-          final int currentItemPrice = cart.price;
-          final int currentItemCount = cart.count;
-
-          allProductPrice =
-              allProductPrice + (currentItemPrice * currentItemCount);
+        if (value) {
+          valueNotifier = LocaldatabaseRepo.cartList;
+        } else {
+          valueNotifier = LocaldatabaseRepo.marketCartList;
         }
 
-        return Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              InkWell(
-                onTap: () => widget.callback(),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Icon(Icons.edit, size: sizerSp(15), color: kcPrimaryColor),
-                    SizedBox(width: sizerSp(5.0)),
-                    CustomTextWidget(
-                      text: 'Edit',
-                      fontSize: sizerSp(12),
-                      fontWeight: FontWeight.bold,
-                      textColor: kcPrimaryColor,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  const CustomTextWidget(
-                    text: 'SubTotal',
-                    fontSize: kfsLarge,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  CustomTextWidget(
-                    text: '\u20A6 $allProductPrice',
-                    fontWeight: FontWeight.w300,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  const CustomTextWidget(
-                    text: 'Delivery',
-                    fontSize: kfsLarge,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  BlocConsumer<GetdeliveryfeeBloc, GetdeliveryfeeState>(
-                    listener:
-                        (BuildContext context, GetdeliveryfeeState state) {
-                      if (state is GetdeliveryfeeError) {
-                        CustomSnackBarService.showErrorSnackBar(state.message);
-                      } else if (state is GetdeliveryfeeLoaded) {
-                        fee = state.fee;
-                        setState(() {});
-                      }
-                    },
-                    builder: (BuildContext context, GetdeliveryfeeState state) {
-                      if (state is GetdeliveryfeeError) {
-                        return InkWell(
-                          onTap: () =>
-                              BlocProvider.of<GetdeliveryfeeBloc>(context)
-                                  .add(GetFeeEvent()),
-                          child: CustomTextWidget(
-                            text: '\u20A6 Error! Click to Re-try.',
-                            fontWeight: FontWeight.w300,
-                            fontSize: sizerSp(12),
-                          ),
-                        );
-                      } else if (state is GetdeliveryfeeLoaded) {
-                        return CustomTextWidget(
-                          text: '\u20A6 ${state.fee}',
-                          fontWeight: FontWeight.w300,
-                          // fontSize: sizerSp(12),
-                        );
-                      }
+        return ValueListenableBuilder<List<CartModel>>(
+          valueListenable: valueNotifier,
+          builder: (
+            BuildContext context,
+            List<CartModel> cartList,
+            Widget? child,
+          ) {
+            int allProductPrice = 0;
 
-                      return CustomTextWidget(
-                        text: '\u20A6 Calculating...',
-                        fontWeight: FontWeight.w200,
-                        fontSize: sizerSp(12),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10.0),
-              const Divider(thickness: 0.5),
-              const SizedBox(height: 10.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            for (final CartModel cart in cartList) {
+              final int currentItemPrice = cart.price;
+              final int currentItemCount = cart.count;
+
+              allProductPrice =
+                  allProductPrice + (currentItemPrice * currentItemCount);
+            }
+
+            return Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  const CustomTextWidget(
-                    text: 'Total',
-                    fontSize: kfsSuperLarge,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  CustomTextWidget(
-                    text: '\u20A6 ${allProductPrice + (fee ?? 0)}',
-                    fontWeight: FontWeight.bold,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 15.0),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: CustomButton(
-                      text: 'Clear Cart',
-                      onTap: () =>
-                          CartItemPriceWidget.localdatabaseRepo.clearCartItem(),
-                      color: Colors.grey[300],
-                      textColor: kcTextColor,
+                  InkWell(
+                    onTap: () => widget.callback(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Icon(Icons.edit,
+                            size: sizerSp(15), color: kcPrimaryColor),
+                        SizedBox(width: sizerSp(5.0)),
+                        CustomTextWidget(
+                          text: 'Edit',
+                          fontSize: sizerSp(12),
+                          fontWeight: FontWeight.bold,
+                          textColor: kcPrimaryColor,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 10.0),
-                  Expanded(
-                    child: CustomButton(
-                      text: 'CHECKOUT',
-                      onTap: () {
-                        if (cartList.isNotEmpty) {
-                          if (fee == null) {
-                            CustomSnackBarService.showWarningSnackBar(
-                                'Still loading delivery fee');
-                            return;
+                  const SizedBox(height: 20.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      const CustomTextWidget(
+                        text: 'SubTotal',
+                        fontSize: kfsLarge,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      CustomTextWidget(
+                        text: '\u20A6 $allProductPrice',
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      const CustomTextWidget(
+                        text: 'Delivery',
+                        fontSize: kfsLarge,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      BlocConsumer<GetdeliveryfeeBloc, GetdeliveryfeeState>(
+                        listener:
+                            (BuildContext context, GetdeliveryfeeState state) {
+                          if (state is GetdeliveryfeeError) {
+                            CustomSnackBarService.showErrorSnackBar(
+                                state.message);
+                          } else if (state is GetdeliveryfeeLoaded) {
+                            fee = state.fee;
+                            setState(() {});
+                          }
+                        },
+                        builder:
+                            (BuildContext context, GetdeliveryfeeState state) {
+                          if (state is GetdeliveryfeeError) {
+                            return InkWell(
+                              onTap: () =>
+                                  BlocProvider.of<GetdeliveryfeeBloc>(context)
+                                      .add(GetFeeEvent()),
+                              child: CustomTextWidget(
+                                text: '\u20A6 Error! Click to Re-try.',
+                                fontWeight: FontWeight.w300,
+                                fontSize: sizerSp(12),
+                              ),
+                            );
+                          } else if (state is GetdeliveryfeeLoaded) {
+                            return CustomTextWidget(
+                              text: '\u20A6 ${state.fee}',
+                              fontWeight: FontWeight.w300,
+                              // fontSize: sizerSp(12),
+                            );
                           }
 
-                          CustomButtomModalService.showModal(
-                              AuthenticateUserScreen(fee!));
-                        }
-                      },
-                    ),
+                          return CustomTextWidget(
+                            text: '\u20A6 Calculating...',
+                            fontWeight: FontWeight.w200,
+                            fontSize: sizerSp(12),
+                          );
+                        },
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 10.0),
+                  const Divider(thickness: 0.5),
+                  const SizedBox(height: 10.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      const CustomTextWidget(
+                        text: 'Total',
+                        fontSize: kfsSuperLarge,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      CustomTextWidget(
+                        text: '\u20A6 ${allProductPrice + (fee ?? 0)}',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15.0),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: CustomButton(
+                          text: 'Clear Cart',
+                          onTap: () {
+                            if (CartItemPriceWidget
+                                .localdatabaseRepo.showFood.value) {
+                              CartItemPriceWidget.localdatabaseRepo
+                                  .clearCartItem();
+                            } else {
+                              CartItemPriceWidget.localdatabaseRepo
+                                  .clearMarketCartItem();
+                            }
+                          },
+                          color: Colors.grey[300],
+                          textColor: kcTextColor,
+                        ),
+                      ),
+                      const SizedBox(width: 10.0),
+                      Expanded(
+                        child: CustomButton(
+                          text: 'CHECKOUT',
+                          onTap: () {
+                            if (cartList.isNotEmpty) {
+                              if (fee == null) {
+                                CustomSnackBarService.showWarningSnackBar(
+                                    'Still loading delivery fee');
+                                return;
+                              }
+
+                              CustomButtomModalService.showModal(
+                                  AuthenticateUserScreen(fee!));
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20.0),
                 ],
               ),
-              const SizedBox(height: 20.0),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -443,6 +514,8 @@ class CartItemWidget extends StatelessWidget {
   final CartModel cartItem;
   final int index;
   final MerchantRepo merchantRepo;
+  static final LocaldatabaseRepo localdatabaseRepo =
+      GetIt.instance<LocaldatabaseRepo>();
 
   @override
   Widget build(BuildContext context) {
@@ -516,10 +589,12 @@ class CartItemWidget extends StatelessWidget {
                           count: cartItem.count + 1,
                         );
 
-                        merchantRepo.updateCartItem(
-                          updatedCartItem,
-                          index,
-                        );
+                        if (localdatabaseRepo.showFood.value == true) {
+                          merchantRepo.updateCartItem(updatedCartItem, index);
+                        } else {
+                          merchantRepo.updateMarketCartItem(
+                              updatedCartItem, index);
+                        }
                       },
                     ),
                     const SizedBox(width: 10.0),
@@ -538,10 +613,12 @@ class CartItemWidget extends StatelessWidget {
                           count: cartItem.count - 1,
                         );
 
-                        merchantRepo.updateCartItem(
-                          updatedCartItem,
-                          index,
-                        );
+                        if (localdatabaseRepo.showFood.value) {
+                          merchantRepo.updateCartItem(updatedCartItem, index);
+                        } else {
+                          merchantRepo.updateMarketCartItem(
+                              updatedCartItem, index);
+                        }
                       },
                     ),
                   ],

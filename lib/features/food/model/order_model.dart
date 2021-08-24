@@ -11,6 +11,7 @@ class OrderModel {
     this.timestamp,
     required this.userDetails,
     required this.id,
+    required this.type,
     required this.itemsFee,
     required this.deliveryFee,
     this.orderStatus,
@@ -35,6 +36,7 @@ class OrderModel {
       timestamp: map['timestamp'] as Timestamp,
       userDetails: userDetails,
       id: map['id'] as String,
+      type: map['type'] as String,
       restaurantsList: List<String>.from(
         map['restaurants_list'] as List<dynamic>,
       ),
@@ -56,6 +58,7 @@ class OrderModel {
   final Timestamp? timestamp;
   final UserDetailsModel userDetails;
   final String id;
+  final String type;
   final String? userId;
   final List<String>? restaurantsList;
   final OrderStatusEunm? orderStatus;
@@ -77,6 +80,7 @@ class OrderModel {
       'user_details': userDetails.toMap(),
       'user_id': userDetails.uid,
       'id': id,
+      'type': type,
       'restaurants_list': _restaurantsList.toList(),
       'order_status': OrderStatusExtension.eumnToString(
         orderStatus ?? OrderStatusEunm.pending,

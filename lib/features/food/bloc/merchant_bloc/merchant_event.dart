@@ -27,6 +27,14 @@ class AddFoodProductToFavouriteEvents extends MerchantEvent {
   final FoodProductModel foodProduct;
 }
 
+
+// /// add market item to favourite
+// class AddFoodProductToFavouriteEvents extends MerchantEvent {
+//   const AddFoodProductToFavouriteEvents(this.foodProduct);
+
+//   final FoodProductModel foodProduct;
+// }
+
 /// remove food item to favourite
 class RemoveFoodProductToFavouriteEvents extends MerchantEvent {
   const RemoveFoodProductToFavouriteEvents(this.foodProductId);
@@ -40,6 +48,14 @@ class AddFoodProductToCartEvents extends MerchantEvent {
 
   final CartModel foodProduct;
 }
+
+/// add food item to cart
+class AddMarketItemProductToCartEvents extends MerchantEvent {
+  const AddMarketItemProductToCartEvents(this.marketItem);
+
+  final CartModel marketItem;
+}
+
 
 /// remove food item to cart
 class RemoveFoodProductToCartEvents extends MerchantEvent {
@@ -76,3 +92,6 @@ class SearchEvent extends MerchantEvent {
   const SearchEvent(this.query);
   final String query;
 }
+
+
+class GetMarketItemsEvent extends MerchantEvent{}

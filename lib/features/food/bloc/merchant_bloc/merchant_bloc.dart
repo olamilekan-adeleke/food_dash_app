@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
+import 'package:food_dash_app/features/food/UI/widgets/market_items_widget.dart';
 import 'package:food_dash_app/features/food/model/cart_model.dart';
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
+import 'package:food_dash_app/features/food/model/market_item_model.dart';
 import 'package:food_dash_app/features/food/model/merchant_model.dart';
 import 'package:food_dash_app/features/food/repo/food_repo.dart';
 import 'package:get_it/get_it.dart';
@@ -22,18 +24,21 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
   FoodProductModel? lastMerchantFoodProduct;
   FoodProductModel? search;
   FoodProductModel? lastFavFoodProduct;
+  MarketItemModel? lastMarketItem;
 
   bool merchantBusy = false;
   bool foodBusy = false;
   bool merchantFoodBusy = false;
   bool foodFavBusy = false;
   bool searchBusy = false;
+  bool marketBusy = false;
 
   bool hasMoreMerchant = true;
   bool hasMoreFavFood = true;
   bool hasMoreFoodProduct = true;
   bool hasMoreMerchantFoodProduct = true;
   bool hasMoreSearch = true;
+  bool hasMoreMarket = true;
 
   @override
   Stream<MerchantState> mapEventToState(
@@ -71,6 +76,21 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         yield GetFoodProductsErrorState(e.toString());
       }
       merchantFoodBusy = false;
+    } else if (event is GetMarketItemsEvent) {
+      marketBusy = true;
+      try {
+        yield GetMarketItemLoadingState();
+        final List<MarketItemModel> marketItems =
+            await merchantRepo.getMarketItem(lastMarketItem);
+        if (marketItems.isNotEmpty) lastMarketItem = marketItems.last;
+        hasMoreMerchantFoodProduct = marketItems.length == merchantRepo.limit;
+        yield GetMarketItemLoadedState(marketItems);
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield GetMarketItemErrorState(e.toString());
+      }
+      marketBusy = false;
     } else if (event is GetPopularFoodEvents) {
       foodFavBusy = true;
       try {
@@ -130,6 +150,17 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         debugPrint(e.toString());
         debugPrint(s.toString());
         yield AddFoodProductToCartErrorState(e.toString());
+      }
+    }
+    else if (event is AddMarketItemProductToCartEvents) {
+      try {
+        yield AddMarketItemToCartLoadingState(event.marketItem.id);
+        await merchantRepo.addToCartMarket(event.marketItem);
+        yield AddMarketItemToCartLoadedState();
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield AddMarketItemToCartErrorState(e.toString());
       }
     } else if (event is RemoveFoodProductToCartEvents) {
       try {

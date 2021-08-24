@@ -52,6 +52,7 @@ class Config {
     ///
     await storage.GetStorage.init('box');
     await _localdatabaseRepo.setListener();
+    await _localdatabaseRepo.setListenerMarket();
     await _localdatabaseRepo.setListenerForUserData();
     await NotificationMethods.initNotification();
     await paystackPlugin.initialize(publicKey: publicKey);

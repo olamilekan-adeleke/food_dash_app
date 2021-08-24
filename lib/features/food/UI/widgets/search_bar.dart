@@ -6,7 +6,9 @@ import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/sizer_utils.dart';
 
 class SearchBarWidget extends StatelessWidget {
-  const SearchBarWidget({Key? key}) : super(key: key);
+  const SearchBarWidget({this.extra = '', Key? key}) : super(key: key);
+
+  final String extra;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,7 @@ class SearchBarWidget extends StatelessWidget {
             ),
             SizedBox(width: sizerSp(10)),
             CustomTextWidget(
-              text: 'Search',
+              text: 'Search $extra',
               fontSize: sizerSp(13.64),
               textColor: kcTextColor.withOpacity(0.5),
             ),

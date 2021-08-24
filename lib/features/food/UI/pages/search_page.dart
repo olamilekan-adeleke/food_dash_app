@@ -6,28 +6,23 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:food_dash_app/cores/components/custom_text_widget.dart';
 import 'package:food_dash_app/cores/components/custom_textfiled.dart';
 import 'package:food_dash_app/cores/components/error_widget.dart';
-import 'package:food_dash_app/cores/components/image_widget.dart';
 import 'package:food_dash_app/cores/components/loading_indicator.dart';
-import 'package:food_dash_app/cores/constants/color.dart';
-import 'package:food_dash_app/cores/utils/currency_formater.dart';
-import 'package:food_dash_app/cores/utils/emums.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/sizer_utils.dart';
 import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/features/food/UI/widgets/popular_food_widget.dart';
 import 'package:food_dash_app/features/food/bloc/merchant_bloc/merchant_bloc.dart';
-import 'package:food_dash_app/features/food/model/cart_model.dart';
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen();
+class FoodSearchScreen extends StatefulWidget {
+  const FoodSearchScreen();
 
   @override
-  _SearchScreenState createState() => _SearchScreenState();
+  _FoodSearchScreenState createState() => _FoodSearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _FoodSearchScreenState extends State<FoodSearchScreen> {
   static final TextEditingController controller = TextEditingController();
   MerchantBloc? merchantBloc;
   final List<FoodProductModel> foodProducts = <FoodProductModel>[];

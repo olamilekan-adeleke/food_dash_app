@@ -4,8 +4,8 @@ import 'package:food_dash_app/cores/constants/color.dart';
 import 'package:food_dash_app/features/food/UI/pages/cart_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/favourite_screen.dart';
 import 'package:food_dash_app/features/food/UI/pages/home_page.dart';
-import 'package:food_dash_app/features/food/UI/pages/notification_screen.dart';
 import 'package:food_dash_app/features/food/UI/pages/wallet_page.dart';
+import 'package:food_dash_app/features/market/view/screens/market_hoem_screen.dart';
 
 class HomeTabScreen extends StatelessWidget {
   const HomeTabScreen({Key? key}) : super(key: key);
@@ -14,7 +14,7 @@ class HomeTabScreen extends StatelessWidget {
     WalletScreen(),
     FavouriteScreen(),
     HomePage(),
-    NotificationScreen(),
+    MarketHomeScreen(),
     CartPage(),
   ];
 
@@ -39,8 +39,8 @@ class HomeTabScreen extends StatelessWidget {
           Icon(Icons.account_balance_wallet_rounded,
               size: 25, color: Colors.grey[600]),
           Icon(Icons.favorite_outlined, size: 25, color: Colors.grey[600]),
-          Icon(Icons.home_filled, size: 25, color: Colors.grey[600]),
-          Icon(Icons.notifications, size: 25, color: Colors.grey[600]),
+          Icon(Icons.fastfood_outlined, size: 25, color: Colors.grey[600]),
+          Icon(Icons.shopping_bag_outlined, size: 25, color: Colors.grey[600]),
           Icon(Icons.shopping_cart, size: 25, color: Colors.grey[600]),
         ],
         onTap: (int index) => _pageIndex.value = index,

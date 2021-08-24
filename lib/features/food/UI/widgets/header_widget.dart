@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:food_dash_app/cores/components/custom_text_widget.dart';
-import 'package:food_dash_app/cores/components/image_widget.dart';
-import 'package:food_dash_app/cores/constants/asset.dart';
 import 'package:food_dash_app/cores/constants/color.dart';
-import 'package:food_dash_app/cores/utils/emums.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/sizer_utils.dart';
-import 'package:food_dash_app/features/auth/repo/auth_repo.dart';
 
 class HeaderWidget extends StatelessWidget {
   const HeaderWidget({
@@ -59,13 +55,21 @@ class HeaderWidget extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
         if (iconData != null)
-          CircleAvatar(
-            radius: sizerSp(15),
-            backgroundColor: kcPrimaryColor,
-            child: SizedBox(
-              height: sizerSp(15),
-              width: sizerSp(15),
-              child: Icon(Icons.person, color: Colors.white, size: sizerSp(12)),
+          InkWell(
+            onTap: () => CustomNavigationService()
+                .navigateTo(RouteName.notificationPage),
+            child: CircleAvatar(
+              radius: sizerSp(12),
+              backgroundColor: kcPrimaryColor,
+              child: SizedBox(
+                height: sizerSp(15),
+                width: sizerSp(15),
+                child: Icon(
+                  Icons.notifications_none_outlined,
+                  color: Colors.white,
+                  size: sizerSp(12),
+                ),
+              ),
             ),
           )
         else

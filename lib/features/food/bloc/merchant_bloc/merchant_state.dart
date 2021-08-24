@@ -113,6 +113,22 @@ class AddFoodProductToCartErrorState extends MerchantState {
   final String message;
 }
 
+/// add food product to cart state
+class AddMarketItemToCartInitialState extends MerchantState {}
+
+class AddMarketItemToCartLoadingState extends MerchantState {
+  const AddMarketItemToCartLoadingState(this.id);
+  final String id;
+}
+
+class AddMarketItemToCartLoadedState extends MerchantState {}
+
+class AddMarketItemToCartErrorState extends MerchantState {
+  const AddMarketItemToCartErrorState(this.message);
+
+  final String message;
+}
+
 /// remove food product to cart state
 class RemoveFoodProductToCartInitialState extends MerchantState {}
 
@@ -195,7 +211,7 @@ class RateRiderErrorState extends MerchantState {
   final String message;
 }
 
-/// rate rider
+/// search
 class SearchInitialState extends MerchantState {}
 
 class SearchLoadingState extends MerchantState {}
@@ -203,12 +219,26 @@ class SearchLoadingState extends MerchantState {}
 class SearchLoadedState extends MerchantState {
   const SearchLoadedState(this.search);
   final List<FoodProductModel> search;
-
-  
 }
 
 class SearchErrorState extends MerchantState {
   const SearchErrorState(this.message);
+
+  final String message;
+}
+
+/// search
+class GetMarketItemInitialState extends MerchantState {}
+
+class GetMarketItemLoadingState extends MerchantState {}
+
+class GetMarketItemLoadedState extends MerchantState {
+  const GetMarketItemLoadedState(this.items);
+  final List<MarketItemModel> items;
+}
+
+class GetMarketItemErrorState extends MerchantState {
+  const GetMarketItemErrorState(this.message);
 
   final String message;
 }

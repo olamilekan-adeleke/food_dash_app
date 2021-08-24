@@ -7,9 +7,11 @@ class RouteName {
   static const String forgotPassword = 'forgot-password';
   static const String selectedMerchantPage = 'selected-merchant-page';
   static const String selectedFoodPage = 'selected-Food-page';
+  static const String selectedMarketItemPage = 'selected-market-item';
   static const String cartPage = 'cart';
   static const String restaurantPage = 'restaurant-page';
   static const String favouritePage = 'favourite';
+  static const String notificationPage = 'notification';
   static const String paymentPage = 'payment';
   static const String editAddress = 'edit-address';
   static const String orderStatus = 'order-status';

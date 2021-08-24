@@ -12,6 +12,7 @@ import 'package:food_dash_app/features/food/UI/pages/edit_address_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/edit_profile_screen.dart';
 import 'package:food_dash_app/features/food/UI/pages/home_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/home_tab_pages.dart';
+import 'package:food_dash_app/features/food/UI/pages/notification_screen.dart';
 import 'package:food_dash_app/features/food/UI/pages/order_history_screen.dart';
 import 'package:food_dash_app/features/food/UI/pages/order_status_screen.dart';
 import 'package:food_dash_app/features/food/UI/pages/payment_history_screen.dart';
@@ -19,6 +20,8 @@ import 'package:food_dash_app/features/food/UI/pages/profile_screen.dart';
 import 'package:food_dash_app/features/food/UI/pages/restaurant_screen.dart';
 import 'package:food_dash_app/features/food/UI/pages/reveiw_screem.dart';
 import 'package:food_dash_app/features/food/UI/pages/search_page.dart';
+import 'package:food_dash_app/features/food/UI/pages/selected_market_item_page.dart';
+import 'package:food_dash_app/features/food/model/market_item_model.dart';
 import 'package:food_dash_app/features/payment/Ui/pages/payment_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/selected_food_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/selected_merchant_page.dart';
@@ -76,9 +79,24 @@ Route<dynamic>? generateRoute(RouteSettings settings) {
       }
       break;
 
+      case RouteName.selectedMarketItemPage:
+      if (settings.arguments is MarketItemModel) {
+        final MarketItemModel? marketItem =
+            settings.arguments as MarketItemModel?;
+
+        return MaterialPageRoute<Widget>(
+            builder: (BuildContext context) =>
+                SelectedMarketItmePage(marketItem: marketItem!));
+      }
+      break;
+
     case RouteName.cartPage:
       return MaterialPageRoute<Widget>(
           builder: (BuildContext context) => const CartPage());
+
+          case RouteName.notificationPage:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const NotificationScreen());
 
     case RouteName.paymentPage:
       return MaterialPageRoute<Widget>(
@@ -106,7 +124,7 @@ Route<dynamic>? generateRoute(RouteSettings settings) {
 
     case RouteName.searchScreen:
       return MaterialPageRoute<Widget>(
-          builder: (BuildContext context) => const SearchScreen());
+          builder: (BuildContext context) => const FoodSearchScreen());
 
     case RouteName.paymentHistoryScreen:
       return MaterialPageRoute<Widget>(

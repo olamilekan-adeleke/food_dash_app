@@ -8,6 +8,7 @@ import 'package:food_dash_app/features/auth/model/user_details_model.dart';
 import 'package:food_dash_app/features/auth/repo/auth_repo.dart';
 import 'package:food_dash_app/features/food/model/cart_model.dart';
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
+import 'package:food_dash_app/features/food/model/market_item_model.dart';
 import 'package:food_dash_app/features/food/model/merchant_model.dart';
 import 'package:food_dash_app/features/food/model/order_model.dart';
 import 'package:food_dash_app/features/food/model/paymaent_history.dart';
@@ -35,6 +36,9 @@ class MerchantRepo {
   static final CollectionReference<Map<String, dynamic>>
       constantsCollectionRef =
       FirebaseFirestore.instance.collection('constants');
+
+  static final CollectionReference<Map<String, dynamic>> marketRef =
+      FirebaseFirestore.instance.collection('market');
 
   final int limit = 7;
 
@@ -96,6 +100,33 @@ class MerchantRepo {
     return merchants;
   }
 
+  Future<List<MarketItemModel>> getMarketItem(
+      MarketItemModel? lastMarketItme) async {
+    final List<MarketItemModel> marketItems = <MarketItemModel>[];
+
+    Query<Map<String, dynamic>> query = marketRef.orderBy('id').limit(limit);
+
+    if (lastMarketItme != null) {
+      query = query.startAfter(
+        <String>[lastMarketItme.id],
+      );
+    }
+
+    final QuerySnapshot<Map<String, dynamic>> querySnapshot = await query.get(
+      const GetOptions(source: Source.server),
+    );
+
+    marketItems.addAll(
+      querySnapshot.docs.map(
+        (QueryDocumentSnapshot<Map<String, dynamic>> data) {
+          return MarketItemModel.fromMap(data.data());
+        },
+      ),
+    );
+
+    return marketItems;
+  }
+
   Future<List<FoodProductModel>> getTopFoodProduct({
     FoodProductModel? lastFoodProduct,
   }) async {
@@ -154,9 +185,28 @@ class MerchantRepo {
     }
   }
 
+  Future<void> addToCartMarket(CartModel foodProductModel) async {
+    try {
+      await localdatabaseRepo.saveMarketItemToCart(foodProductModel);
+    } catch (e, s) {
+      debugPrint(s.toString());
+      throw Exception(e.toString());
+    }
+  }
+
   Future<void> updateCartItem(CartModel foodProductModel, int index) async {
     try {
       await localdatabaseRepo.updateCartItem(foodProductModel);
+    } catch (e, s) {
+      debugPrint(s.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> updateMarketCartItem(
+      CartModel foodProductModel, int index) async {
+    try {
+      await localdatabaseRepo.updateMarketCartItem(foodProductModel);
     } catch (e, s) {
       debugPrint(s.toString());
       throw Exception(e.toString());
@@ -172,11 +222,33 @@ class MerchantRepo {
     }
   }
 
+  Future<void> removeMarketFromCart(int index) async {
+    try {
+      await localdatabaseRepo.deleteMarketCartItem(index);
+    } catch (e, s) {
+      debugPrint(s.toString());
+      throw Exception(e.toString());
+    }
+  }
+
   Future<List<CartModel>> getCart() async {
     final List<CartModel> cartList = <CartModel>[];
 
     try {
       await localdatabaseRepo.getAllItemInCart();
+    } catch (e, s) {
+      debugPrint(s.toString());
+      throw Exception(e.toString());
+    }
+
+    return cartList;
+  }
+
+  Future<List<CartModel>> getMarketCart() async {
+    final List<CartModel> cartList = <CartModel>[];
+
+    try {
+      await localdatabaseRepo.getAllMarketItemInCart();
     } catch (e, s) {
       debugPrint(s.toString());
       throw Exception(e.toString());
@@ -214,10 +286,22 @@ class MerchantRepo {
 
   Future<String> sendOrder(int deliveryFee) async {
     final String id = const Uuid().v1();
+    int totalPrice = 0;
+    List<CartModel> items = <CartModel>[];
+    String type = 'food';
+
     final UserDetailsModel? userDetails =
         await localdatabaseRepo.getUserDataFromLocalDB();
-    final List<CartModel> items = await localdatabaseRepo.getAllItemInCart();
-    final int totalPrice = await localdatabaseRepo.getTotalCartItemPrice();
+
+    if (localdatabaseRepo.showFood.value) {
+      totalPrice = await localdatabaseRepo.getTotalCartItemPrice();
+      items = await localdatabaseRepo.getAllItemInCart();
+      type = 'food';
+    } else {
+      totalPrice = await localdatabaseRepo.getTotalMarketCartItemPrice();
+      items = await localdatabaseRepo.getAllMarketItemInCart();
+      type = 'market';
+    }
 
     final OrderModel order = OrderModel(
       id: id,
@@ -225,6 +309,7 @@ class MerchantRepo {
       userDetails: userDetails!,
       timestamp: Timestamp.now(),
       deliveryFee: deliveryFee,
+      type: type,
       itemsFee: totalPrice,
     );
 
@@ -244,7 +329,14 @@ class MerchantRepo {
 
   Future<void> checkUserWalletBalance() async {
     final String? userUid = authenticationRepo.getUserUid();
-    final int totalPrice = await localdatabaseRepo.getTotalCartItemPrice();
+    int totalPrice = 0;
+
+    if (localdatabaseRepo.showFood.value) {
+      totalPrice = await localdatabaseRepo.getTotalCartItemPrice();
+    } else {
+      totalPrice = await localdatabaseRepo.getTotalMarketCartItemPrice();
+    }
+
     final PaymentModel paymentModel = PaymentModel(
       id: const Uuid().v1(),
       amount: totalPrice,
@@ -281,8 +373,15 @@ class MerchantRepo {
 
       if (isAuthenticated) {
         await checkUserWalletBalance();
+
         id = await sendOrder(deliveryFee);
-        await localdatabaseRepo.clearCartItem();
+
+        if (localdatabaseRepo.showFood.value) {
+          await localdatabaseRepo.clearCartItem();
+        } else {
+          await localdatabaseRepo.clearMarketCartItem();
+        }
+
         CustomSnackBarService.showSuccessSnackBar(
             'Paymennt Successful, Order has been placed!');
       } else {

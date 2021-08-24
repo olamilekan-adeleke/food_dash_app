@@ -13,5 +13,6 @@ Future<void> main() async {
   await Firebase.initializeApp();
   await Config.setUpHiveLocalDB();
   RequestCompletionListener();
+  // FakeMarketPlace().init();
   runApp(MyApp());
 }
