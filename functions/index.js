@@ -98,6 +98,25 @@ exports.OnOrderStatusChange = functions.firestore
         "picked up your order and is now enroute to your location";
     } else if (orderStatus === "completed") {
       body = "Your order has been completed. Have a great meal!";
+    } else if (data.pay_status === "confrim") {
+      // send notification to user
+      // save notification to user
+      // send notification to rider
+      // save notification to rider
+      // update rider wallet
+      // end
+    } else if (data.pay_status === "cancel") {
+      // send notification to user
+      // save notification to user
+      // send notification to rider
+      // save notification to rider
+      // end
+    } else if (data.pay_status === "pending") {
+      // send notification to user
+      // save notification to user
+      // end
+    } else {
+      return Promise.resolve();
     }
 
     const dataToSave = {

@@ -12,6 +12,7 @@ import 'package:food_dash_app/features/food/UI/pages/edit_address_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/edit_profile_screen.dart';
 import 'package:food_dash_app/features/food/UI/pages/home_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/home_tab_pages.dart';
+import 'package:food_dash_app/features/food/UI/pages/market_serach_page.dart';
 import 'package:food_dash_app/features/food/UI/pages/notification_screen.dart';
 import 'package:food_dash_app/features/food/UI/pages/order_history_screen.dart';
 import 'package:food_dash_app/features/food/UI/pages/order_status_screen.dart';
@@ -122,9 +123,14 @@ Route<dynamic>? generateRoute(RouteSettings settings) {
       return MaterialPageRoute<Widget>(
           builder: (BuildContext context) => const ChangePasswordScreen());
 
-    case RouteName.searchScreen:
+    case RouteName.foodSearchScreen:
       return MaterialPageRoute<Widget>(
           builder: (BuildContext context) => const FoodSearchScreen());
+
+          case RouteName.marketSearchScreen:
+      return MaterialPageRoute<Widget>(
+          builder: (BuildContext context) => const MarketSearchScreen());
+
 
     case RouteName.paymentHistoryScreen:
       return MaterialPageRoute<Widget>(

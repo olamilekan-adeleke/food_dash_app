@@ -6,14 +6,17 @@ import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/sizer_utils.dart';
 
 class SearchBarWidget extends StatelessWidget {
-  const SearchBarWidget({this.extra = '', Key? key}) : super(key: key);
+  const SearchBarWidget({this.extra = '', this.food = true, Key? key})
+      : super(key: key);
 
   final String extra;
+  final bool food;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => CustomNavigationService().navigateTo(RouteName.searchScreen),
+      onTap: () => CustomNavigationService().navigateTo(
+          food ? RouteName.foodSearchScreen : RouteName.marketSearchScreen),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: sizerSp(10)),
         height: 40,

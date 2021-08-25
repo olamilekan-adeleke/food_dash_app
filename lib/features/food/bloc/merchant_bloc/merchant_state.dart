@@ -227,7 +227,24 @@ class SearchErrorState extends MerchantState {
   final String message;
 }
 
-/// search
+
+/// search market
+class SearchMarketInitialState extends MerchantState {}
+
+class SearchMarketLoadingState extends MerchantState {}
+
+class SearchMarketLoadedState extends MerchantState {
+  const SearchMarketLoadedState(this.search);
+  final List<MarketItemModel> search;
+}
+
+class SearchMarketErrorState extends MerchantState {
+  const SearchMarketErrorState(this.message);
+
+  final String message;
+}
+
+/// get market item
 class GetMarketItemInitialState extends MerchantState {}
 
 class GetMarketItemLoadingState extends MerchantState {}

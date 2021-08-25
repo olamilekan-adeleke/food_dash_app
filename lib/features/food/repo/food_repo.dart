@@ -503,6 +503,36 @@ class MerchantRepo {
     return foods;
   }
 
+  Future<List<MarketItemModel>> searchMarket(String query,
+      {MarketItemModel? marketItem}) async {
+    List<MarketItemModel> items;
+
+    final Query<Map<String, dynamic>> _query = marketRef
+        .where('search_key', arrayContains: query)
+        .orderBy('name')
+        .limit(limit);
+
+    try {
+      if (marketItem != null) {
+        _query.startAfter(<String>[marketItem.name]);
+      }
+
+      final QuerySnapshot<Map<String, dynamic>> queryDocumentSnapshot =
+          await _query.get();
+
+      items = queryDocumentSnapshot.docs
+          .map((QueryDocumentSnapshot<Map<String, dynamic>> e) =>
+              MarketItemModel.fromMap(e.data()))
+          .toList();
+    } on Exception catch (e, s) {
+      debugPrint(e.toString());
+      debugPrint(s.toString());
+      throw Exception(e.toString());
+    }
+
+    return items;
+  }
+
   Future<int> getDeliveryFee() async {
     final DocumentSnapshot<Map<String, dynamic>> data =
         await constantsCollectionRef.doc('delivery_fee').get();

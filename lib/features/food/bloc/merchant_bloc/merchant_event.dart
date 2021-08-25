@@ -94,4 +94,10 @@ class SearchEvent extends MerchantEvent {
 }
 
 
+class SearchMarketEvent extends MerchantEvent {
+  const SearchMarketEvent(this.query);
+  final String query;
+}
+
+
 class GetMarketItemsEvent extends MerchantEvent{}

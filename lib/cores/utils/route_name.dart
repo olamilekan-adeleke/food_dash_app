@@ -20,6 +20,7 @@ class RouteName {
   static const String editProfileScreen = 'eidt-pofile';
   static const String oderHistoryScreen = 'order-history';
   static const String changePasswordScreen = 'change-password';
-  static const String searchScreen = 'search-page';
+  static const String foodSearchScreen = 'food-search-page';
+  static const String marketSearchScreen = 'market-search-page';
   static const String paymentHistoryScreen = 'payment-history-page';
 }

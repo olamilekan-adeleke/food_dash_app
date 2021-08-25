@@ -23,6 +23,7 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
   FoodProductModel? lastFoodProduct;
   FoodProductModel? lastMerchantFoodProduct;
   FoodProductModel? search;
+  MarketItemModel? lastMarketSearch;
   FoodProductModel? lastFavFoodProduct;
   MarketItemModel? lastMarketItem;
 
@@ -31,6 +32,7 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
   bool merchantFoodBusy = false;
   bool foodFavBusy = false;
   bool searchBusy = false;
+  bool searchMarketBusy = false;
   bool marketBusy = false;
 
   bool hasMoreMerchant = true;
@@ -38,6 +40,7 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
   bool hasMoreFoodProduct = true;
   bool hasMoreMerchantFoodProduct = true;
   bool hasMoreSearch = true;
+  bool hasMoreMarketSearch = true;
   bool hasMoreMarket = true;
 
   @override
@@ -121,6 +124,22 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         yield SearchErrorState(e.toString());
       }
       searchBusy = false;
+    } else if (event is SearchMarketEvent) {
+      searchMarketBusy = true;
+      try {
+        yield SearchMarketLoadingState();
+        final List<MarketItemModel> items = await merchantRepo
+            .searchMarket(event.query, marketItem: lastMarketSearch);
+
+        if (items.isNotEmpty) lastMarketSearch = items.last;
+        hasMoreMarketSearch = items.length == merchantRepo.limit;
+        yield SearchMarketLoadedState(items);
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield SearchMarketErrorState(e.toString());
+      }
+      searchMarketBusy = false;
     } else if (event is AddFoodProductToFavouriteEvents) {
       try {
         yield AddFoodProductToFavouriteLoadingState(event.foodProduct.id);
@@ -151,8 +170,7 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         debugPrint(s.toString());
         yield AddFoodProductToCartErrorState(e.toString());
       }
-    }
-    else if (event is AddMarketItemProductToCartEvents) {
+    } else if (event is AddMarketItemProductToCartEvents) {
       try {
         yield AddMarketItemToCartLoadingState(event.marketItem.id);
         await merchantRepo.addToCartMarket(event.marketItem);
