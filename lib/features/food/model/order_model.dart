@@ -36,7 +36,7 @@ class OrderModel {
       timestamp: map['timestamp'] as Timestamp,
       userDetails: userDetails,
       id: map['id'] as String,
-      type: map['type'] as String,
+      type: map['type'] != null ? map['type'] as String : 'food',
       restaurantsList: List<String>.from(
         map['restaurants_list'] as List<dynamic>,
       ),
@@ -89,7 +89,7 @@ class OrderModel {
       'has_rated': hasRated ?? false,
       'items_fee': itemsFee,
       'delivery_fee': deliveryFee,
-      'pay_status': '',  
+      'pay_status': '',
     };
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -178,12 +179,29 @@ class ItemWidget extends StatelessWidget {
                 SizedBox(
                   height: sizerSp(100),
                   width: double.infinity,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5.0),
-                    child: CustomImageWidget(
-                      imageUrl: marketItem.images.first,
-                      imageTypes: ImageTypes.network,
+                  child: CarouselSlider(
+                    options: CarouselOptions(
+                      viewportFraction: 0.9,
+                      autoPlay: true,
+                      enableInfiniteScroll: false,
                     ),
+                    items: marketItem.images.map((String image) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return Container(
+                            width: MediaQuery.of(context).size.width,
+                            margin: EdgeInsets.symmetric(horizontal: 3.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5.0),
+                              child: CustomImageWidget(
+                                imageUrl: image,
+                                imageTypes: ImageTypes.network,
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }).toList(),
                   ),
                 ),
                 SizedBox(height: sizerSp(5)),

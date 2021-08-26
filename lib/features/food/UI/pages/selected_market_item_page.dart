@@ -1,3 +1,5 @@
+import 'package:carousel_slider/carousel_options.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_dash_app/cores/components/custom_button.dart';
@@ -10,7 +12,6 @@ import 'package:food_dash_app/cores/utils/emums.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/sizer_utils.dart';
-import 'package:food_dash_app/features/food/UI/widgets/favourite_button.dart';
 import 'package:food_dash_app/features/food/UI/widgets/market_fav_button.dart';
 import 'package:food_dash_app/features/food/bloc/merchant_bloc/merchant_bloc.dart';
 import 'package:food_dash_app/features/food/model/cart_model.dart';
@@ -35,19 +36,49 @@ class SelectedMarketItmePage extends StatelessWidget {
             width: size.width,
             child: Stack(
               children: <Widget>[
-                SizedBox(
-                  width: size.width,
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(20.0),
-                      bottomRight: Radius.circular(20.0),
-                    ),
-                    child: CustomImageWidget(
-                      imageUrl: marketItem.images.first,
-                      imageTypes: ImageTypes.network,
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(20.0),
+                    bottomRight: Radius.circular(20.0),
+                  ),
+                  child: Container(
+                    color: Colors.yellow,
+                    width: size.width,
+                    height: size.height * 0.35,
+                    child: CarouselSlider(
+                      options: CarouselOptions(
+                        viewportFraction: 1.0,
+                        autoPlay: true,
+                        enableInfiniteScroll: false,
+                        aspectRatio: 2 / 2,
+                      ),
+                      items: marketItem.images.map((String image) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: CustomImageWidget(
+                                imageUrl: image,
+                                imageTypes: ImageTypes.network,
+                              ),
+                            );
+                          },
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),
+                // child: ClipRRect(
+                //   borderRadius: const BorderRadius.only(
+                //     bottomLeft: Radius.circular(20.0),
+                //     bottomRight: Radius.circular(20.0),
+                //   ),
+                //   child: CustomImageWidget(
+                //     imageUrl: marketItem.images.first,
+                //     imageTypes: ImageTypes.network,
+                //   ),
+                // ),
+                // ),
                 Align(
                   alignment: Alignment.topCenter,
                   child: Padding(
