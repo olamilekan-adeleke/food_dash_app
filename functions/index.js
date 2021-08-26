@@ -14,6 +14,8 @@ exports.OnNewOrderCreated = functions.firestore
     const orderId = data.id;
     const docId = uuidv4();
     const items = data.items;
+    const itemFee = data.items_fee;
+    const type = data.type;
 
     const sendToCustomer = {
       data_to_send: "msg_from_the_cloud",
@@ -53,15 +55,23 @@ exports.OnNewOrderCreated = functions.firestore
         return { msg: "error in execution: notification not saved" };
       });
 
-    // / add order to favourite
-    items.forEach(async (element) => {
-      const id = element.id;
-      const dataTo = {
-        likes_count: admin.firestore.FieldValue.increment(1),
-      };
+    if (type === "food") {
+      // / add order to favourite
+      items.forEach(async (element) => {
+        const id = element.id;
+        const dataTo = {
+          likes_count: admin.firestore.FieldValue.increment(1),
+        };
 
-      await addDataToPopular(id, dataTo);
-    });
+        await addDataToPopular(id, dataTo);
+      });
+    }
+
+    // update total count order count for that day
+    await incrementTotalOrderCount();
+
+    // update item fee
+    await incrementTotalOrderAmountCount(itemFee);
 
     return Promise.resolve();
   });
@@ -77,6 +87,7 @@ exports.OnOrderStatusChange = functions.firestore
     const orderId = data.id;
     const docId = uuidv4();
     const items = data.items;
+    const riderId = data.rider_details.uid;
 
     let body;
 
@@ -96,26 +107,153 @@ exports.OnOrderStatusChange = functions.firestore
       body =
         "Your order has been pickup by the rider. Rider has " +
         "picked up your order and is now enroute to your location";
-    } else if (orderStatus === "completed") {
-      body = "Your order has been completed. Have a great meal!";
-    } else if (data.pay_status === "confrim") {
+    }
+    // else if (orderStatus === "completed") {
+    // body = "Your order has been completed. Login To confrim order!";
+    // }
+    else if (data.pay_status === "confrim") {
+      const notificationUser = "Order has been Comfrimed by you!!";
+      const notificationRider =
+        "User Comfrimed order received! \nYou Will receive your pay soon.";
+
+      const dataToSaveUser = {
+        body: notificationUser,
+        orderId: `${orderId}`,
+        timestamp: admin.firestore.Timestamp.now(),
+        userId: `${userId}`,
+        id: `${docId}`,
+        items: items,
+      };
+
+      const dataToSaveRider = {
+        body: notificationUser,
+        orderId: `${orderId}`,
+        timestamp: admin.firestore.Timestamp.now(),
+        userId: `${userId}`,
+        id: `${docId}`,
+        items: items,
+      };
+
       // send notification to user
-      // save notification to user
+      await sendNotificationToUser(userId, notificationUser, sendToCustomer);
+
       // send notification to rider
+      await sendNotificationToUser(riderId, notificationRider, sendToCustomer);
+
+      // save notification to user
+      await saveDataToUserNotification(userId, docId, dataToSaveUser)
+        .then(() => {
+          console.info("succesfully: saved notification data");
+        })
+        .catch((error) => {
+          console.info("error in execution: notification not saved");
+          console.log(error);
+          return { msg: "error in execution: notification not saved" };
+        });
+
       // save notification to rider
-      // update rider wallet
-      // end
+      await saveDataToRiderNotification(userId, docId, dataToSaveRider)
+        .then(() => {
+          console.info("succesfully: saved notification data");
+        })
+        .catch((error) => {
+          console.info("error in execution: notification not saved");
+          console.log(error);
+          return { msg: "error in execution: notification not saved" };
+        });
+
+      // update completed order
+      await incrementCompletedOrderCount();
+
+      // pay rider
+      const snapshot = await getRiderFee();
+      const fee = snapshot.data().fee;
+
+      await updateRiderWallet(riderId, fee);
+
+      const nnotificationRider = `Account Credited! \nYou received a credit of NGN ${fee} `;
+
+      await sendNotificationToUser(riderId, nnotificationRider, sendToCustomer);
+
+      return Promise.resolve();
     } else if (data.pay_status === "cancel") {
+      const notificationUser = "You marked order has Canceled!";
+      const notificationRider = "User has marked order has Canceled!";
+
+      const dataToSaveUser = {
+        body: notificationUser,
+        orderId: `${orderId}`,
+        timestamp: admin.firestore.Timestamp.now(),
+        userId: `${userId}`,
+        id: `${docId}`,
+        items: items,
+      };
+
+      const dataToSaveRider = {
+        body: notificationUser,
+        orderId: `${orderId}`,
+        timestamp: admin.firestore.Timestamp.now(),
+        userId: `${userId}`,
+        id: `${docId}`,
+        items: items,
+      };
+
       // send notification to user
-      // save notification to user
+      await sendNotificationToUser(userId, notificationUser, sendToCustomer);
+
       // send notification to rider
-      // save notification to rider
-      // end
-    } else if (data.pay_status === "pending") {
-      // send notification to user
+      await sendNotificationToUser(riderId, notificationRider, sendToCustomer);
+
       // save notification to user
-      // end
-    } else {
+      await saveDataToUserNotification(userId, docId, dataToSaveUser)
+        .then(() => {
+          console.info("succesfully: saved notification data");
+        })
+        .catch((error) => {
+          console.info("error in execution: notification not saved");
+          console.log(error);
+          return { msg: "error in execution: notification not saved" };
+        });
+
+      // save notification to rider
+      await saveDataToRiderNotification(userId, docId, dataToSaveRider)
+        .then(() => {
+          console.info("succesfully: saved notification data");
+        })
+        .catch((error) => {
+          console.info("error in execution: notification not saved");
+          console.log(error);
+          return { msg: "error in execution: notification not saved" };
+        });
+
+      return Promise.resolve();
+    } else if (data.pay_status === "pending") {
+      const notificationUser =
+        "Rider has marked order has completed! please login to confrim";
+
+      const dataToSave = {
+        body: "Rider has marked order has completed!",
+        orderId: `${orderId}`,
+        timestamp: admin.firestore.Timestamp.now(),
+        userId: `${userId}`,
+        id: `${docId}`,
+        items: items,
+      };
+
+      // send notification to user
+      await sendNotificationToUser(userId, notificationUser, sendToCustomer);
+
+      // save notification to user
+      await saveDataToRiderNotification(userId, docId, dataToSave)
+        .then(() => {
+          console.info("succesfully: saved notification data");
+        })
+        .catch((error) => {
+          console.info("error in execution: notification not saved");
+          console.log(error);
+          return { msg: "error in execution: notification not saved" };
+        });
+
       return Promise.resolve();
     }
 
@@ -188,6 +326,44 @@ async function saveDataToUserNotification(userId, docId, data) {
 
 /**
  * Add two numbers.
+ */
+async function getRiderFee() {
+  return await admin.firestore().collection("constants").doc("rider_fee").get();
+}
+
+/**
+ * Add two numbers.
+ * @param {riderId} userId id.
+ * @param {amount} amount.
+ * @return {any} any.
+ */
+async function updateRiderWallet(riderId, amount) {
+  return await admin
+    .firestore()
+    .collection("rider")
+    .doc(riderId)
+    .update({ wallet_balance: admin.firestore.FieldValue.increment(amount) });
+}
+
+/**
+ * Add two numbers.
+ * @param {userId} userId id.
+ * @param {docid} docId id.
+ * @param {data} data data.
+ * @return {any} any.
+ */
+async function saveDataToRiderNotification(riderId, docId, data) {
+  return await admin
+    .firestore()
+    .collection("rider")
+    .doc(riderId)
+    .collection("notifications")
+    .doc(`${docId}`)
+    .set(data);
+}
+
+/**
+ * Add two numbers.
  * @param {docid} docId id.
  * @param {data} data data.
  * @return {any} any.
@@ -198,6 +374,90 @@ async function addDataToPopular(docId, data) {
     .collection("food_items")
     .doc(docId)
     .update(data);
+}
+
+/**
+ * save data to firestore
+ *  @param {string} path the path.
+ * @param {string} data The data.
+ */
+async function incrementTotalOrderCount() {
+  const d = new Date();
+
+  const day = d.getDate(); // Day		[dd]	(1 - 31)
+  const month = d.getMonth() + 1; // Month	[mm]	(1 - 12)
+  const year = d.getFullYear(); // Year		[yyyy]
+
+  return await admin
+    .firestore()
+    .collection("constants")
+    .doc("metrics")
+    .collection(`${year.toString()}`)
+    .doc(`${month.toString()}`)
+    .collection("days")
+    .doc(`${day.toString()}`)
+    .set(
+      {
+        total_order: admin.firestore.FieldValue.increment(1),
+      },
+      { merge: true }
+    );
+}
+
+/**
+ * save data to firestore
+ *  @param {string} path the path.
+ * @param {string} data The data.
+ */
+async function incrementCompletedOrderCount() {
+  const d = new Date();
+
+  const day = d.getDate(); // Day		[dd]	(1 - 31)
+  const month = d.getMonth() + 1; // Month	[mm]	(1 - 12)
+  const year = d.getFullYear(); // Year		[yyyy]
+
+  return await admin
+    .firestore()
+    .collection("constants")
+    .doc("metrics")
+    .collection(`${year.toString()}`)
+    .doc(`${month.toString()}`)
+    .collection("days")
+    .doc(`${day.toString()}`)
+    .set(
+      {
+        total_completed_order: admin.firestore.FieldValue.increment(1),
+      },
+      { merge: true }
+    );
+}
+
+/**
+ * save data to firestore
+ *  @param {string} path the path.
+ * @param {string} data The data.
+ */
+async function incrementTotalOrderAmountCount(amount) {
+  const d = new Date();
+
+  const day = d.getDate(); // Day		[dd]	(1 - 31)
+  const month = d.getMonth() + 1; // Month	[mm]	(1 - 12)
+  const year = d.getFullYear(); // Year		[yyyy]
+
+  return await admin
+    .firestore()
+    .collection("constants")
+    .doc("metrics")
+    .collection(`${year.toString()}`)
+    .doc(`${month.toString()}`)
+    .collection("days")
+    .doc(`${day.toString()}`)
+    .set(
+      {
+        total_amount: admin.firestore.FieldValue.increment(amount),
+      },
+      { merge: true }
+    );
 }
 
 /**

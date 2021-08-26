@@ -89,6 +89,7 @@ class OrderModel {
       'has_rated': hasRated ?? false,
       'items_fee': itemsFee,
       'delivery_fee': deliveryFee,
+      'pay_status': '',  
     };
   }
 }
