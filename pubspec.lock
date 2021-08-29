@@ -310,6 +310,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutterwave:
+    dependency: "direct main"
+    description:
+      name: flutterwave
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   get:
     dependency: "direct main"
     description:
@@ -616,6 +623,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.7.0"
+  tripledes_nullsafety:
+    dependency: transitive
+    description:
+      name: tripledes_nullsafety
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   typed_data:
     dependency: transitive
     description:
@@ -644,6 +658,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  webview_flutter:
+    dependency: transitive
+    description:
+      name: webview_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.12"
   win32:
     dependency: transitive
     description:

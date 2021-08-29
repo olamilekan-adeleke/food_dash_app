@@ -534,12 +534,27 @@ class MerchantRepo {
   }
 
   Future<int> getDeliveryFee() async {
+    final UserDetailsModel userDetails = await authenticationRepo.getUser();
+    final String? region = userDetails.region?.split('-')[1].trim() ?? null;
+    final String? location = userDetails.region?.split('-')[0].trim() ?? null;
+
+    if (region == null || location == null) {
+      throw 'Location Not Found! \nPlease Select a location.';
+    }
+
+    log(userDetails.region!);
+
     final DocumentSnapshot<Map<String, dynamic>> data =
-        await constantsCollectionRef.doc('delivery_fee').get();
+        await constantsCollectionRef.doc('delivery_prices').get();
 
-    final int fee = (data.data()?['fee'] ?? 100) as int;
+    log(data.data().toString());
+    final Map<String, dynamic> allRegionPriceMap =
+        data.data() as Map<String, dynamic>;
 
-    return fee;
+    final Map<String, dynamic> regionPriceMap = allRegionPriceMap[region];
+    final int locationPriceFormRegion = regionPriceMap[location] as int;
+
+    return locationPriceFormRegion;
   }
 
   Future<void> completeOrder(String id, bool status) async {

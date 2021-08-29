@@ -245,6 +245,19 @@ class AddressWidget extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: sizerSp(5)),
+              CustomTextWidget(
+                text: 'Region',
+                fontSize: sizerSp(16),
+                fontWeight: FontWeight.w500,
+              ),
+              CustomTextWidget(
+                text: userDetails.region ?? 'No Region Was Found! ',
+                fontSize: sizerSp(12),
+                fontWeight: FontWeight.w300,
+                maxLines: 6,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: sizerSp(5)),
               InkWell(
                 onTap: () =>
                     CustomNavigationService().navigateTo(RouteName.editAddress),

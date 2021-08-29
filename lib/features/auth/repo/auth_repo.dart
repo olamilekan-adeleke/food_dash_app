@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+
 import 'package:food_dash_app/cores/constants/error_text.dart';
 import 'package:food_dash_app/cores/utils/firebase_messaging_utils.dart';
 import 'package:food_dash_app/cores/utils/logger.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
-import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/features/auth/model/login_user_model.dart';
 import 'package:food_dash_app/features/auth/model/user_details_model.dart';
 import 'package:food_dash_app/features/food/repo/local_database_repo.dart';
@@ -19,6 +19,8 @@ class AuthenticationRepo {
       GetIt.instance<LocaldatabaseRepo>();
   final CollectionReference<dynamic> userCollectionRef =
       FirebaseFirestore.instance.collection('users');
+  final CollectionReference<dynamic> constantCollectionRef =
+      FirebaseFirestore.instance.collection('constants');
 
   LoginUserModel? userFromFirestore(User? user) {
     infoLog(
@@ -210,5 +212,28 @@ class AuthenticationRepo {
     final DocumentSnapshot<dynamic> documentSnapshot = querySnapshot.docs.first;
 
     return documentSnapshot.data() as Map<String, dynamic>;
+  }
+
+  Future<UserDetailsModel> getUser() async {
+    final DocumentSnapshot<dynamic> documentSnapshot = await userCollectionRef
+        .doc(getUserUid())
+        .get(GetOptions(source: Source.server));
+
+    final Map<String, dynamic> data =
+        documentSnapshot.data() as Map<String, dynamic>;
+
+    return UserDetailsModel.fromMap(data);
+  }
+
+  Future<List<String>> getAddressData() async {
+    final DocumentSnapshot<dynamic> documentSnapshot =
+        await constantCollectionRef
+            .doc('all_locations')
+            .get(GetOptions(source: Source.server));
+
+    final Map<String, dynamic> data =
+        documentSnapshot.data() as Map<String, dynamic>;
+
+    return List<String>.from(data['loctaions_list'] ?? <String>[]);
   }
 }

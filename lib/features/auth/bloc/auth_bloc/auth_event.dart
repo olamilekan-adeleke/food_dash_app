@@ -54,3 +54,6 @@ class UpdateUserDataEvent extends AuthEvent {
 
   
 }
+
+
+class GetAddressDataEvent extends AuthEvent {}

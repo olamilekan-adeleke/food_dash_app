@@ -89,3 +89,19 @@ class UpdateUserDataErrorState extends AuthState {
 
   final String message;
 }
+
+// get address
+class GetAddressDataIntialState extends AuthState {}
+
+class GetAddressDataLoadingState extends AuthState {}
+
+class GetAddressDataLoadedState extends AuthState {
+  GetAddressDataLoadedState(this.address);
+  final List<String> address;
+}
+
+class GetAddressDataErrorState extends AuthState {
+  const GetAddressDataErrorState(this.message);
+
+  final String message;
+}

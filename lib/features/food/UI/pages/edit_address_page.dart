@@ -5,6 +5,7 @@ import 'package:food_dash_app/cores/components/custom_button.dart';
 import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
 import 'package:food_dash_app/cores/components/custom_text_widget.dart';
 import 'package:food_dash_app/cores/components/custom_textfiled.dart';
+import 'package:food_dash_app/cores/components/error_widget.dart';
 import 'package:food_dash_app/cores/constants/location_list.dart';
 import 'package:food_dash_app/cores/utils/locator.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
@@ -15,13 +16,26 @@ import 'package:food_dash_app/features/auth/model/user_details_model.dart';
 import 'package:food_dash_app/features/food/UI/widgets/header_widget.dart';
 import 'package:food_dash_app/features/food/repo/local_database_repo.dart';
 
-class EditAddressScreen extends StatelessWidget {
+class EditAddressScreen extends StatefulWidget {
   const EditAddressScreen({Key? key}) : super(key: key);
 
   static final TextEditingController address = TextEditingController(text: '');
   static final LocaldatabaseRepo localdatabaseRepo =
       locator<LocaldatabaseRepo>();
   static final ValueNotifier<String> selectedVal = ValueNotifier<String>('');
+
+  @override
+  _EditAddressScreenState createState() => _EditAddressScreenState();
+}
+
+class _EditAddressScreenState extends State<EditAddressScreen> {
+  List<String> addresses = <String>[];
+  @override
+  void initState() {
+    BlocProvider.of<AuthBloc>(context).add(GetAddressDataEvent());
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +68,9 @@ class EditAddressScreen extends StatelessWidget {
                 UserDetailsModel? userDetails,
                 Widget? child,
               ) {
-                address.text = userDetails!.address ?? '';
+                EditAddressScreen.address.text = userDetails!.address ?? '';
                 return CustomTextField(
-                  textEditingController: address,
+                  textEditingController: EditAddressScreen.address,
                   hintText: 'Enter Address',
                   labelText: 'Address',
                   maxLine: null,
@@ -72,43 +86,63 @@ class EditAddressScreen extends StatelessWidget {
               fontSize: sizerSp(15),
             ),
             SizedBox(height: sizerSp(10.0)),
-            ValueListenableBuilder<String>(
-              valueListenable: selectedVal,
-              builder: (
-                BuildContext context,
-                String value,
-                Widget? child,
-              ) {
-                // return SearchableDropdown<String>.single(
-                //   items: locationList
-                //       .map(
-                //         (String e) => DropdownMenuItem<String>(
-                //           child: CustomTextWidget(
-                //             text: e,
-                //             fontWeight: FontWeight.w200,
-                //             fontSize: sizerSp(13),
-                //           ),
-                //         ),
-                //       )
-                //       .toList(),
-                //   value: value,
-                //   hint: 'Select one',
-                //   searchHint: 'Select one',
-                //   onChanged: (String value) => selectedVal.value = value,
-                //   isExpanded: true,
-                // );
 
-                return DropdownSearch<String>(
-                  mode: Mode.BOTTOM_SHEET,
-                  showSelectedItem: true,
-                  items: locationList,
-                  // label: 'Menu mode',
-                  hint: 'Select Region',
-                  onChanged: (String? val) => selectedVal.value = val ?? '',
-                  selectedItem: value != '' ? value : null,
+            BlocConsumer<AuthBloc, AuthState>(
+                listener: (BuildContext context, AuthState state) {
+              if (state is GetAddressDataLoadedState) {
+                addresses = state.address;
+              } else if (state is GetAddressDataErrorState) {
+                CustomSnackBarService.showErrorSnackBar(state.message);
+              }
+            }, builder: (BuildContext context, AuthState state) {
+              if (state is GetAddressDataLoadingState) {
+                return const CustomButton.loading();
+              } else if (state is GetAddressDataErrorState) {
+                return CustomErrorWidget(
+                  message: state.message,
+                  callback: () => BlocProvider.of<AuthBloc>(context)
+                      .add(GetAddressDataEvent()),
                 );
-              },
-            ),
+              }
+              return ValueListenableBuilder<String>(
+                valueListenable: EditAddressScreen.selectedVal,
+                builder: (
+                  BuildContext context,
+                  String value,
+                  Widget? child,
+                ) {
+                  // return SearchableDropdown<String>.single(
+                  //   items: locationList
+                  //       .map(
+                  //         (String e) => DropdownMenuItem<String>(
+                  //           child: CustomTextWidget(
+                  //             text: e,
+                  //             fontWeight: FontWeight.w200,
+                  //             fontSize: sizerSp(13),
+                  //           ),
+                  //         ),
+                  //       )
+                  //       .toList(),
+                  //   value: value,
+                  //   hint: 'Select one',
+                  //   searchHint: 'Select one',
+                  //   onChanged: (String value) => selectedVal.value = value,
+                  //   isExpanded: true,
+                  // );
+
+                  return DropdownSearch<String>(
+                    mode: Mode.BOTTOM_SHEET,
+                    showSelectedItem: true,
+                    items: addresses,
+                    // label: 'Menu mode',
+                    hint: 'Select Region',
+                    onChanged: (String? val) =>
+                        EditAddressScreen.selectedVal.value = val ?? '',
+                    selectedItem: value != '' ? value : null,
+                  );
+                },
+              );
+            }),
 
             const Spacer(),
             BlocConsumer<AuthBloc, AuthState>(
@@ -128,20 +162,22 @@ class EditAddressScreen extends StatelessWidget {
                 return CustomButton(
                   text: 'Save',
                   onTap: () async {
-                    print(selectedVal.value);
+                    print(EditAddressScreen.selectedVal.value);
 
-                    if (selectedVal.value.isEmpty || address.text.isEmpty) {
+                    if (EditAddressScreen.selectedVal.value.isEmpty ||
+                        EditAddressScreen.address.text.isEmpty) {
                       CustomSnackBarService.showWarningSnackBar(
                           'Enter Address and Select a Region');
 
                       return;
                     }
-                    UserDetailsModel? userDetails =
-                        await localdatabaseRepo.getUserDataFromLocalDB();
+                    UserDetailsModel? userDetails = await EditAddressScreen
+                        .localdatabaseRepo
+                        .getUserDataFromLocalDB();
 
                     userDetails = userDetails!.copyWith(
-                      address: address.text.trim(),
-                      region: selectedVal.value,
+                      address: EditAddressScreen.address.text.trim(),
+                      region: EditAddressScreen.selectedVal.value,
                     );
 
                     BlocProvider.of<AuthBloc>(context)

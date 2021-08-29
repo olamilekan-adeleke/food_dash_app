@@ -174,7 +174,7 @@ class LoginPage extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                         CustomTextWidget(
-                          text: 'Create and account',
+                          text: 'Create an account',
                           fontSize: sizerSp(11.24),
                           fontWeight: FontWeight.w600,
                           textColor: Colors.red,

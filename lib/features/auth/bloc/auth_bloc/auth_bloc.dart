@@ -78,6 +78,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         debugPrint(s.toString());
         yield UpdateUserDataErrorState(e.toString());
       }
+    } else if (event is GetAddressDataEvent) {
+      try {
+        yield GetAddressDataLoadingState();
+        List<String> address = await authenticationRepo.getAddressData();
+        yield GetAddressDataLoadedState(address);
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+        yield GetAddressDataErrorState(e.toString());
+      }
     }
   }
 }
