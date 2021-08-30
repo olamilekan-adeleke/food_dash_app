@@ -3,10 +3,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack/flutter_paystack.dart';
+import 'package:flutterwave/flutterwave.dart';
+import 'package:flutterwave/models/responses/charge_response.dart';
 import 'package:food_dash_app/cores/utils/config.dart';
 import 'package:food_dash_app/cores/utils/locator.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
+import 'package:food_dash_app/env.dart';
+import 'package:food_dash_app/features/auth/model/user_details_model.dart';
+import 'package:food_dash_app/features/auth/repo/auth_repo.dart';
 import 'package:food_dash_app/features/food/model/paymaent_history.dart';
 import 'package:food_dash_app/features/food/repo/food_repo.dart';
 
@@ -18,6 +23,8 @@ const String secretKey = 'sk_test_33dfdc0d792c01298c04c42bbc2dcabba2bf8913';
 
 class PaymentRepo {
   static final MerchantRepo merchantRepo = locator<MerchantRepo>();
+  static AuthenticationRepo authenticationRepo = locator<AuthenticationRepo>();
+  static final String currency = FlutterwaveCurrency.NGN;
 
   String _getReference() {
     String platform;
@@ -162,5 +169,84 @@ class PaymentRepo {
       debugPrint('error');
       throw Exception('An Error Occurred Please Try Again!');
     }
+  }
+
+  Future<void> useFlutterWave(BuildContext context, int amount) async {
+    final UserDetailsModel user = await authenticationRepo.getUser();
+    final String txRef =
+        'REF-${DateTime.now().millisecondsSinceEpoch}-${user.email}_';
+
+    Flutterwave flutterwave = Flutterwave.forUIPayment(
+      context: context,
+      encryptionKey: encrptionKeyFlutterWave,
+      publicKey: publicKeyFlutterWave,
+      currency: currency,
+      amount: amount.toString(),
+      email: user.email,
+      fullName: user.fullName,
+      txRef: txRef,
+      isDebugMode: true,
+      phoneNumber: user.phoneNumber.toString(),
+      acceptCardPayment: true,
+      acceptUSSDPayment: false,
+      acceptAccountPayment: false,
+    );
+
+    
+
+    try {
+      final ChargeResponse response =
+          await flutterwave.initializeForUiPayments();
+      // ignore: unnecessary_null_comparison
+      if (response == null) {
+        throw 'Transcation not completed!';
+      } else {
+        final bool isSuccessful =
+            checkPaymentIsSuccessful(response, '$amount', txRef);
+        if (isSuccessful) {
+          CustomSnackBarService.showSuccessSnackBar('Payment SucessFull');
+          final PaymentModel paymentModel = PaymentModel(
+            id: const Uuid().v1(),
+            amount: amount,
+            dateTime: DateTime.now(),
+            message: 'Wallet Top up',
+          );
+
+          await merchantRepo.deductUserWallet(amount);
+          await merchantRepo.addPaymentHistory(paymentModel);
+
+          CustomNavigationService().goBack();
+        } else {
+          // check message
+          print(response.message);
+
+          // check status
+          print(response.status);
+
+          // check processor error
+          print(response.data!.processorResponse);
+
+          CustomSnackBarService.showErrorSnackBar('Error Occured In Payment');
+          CustomNavigationService().goBack();
+
+          throw response.message ?? 'An Error Occured!';
+        }
+      }
+    } catch (e, s) {
+      debugPrint(e.toString());
+      debugPrint(s.toString());
+      CustomSnackBarService.showErrorSnackBar('Error: ${e.toString()}');
+    }
+  }
+
+  bool checkPaymentIsSuccessful(
+    ChargeResponse response,
+    String amount,
+    String txref,
+  ) {
+    return response.data!.status == FlutterwaveConstants.SUCCESSFUL &&
+        response.data!.currency == currency &&
+        response.data!.amount == amount &&
+        response.data!.txRef == txref;
   }
 }

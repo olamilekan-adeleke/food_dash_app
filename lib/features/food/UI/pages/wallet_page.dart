@@ -111,6 +111,10 @@ class FundWalletDetailsWidget extends StatelessWidget {
                 userEmail:
                     (await localdatabaseRepo.getUserDataFromLocalDB())!.email,
               );
+              // paymentRepo.useFlutterWave(
+              //   context,
+              //   int.parse(textEditingController.text.trim()),
+              // );
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
