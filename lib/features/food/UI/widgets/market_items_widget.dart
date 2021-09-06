@@ -39,7 +39,7 @@ class _MarketItemsWidgetsState extends State<MarketItemsWidgets> {
     if (_controller.position.pixels >= _controller.position.maxScrollExtent) {
       if (merchantBloc.hasMoreMarket == true &&
           merchantBloc.marketBusy == false) {
-        merchantBloc.add(GetMarketItemsEvent());
+        merchantBloc.add(GetMarketItemsEvent(false));
       }
     }
   }
@@ -48,7 +48,7 @@ class _MarketItemsWidgetsState extends State<MarketItemsWidgets> {
   void initState() {
     _controller = ScrollController();
     _controller.addListener(_scrollListener);
-    BlocProvider.of<MerchantBloc>(context).add(GetMarketItemsEvent());
+    BlocProvider.of<MerchantBloc>(context).add(GetMarketItemsEvent(true));
     super.initState();
   }
 
@@ -71,50 +71,57 @@ class _MarketItemsWidgetsState extends State<MarketItemsWidgets> {
             return CustomErrorWidget(
               message: state.message,
               callback: () => BlocProvider.of<MerchantBloc>(context)
-                  .add(GetMarketItemsEvent()),
+                  .add(GetMarketItemsEvent(true)),
             );
           }
 
-          return Stack(
-            children: <Widget>[
-              foodItemWidget(),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: BlocConsumer<MerchantBloc, MerchantState>(
-                  listener: (BuildContext context, MerchantState state) {},
-                  builder: (BuildContext context, MerchantState state) {
-                    if (state is GetMarketItemLoadingState) {
-                      return Container(
-                        padding: const EdgeInsets.all(5),
-                        margin: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade600,
-                          borderRadius: BorderRadius.circular(sizerSp(3)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
-                            SizedBox(
-                              height: 18,
-                              width: 18,
-                              child: CupertinoActivityIndicator(),
-                            ),
-                            SizedBox(width: 20),
-                            CustomTextWidget(
-                              text: 'Loading More',
-                              textColor: Colors.white,
-                            ),
-                          ],
-                        ),
-                      );
-                    }
+          return RefreshIndicator(
+            onRefresh: () async {
+              marketItems.clear();
+              BlocProvider.of<MerchantBloc>(context)
+                  .add(GetMarketItemsEvent(true));
+            },
+            child: Stack(
+              children: <Widget>[
+                foodItemWidget(),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: BlocConsumer<MerchantBloc, MerchantState>(
+                    listener: (BuildContext context, MerchantState state) {},
+                    builder: (BuildContext context, MerchantState state) {
+                      if (state is GetMarketItemLoadingState) {
+                        return Container(
+                          padding: const EdgeInsets.all(5),
+                          margin: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade600,
+                            borderRadius: BorderRadius.circular(sizerSp(3)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const <Widget>[
+                              SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CupertinoActivityIndicator(),
+                              ),
+                              SizedBox(width: 20),
+                              CustomTextWidget(
+                                text: 'Loading More',
+                                textColor: Colors.white,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
 
-                    return Container();
-                  },
+                      return Container();
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),

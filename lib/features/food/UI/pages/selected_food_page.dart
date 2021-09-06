@@ -35,6 +35,7 @@ class SelectedFoodPage extends StatelessWidget {
               children: <Widget>[
                 SizedBox(
                   width: size.width,
+                  height: double.infinity,
                   child: ClipRRect(
                     borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(20.0),
@@ -95,7 +96,7 @@ class SelectedFoodPage extends StatelessWidget {
                 ),
                 SizedBox(height: sizerSp(10.0)),
                 CustomTextWidget(
-                  text: foodProduct!.description * 6,
+                  text: foodProduct!.description,
                   fontWeight: FontWeight.w300,
                 ),
                 SizedBox(height: sizerSp(20.0)),

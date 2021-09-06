@@ -122,31 +122,31 @@ class _PopularFoodWidgetsState extends State<PopularFoodWidgets> {
   }
 
   Widget foodItemWidget() {
-    return StaggeredGridView.countBuilder(
-      // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-      //   maxCrossAxisExtent: sizerSp(260),
-      //   childAspectRatio: 0.69,
-      // ),
-      controller: _controller,
-      // physics: const BouncingScrollPhysics(),
-      shrinkWrap: true,
-      crossAxisCount: 4,
-      staggeredTileBuilder: (int index) {
-        return StaggeredTile.fit(2);
+    return RefreshIndicator(
+      onRefresh: () async {
+        foodList.clear();
+        BlocProvider.of<MerchantBloc>(context).add(GetPopularFoodEvents());
       },
-      itemCount: foodList.length,
+      child: StaggeredGridView.countBuilder(
+        controller: _controller,
+        shrinkWrap: true,
+        crossAxisCount: 4,
+        staggeredTileBuilder: (int index) {
+          return StaggeredTile.fit(2);
+        },
+        itemCount: foodList.length,
+        itemBuilder: (BuildContext context, int index) {
+          final FoodProductModel foodProduct = foodList[index];
 
-      itemBuilder: (BuildContext context, int index) {
-        final FoodProductModel foodProduct = foodList[index];
-
-        return ItemWidget(
-          foodProduct: foodProduct,
-          callback: () => CustomNavigationService().navigateTo(
-            RouteName.selectedFoodPage,
-            argument: foodProduct,
-          ),
-        );
-      },
+          return ItemWidget(
+            foodProduct: foodProduct,
+            callback: () => CustomNavigationService().navigateTo(
+              RouteName.selectedFoodPage,
+              argument: foodProduct,
+            ),
+          );
+        },
+      ),
     );
   }
 }

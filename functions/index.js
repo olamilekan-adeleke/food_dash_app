@@ -88,6 +88,7 @@ exports.OnOrderStatusChange = functions.firestore
     const docId = uuidv4();
     const items = data.items;
     const riderId = data.rider_details.uid;
+    const deliveryFee = data.delivery_fee;
 
     let body;
 
@@ -167,7 +168,8 @@ exports.OnOrderStatusChange = functions.firestore
 
       // pay rider
       const snapshot = await getRiderFee();
-      const fee = snapshot.data().fee;
+      const percentageFee = snapshot.data().percentage;
+      const fee = (100 * percentageFee) / deliveryFee;
 
       await updateRiderWallet(riderId, fee);
 

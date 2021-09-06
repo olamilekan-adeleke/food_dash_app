@@ -40,8 +40,9 @@ class OrderStatusScreen extends StatelessWidget {
                 AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot,
               ) {
                 if (snapshot.hasData) {
-                  final OrderModel order =
-                      OrderModel.fromMap(snapshot.data!.data() ?? {});
+                  final OrderModel order = OrderModel.fromMap(
+                    snapshot.data!.data() ?? <String, dynamic>{},
+                  );
                   final int index =
                       OrderStatusExtension.eumnToInt(order.orderStatus);
                   // log('data: ${order.toMap()}');

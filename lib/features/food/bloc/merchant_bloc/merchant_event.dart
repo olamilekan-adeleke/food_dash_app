@@ -8,16 +8,20 @@ abstract class MerchantEvent extends Equatable {
 }
 
 /// get merchants list event
-class GetMerchantsEvents extends MerchantEvent {}
+class GetMerchantsEvents extends MerchantEvent {
+  const GetMerchantsEvents(this.fresh);
+  final bool fresh;
+}
 
 /// get popular food
 class GetPopularFoodEvents extends MerchantEvent {}
 
 /// get food product list  event
 class GetFoodProductsEvents extends MerchantEvent {
-  const GetFoodProductsEvents(this.merchantId);
+  const GetFoodProductsEvents(this.merchantId, this.fresh);
 
   final String merchantId;
+  final bool fresh;
 }
 
 /// add food item to favourite
@@ -26,7 +30,6 @@ class AddFoodProductToFavouriteEvents extends MerchantEvent {
 
   final FoodProductModel foodProduct;
 }
-
 
 // /// add market item to favourite
 // class AddFoodProductToFavouriteEvents extends MerchantEvent {
@@ -55,7 +58,6 @@ class AddMarketItemProductToCartEvents extends MerchantEvent {
 
   final CartModel marketItem;
 }
-
 
 /// remove food item to cart
 class RemoveFoodProductToCartEvents extends MerchantEvent {
@@ -93,11 +95,12 @@ class SearchEvent extends MerchantEvent {
   final String query;
 }
 
-
 class SearchMarketEvent extends MerchantEvent {
   const SearchMarketEvent(this.query);
   final String query;
 }
 
-
-class GetMarketItemsEvent extends MerchantEvent{}
+class GetMarketItemsEvent extends MerchantEvent {
+  const GetMarketItemsEvent(this.fresh);
+  final bool fresh;
+}

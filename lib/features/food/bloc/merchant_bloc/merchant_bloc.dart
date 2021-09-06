@@ -51,8 +51,9 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
       merchantBusy = true;
       try {
         yield GetMerchantLoadingState();
-        final List<MerchantModel> merchants =
-            await merchantRepo.getMerchant(lastMerchant: lastmerchant);
+        final List<MerchantModel> merchants = await merchantRepo.getMerchant(
+          lastMerchant: event.fresh ? null : lastmerchant,
+        );
         if (merchants.isNotEmpty) lastmerchant = merchants.last;
         hasMoreMerchant = merchants.length == merchantRepo.limit;
         yield GetMerchantLoadedState(merchants);
@@ -67,10 +68,14 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
       try {
         yield GetFoodProductsLoadingState();
         final List<FoodProductModel> foodProducts =
-            await merchantRepo.getFoodProduct(event.merchantId,
-                lastFoodProduct: lastMerchantFoodProduct);
+            await merchantRepo.getFoodProduct(
+          event.merchantId,
+          lastFoodProduct: event.fresh ? null : lastMerchantFoodProduct,
+        );
+
         if (foodProducts.isNotEmpty)
           lastMerchantFoodProduct = foodProducts.last;
+
         hasMoreMerchantFoodProduct = foodProducts.length == merchantRepo.limit;
         yield GetFoodProductsLoadedState(foodProducts);
       } catch (e, s) {
@@ -83,8 +88,8 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
       marketBusy = true;
       try {
         yield GetMarketItemLoadingState();
-        final List<MarketItemModel> marketItems =
-            await merchantRepo.getMarketItem(lastMarketItem);
+        final List<MarketItemModel> marketItems = await merchantRepo
+            .getMarketItem(event.fresh ? null : lastMarketItem);
         if (marketItems.isNotEmpty) lastMarketItem = marketItems.last;
         hasMoreMerchantFoodProduct = marketItems.length == merchantRepo.limit;
         yield GetMarketItemLoadedState(marketItems);

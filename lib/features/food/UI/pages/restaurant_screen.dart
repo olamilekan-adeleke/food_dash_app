@@ -64,7 +64,7 @@ class _MerchantListViewState extends State<MerchantListView> {
     if (_controller.position.pixels >= _controller.position.maxScrollExtent) {
       if (merchantBloc!.hasMoreMerchant == true &&
           merchantBloc!.merchantBusy == false) {
-        merchantBloc!.add(GetMerchantsEvents());
+        merchantBloc!.add(GetMerchantsEvents(false));
       }
     }
   }
@@ -74,7 +74,7 @@ class _MerchantListViewState extends State<MerchantListView> {
     super.initState();
 
     merchantBloc = BlocProvider.of<MerchantBloc>(context);
-    merchantBloc!.add(GetMerchantsEvents());
+    merchantBloc!.add(GetMerchantsEvents(true));
     _controller = ScrollController();
     _controller.addListener(() => _scrollListener());
   }
@@ -102,16 +102,23 @@ class _MerchantListViewState extends State<MerchantListView> {
               height: 400,
               child: CustomErrorWidget(
                 message: state.message,
-                callback: () => merchantBloc!.add(GetMerchantsEvents()),
+                callback: () => merchantBloc!.add(GetMerchantsEvents(true)),
               ),
             );
           }
 
           return Stack(
             children: <Widget>[
-              MerchantList(
-                controller: _controller,
-                merchants: merchants,
+              RefreshIndicator(
+                onRefresh: () async {
+                  merchants.clear();
+                  BlocProvider.of<MerchantBloc>(context)
+                      .add(GetMerchantsEvents(false));
+                },
+                child: MerchantList(
+                  controller: _controller,
+                  merchants: merchants,
+                ),
               ),
               Align(
                 alignment: Alignment.bottomCenter,

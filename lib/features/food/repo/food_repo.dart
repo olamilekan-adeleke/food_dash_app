@@ -319,10 +319,11 @@ class MerchantRepo {
 
   Future<void> deductUserWallet(int amount) async {
     final String? userUid = authenticationRepo.getUserUid();
+    final int deliveryFee = await getDeliveryFee();
 
     await userCollectionRef.doc(userUid).update(
       <String, dynamic>{
-        'wallet_balance': FieldValue.increment(amount),
+        'wallet_balance': FieldValue.increment((amount + deliveryFee)),
       },
     );
   }

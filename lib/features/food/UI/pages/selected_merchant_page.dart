@@ -6,17 +6,15 @@ import 'package:food_dash_app/cores/components/custom_text_widget.dart';
 import 'package:food_dash_app/cores/components/error_widget.dart';
 import 'package:food_dash_app/cores/components/image_widget.dart';
 import 'package:food_dash_app/cores/components/loading_indicator.dart';
-import 'package:food_dash_app/cores/constants/color.dart';
-import 'package:food_dash_app/cores/utils/currency_formater.dart';
 import 'package:food_dash_app/cores/utils/emums.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/sizer_utils.dart';
-import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
+
 import 'package:food_dash_app/features/food/UI/widgets/header_widget.dart';
 import 'package:food_dash_app/features/food/UI/widgets/popular_food_widget.dart';
 import 'package:food_dash_app/features/food/bloc/merchant_bloc/merchant_bloc.dart';
-import 'package:food_dash_app/features/food/model/cart_model.dart';
+
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
 import 'package:food_dash_app/features/food/model/merchant_model.dart';
 
@@ -80,7 +78,7 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
     if (_controller.position.pixels >= _controller.position.maxScrollExtent) {
       if (merchantBloc!.hasMoreMerchantFoodProduct == true &&
           merchantBloc!.merchantFoodBusy == false) {
-        merchantBloc!.add(GetFoodProductsEvents(widget.merchantId));
+        merchantBloc!.add(GetFoodProductsEvents(widget.merchantId, false));
       }
     }
   }
@@ -90,7 +88,7 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
     super.initState();
 
     merchantBloc = BlocProvider.of<MerchantBloc>(context);
-    merchantBloc!.add(GetFoodProductsEvents(widget.merchantId));
+    merchantBloc!.add(GetFoodProductsEvents(widget.merchantId, true));
     _controller = ScrollController();
     _controller.addListener(() => _scrollListener());
   }
@@ -117,49 +115,55 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
             return SizedBox(
               child: CustomErrorWidget(
                 message: state.message,
-                callback: () =>
-                    merchantBloc!.add(GetFoodProductsEvents(widget.merchantId)),
+                callback: () => merchantBloc!
+                    .add(GetFoodProductsEvents(widget.merchantId, true)),
               ),
             );
           }
 
-          return Stack(
-            children: <Widget>[
-              foodItemWidget(),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: BlocConsumer<MerchantBloc, MerchantState>(
-                  listener: (BuildContext context, MerchantState state) {},
-                  builder: (BuildContext context, MerchantState state) {
-                    if (state is GetFoodProductsLoadingState) {
-                      return Container(
-                        padding: const EdgeInsets.all(5),
-                        margin: const EdgeInsets.all(10),
-                        color: Colors.grey.shade600,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
-                            SizedBox(
-                              height: 18,
-                              width: 18,
-                              child: CustomLoadingIndicatorWidget(),
-                            ),
-                            SizedBox(width: 20),
-                            CustomTextWidget(
-                              text: 'Loading More...',
-                              textColor: Colors.white,
-                            ),
-                          ],
-                        ),
-                      );
-                    }
+          return RefreshIndicator(
+            onRefresh: () async {
+              foodProducts.clear();
+              merchantBloc!.add(GetFoodProductsEvents(widget.merchantId, true));
+            },
+            child: Stack(
+              children: <Widget>[
+                foodItemWidget(),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: BlocConsumer<MerchantBloc, MerchantState>(
+                    listener: (BuildContext context, MerchantState state) {},
+                    builder: (BuildContext context, MerchantState state) {
+                      if (state is GetFoodProductsLoadingState) {
+                        return Container(
+                          padding: const EdgeInsets.all(5),
+                          margin: const EdgeInsets.all(10),
+                          color: Colors.grey.shade600,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const <Widget>[
+                              SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CustomLoadingIndicatorWidget(),
+                              ),
+                              SizedBox(width: 20),
+                              CustomTextWidget(
+                                text: 'Loading More...',
+                                textColor: Colors.white,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
 
-                    return Container();
-                  },
+                      return Container();
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
@@ -183,16 +187,13 @@ class _FoodProductsListViewState extends State<FoodProductsListView> {
       itemBuilder: (BuildContext context, int index) {
         final FoodProductModel foodProduct = foodProducts[index];
 
-         return ItemWidget(
+        return ItemWidget(
           foodProduct: foodProduct,
           callback: () => CustomNavigationService().navigateTo(
             RouteName.selectedFoodPage,
             argument: foodProduct,
           ),
         );
-
-
-     
       },
     );
   }

@@ -43,9 +43,12 @@ class MarketItemModel {
         currentItem += element;
         searchKey.add(currentItem);
       });
+
+      currentItem = '';
+      searchKey.add(currentItem);
     }
 
-    splitedNames[0].split('').toList().forEach((String element) {
+    name.split('').toList().forEach((String element) {
       currentItem += element;
       searchKey.add(currentItem);
     });

@@ -25,7 +25,7 @@ class _PopularRestaurantWidgetsState extends State<PopularRestaurantWidgets> {
 
   @override
   void initState() {
-    BlocProvider.of<MerchantBloc>(context).add(GetMerchantsEvents());
+    BlocProvider.of<MerchantBloc>(context).add(GetMerchantsEvents(true));
     super.initState();
   }
 
@@ -71,7 +71,7 @@ class _PopularRestaurantWidgetsState extends State<PopularRestaurantWidgets> {
                 return CustomErrorWidget(
                   message: 'Opps, an error occurred!',
                   callback: () => BlocProvider.of<MerchantBloc>(context)
-                      .add(GetMerchantsEvents()),
+                      .add(GetMerchantsEvents(true)),
                 );
               }
 
