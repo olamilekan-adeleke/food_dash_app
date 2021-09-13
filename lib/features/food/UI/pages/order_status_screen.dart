@@ -74,6 +74,7 @@ class OrderStatusScreen extends StatelessWidget {
                         title: CustomTextWidget(
                           text: 'Order Accepted',
                           fontSize: sizerSp(15),
+                          fontWeight: FontWeight.bold,
                         ),
                         content: const OrderAcceptedWidget(),
                         isActive: order.orderStatus == OrderStatusEunm.accepted,
@@ -84,6 +85,7 @@ class OrderStatusScreen extends StatelessWidget {
                         title: CustomTextWidget(
                           text: 'Order Processing',
                           fontSize: sizerSp(15),
+                          fontWeight: FontWeight.bold,
                         ),
                         content: const OrderProcessingWidget(),
                         isActive:
@@ -95,6 +97,7 @@ class OrderStatusScreen extends StatelessWidget {
                         title: CustomTextWidget(
                           text: 'Order Enroute',
                           fontSize: sizerSp(15),
+                          fontWeight: FontWeight.bold,
                         ),
                         content: const OrderEnrouteWidget(),
                         isActive: order.orderStatus == OrderStatusEunm.enroute,
@@ -105,6 +108,7 @@ class OrderStatusScreen extends StatelessWidget {
                         title: CustomTextWidget(
                           text: 'Order Completed',
                           fontSize: sizerSp(15),
+                          fontWeight: FontWeight.bold,
                         ),
                         content: OrderCompletedWidget(
                           orderId: order.id,

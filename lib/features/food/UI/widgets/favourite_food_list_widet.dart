@@ -152,6 +152,7 @@ class FavouriteFoodItemWidget extends StatelessWidget {
         return StaggeredTile.fit(2);
       },
       itemCount: foodProducts.length,
+      
       crossAxisCount: 4,
       itemBuilder: (BuildContext context, int index) {
         final FoodProductModel foodProduct = foodProducts[index];

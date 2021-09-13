@@ -50,13 +50,13 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
     if (event is GetMerchantsEvents) {
       merchantBusy = true;
       try {
-        yield GetMerchantLoadingState();
+        yield GetMerchantLoadingState(isHome: event.isHome);
         final List<MerchantModel> merchants = await merchantRepo.getMerchant(
           lastMerchant: event.fresh ? null : lastmerchant,
         );
         if (merchants.isNotEmpty) lastmerchant = merchants.last;
         hasMoreMerchant = merchants.length == merchantRepo.limit;
-        yield GetMerchantLoadedState(merchants);
+        yield GetMerchantLoadedState(merchants, isHome: event.isHome);
       } catch (e, s) {
         debugPrint(e.toString());
         debugPrint(s.toString());

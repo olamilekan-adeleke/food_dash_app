@@ -12,12 +12,19 @@ class MerchantInitial extends MerchantState {}
 /// get merchants state
 class GetMerchantInitialState extends MerchantState {}
 
-class GetMerchantLoadingState extends MerchantState {}
+class GetMerchantLoadingState extends MerchantState {
+  GetMerchantLoadingState({this.isHome});
+
+  final bool? isHome;
+
+  
+}
 
 class GetMerchantLoadedState extends MerchantState {
-  const GetMerchantLoadedState(this.merchants);
+  const GetMerchantLoadedState(this.merchants, {this.isHome});
 
   final List<MerchantModel> merchants;
+  final bool? isHome;
 }
 
 class GetMerchantErrorState extends MerchantState {
@@ -226,7 +233,6 @@ class SearchErrorState extends MerchantState {
 
   final String message;
 }
-
 
 /// search market
 class SearchMarketInitialState extends MerchantState {}

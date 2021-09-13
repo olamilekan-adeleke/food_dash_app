@@ -9,8 +9,9 @@ abstract class MerchantEvent extends Equatable {
 
 /// get merchants list event
 class GetMerchantsEvents extends MerchantEvent {
-  const GetMerchantsEvents(this.fresh);
+  const GetMerchantsEvents(this.fresh, {this.isHome});
   final bool fresh;
+  final bool? isHome;
 }
 
 /// get popular food

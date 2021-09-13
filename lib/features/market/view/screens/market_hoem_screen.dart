@@ -20,7 +20,7 @@ class MarketHomeScreen extends StatelessWidget {
           children: <Widget>[
             const SizedBox(height: 10),
             const HeaderWidget(
-                iconData: Icons.menu_outlined, title: 'Market Place'),
+                iconData: Icons.menu_outlined, title: 'Groceries'),
             const SizedBox(height: 10),
             const SearchBarWidget(extra: 'Items', food: false),
             SizedBox(height: sizerSp(10)),

@@ -130,19 +130,14 @@ class _MarketItemsWidgetsState extends State<MarketItemsWidgets> {
 
   Widget foodItemWidget() {
     return StaggeredGridView.countBuilder(
-      // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-      //   maxCrossAxisExtent: sizerSp(260),
-      //   childAspectRatio: 0.69,
-      // ),
       controller: _controller,
-      // physics: const BouncingScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       shrinkWrap: true,
       crossAxisCount: 4,
       staggeredTileBuilder: (int index) {
         return StaggeredTile.fit(2);
       },
       itemCount: marketItems.length,
-
       itemBuilder: (BuildContext context, int index) {
         final MarketItemModel marketItem = marketItems[index];
 
@@ -175,125 +170,130 @@ class ItemWidget extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          InkWell(
-            onTap: () => callback(),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                SizedBox(
-                  height: sizerSp(100),
-                  width: double.infinity,
-                  child: CarouselSlider(
-                    options: CarouselOptions(
-                      viewportFraction: 0.9,
-                      autoPlay: true,
-                      enableInfiniteScroll: false,
-                    ),
-                    items: marketItem.images.map((String image) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.symmetric(horizontal: 3.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5.0),
-                              child: CustomImageWidget(
-                                imageUrl: image,
-                                imageTypes: ImageTypes.network,
+      child: SizedBox(
+        height: sizerSp(190),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            InkWell(
+              onTap: () => callback(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SizedBox(
+                    height: sizerSp(100),
+                    width: double.infinity,
+                    child: CarouselSlider(
+                      options: CarouselOptions(
+                        viewportFraction: 0.9,
+                        autoPlay: true,
+                        enableInfiniteScroll: false,
+                      ),
+                      items: marketItem.images.map((String image) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: EdgeInsets.symmetric(horizontal: 3.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5.0),
+                                child: CustomImageWidget(
+                                  imageUrl: image,
+                                  imageTypes: ImageTypes.network,
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
+                            );
+                          },
+                        );
+                      }).toList(),
+                    ),
                   ),
-                ),
-                SizedBox(height: sizerSp(5)),
-                CustomTextWidget(
-                  text: marketItem.name,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-                SizedBox(height: sizerSp(2)),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
-                  child: CustomTextWidget(
-                    text: marketItem.description,
+                  SizedBox(height: sizerSp(5)),
+                  CustomTextWidget(
+                    text: marketItem.name,
                     fontSize: 14,
-                    fontWeight: FontWeight.w300,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  SizedBox(height: sizerSp(2)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
+                    child: CustomTextWidget(
+                      text: marketItem.description,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w300,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  SizedBox(height: sizerSp(5)),
+                  CustomTextWidget(
+                    text: '\u20A6 ${currencyFormatter(marketItem.price)}',
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    textColor: kcPrimaryColor,
                     maxLines: 2,
                     textAlign: TextAlign.center,
                   ),
-                ),
-                SizedBox(height: sizerSp(5)),
-                CustomTextWidget(
-                  text: '\u20A6 ${currencyFormatter(marketItem.price)}',
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  textColor: kcPrimaryColor,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-
-          ///
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: sizerSp(5.0)),
-            child: Container(
-              height: sizerSp(23),
-              width: double.infinity,
-              margin: EdgeInsets.symmetric(vertical: sizerSp(5.0)),
-              padding: EdgeInsets.symmetric(vertical: sizerSp(5.0)),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(sizerSp(5.0)),
-                color: kcPrimaryColor,
-              ),
-              child: BlocConsumer<MerchantBloc, MerchantState>(
-                listener: (BuildContext context, MerchantState state) {
-                  if (state is AddMarketItemToCartLoadedState) {
-                    CustomSnackBarService.showSuccessSnackBar('Added To Cart!');
-                  } else if (state is AddMarketItemToCartErrorState) {
-                    CustomSnackBarService.showErrorSnackBar(state.message);
-                  }
-                },
-                builder: (BuildContext context, MerchantState state) {
-                  if (state is AddMarketItemToCartInitialState) {
-                    return const CustomLoadingIndicatorWidget();
-                  }
-
-                  return InkWell(
-                    onTap: () {
-                      final CartModel cart = CartModel(
-                        category: marketItem.category,
-                        id: marketItem.id,
-                        count: 1,
-                        description: marketItem.description,
-                        image: marketItem.images.first,
-                        name: marketItem.name,
-                        price: marketItem.price,
-                        fastFoodName: '',
-                        fastFoodId: '',
-                      );
-
-                      BlocProvider.of<MerchantBloc>(context)
-                          .add(AddMarketItemProductToCartEvents(cart));
-                    },
-                    child: Icon(
-                      Icons.shopping_cart,
-                      color: Colors.white,
-                      size: sizerSp(12),
-                    ),
-                  );
-                },
+                ],
               ),
             ),
-          ),
-        ],
+            const Spacer(),
+
+            ///
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: sizerSp(5.0)),
+              child: Container(
+                height: sizerSp(23),
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(vertical: sizerSp(5.0)),
+                padding: EdgeInsets.symmetric(vertical: sizerSp(5.0)),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(sizerSp(5.0)),
+                  color: kcPrimaryColor,
+                ),
+                child: BlocConsumer<MerchantBloc, MerchantState>(
+                  listener: (BuildContext context, MerchantState state) {
+                    if (state is AddMarketItemToCartLoadedState) {
+                      CustomSnackBarService.showSuccessSnackBar(
+                          'Added To Cart!');
+                    } else if (state is AddMarketItemToCartErrorState) {
+                      CustomSnackBarService.showErrorSnackBar(state.message);
+                    }
+                  },
+                  builder: (BuildContext context, MerchantState state) {
+                    if (state is AddMarketItemToCartInitialState) {
+                      return const CustomLoadingIndicatorWidget();
+                    }
+
+                    return InkWell(
+                      onTap: () {
+                        final CartModel cart = CartModel(
+                          category: marketItem.category,
+                          id: marketItem.id,
+                          count: 1,
+                          description: marketItem.description,
+                          image: marketItem.images.first,
+                          name: marketItem.name,
+                          price: marketItem.price,
+                          fastFoodName: '',
+                          fastFoodId: '',
+                        );
+
+                        BlocProvider.of<MerchantBloc>(context)
+                            .add(AddMarketItemProductToCartEvents(cart));
+                      },
+                      child: Icon(
+                        Icons.shopping_cart,
+                        color: Colors.white,
+                        size: sizerSp(12),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -25,7 +25,8 @@ class _PopularRestaurantWidgetsState extends State<PopularRestaurantWidgets> {
 
   @override
   void initState() {
-    BlocProvider.of<MerchantBloc>(context).add(GetMerchantsEvents(true));
+    BlocProvider.of<MerchantBloc>(context)
+        .add(GetMerchantsEvents(true, isHome: true));
     super.initState();
   }
 
@@ -65,13 +66,15 @@ class _PopularRestaurantWidgetsState extends State<PopularRestaurantWidgets> {
               }
             },
             builder: (BuildContext context, MerchantState state) {
-              if (state is GetMerchantLoadingState) {
+              if (state is GetMerchantLoadingState &&
+                  state.isHome != null &&
+                  state.isHome == true) {
                 return const Center(child: CustomLoadingIndicatorWidget());
               } else if (state is GetMerchantErrorState) {
                 return CustomErrorWidget(
                   message: 'Opps, an error occurred!',
                   callback: () => BlocProvider.of<MerchantBloc>(context)
-                      .add(GetMerchantsEvents(true)),
+                      .add(GetMerchantsEvents(true, isHome: true)),
                 );
               }
 
