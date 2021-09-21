@@ -209,10 +209,13 @@ class ItemWidget extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: sizerSp(5)),
-                  CustomTextWidget(
-                    text: marketItem.name,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
+                    child: CustomTextWidget(
+                      text: marketItem.name,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   SizedBox(height: sizerSp(2)),
                   Padding(

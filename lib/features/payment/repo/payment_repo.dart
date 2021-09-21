@@ -8,6 +8,7 @@ import 'package:flutterwave/models/responses/charge_response.dart';
 import 'package:food_dash_app/cores/utils/config.dart';
 import 'package:food_dash_app/cores/utils/locator.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
+import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/env.dart';
 import 'package:food_dash_app/features/auth/model/user_details_model.dart';
@@ -65,8 +66,12 @@ class PaymentRepo {
     return accessCode;
   }
 
-  Future<void> _verifyOnServer(String? reference,
-      {required BuildContext context, int? amount}) async {
+  Future<void> _verifyOnServer(
+    String? reference, {
+    required BuildContext context,
+    int? amount,
+    bool isForFood = false,
+  }) async {
     const String skTest = secretKey;
 
     if (reference == null) return;
@@ -87,27 +92,48 @@ class PaymentRepo {
           json.decode(response.body) as Map<String, dynamic>;
 
       if (body['data']['status'] == 'success') {
-        CustomSnackBarService.showSuccessSnackBar('Payment SucessFull');
-        final PaymentModel paymentModel = PaymentModel(
-          id: const Uuid().v1(),
-          amount: amount!,
-          dateTime: DateTime.now(),
-          message: 'Wallet Top up',
-        );
+        if (isForFood) {
+          CustomSnackBarService.showSuccessSnackBar('Payment SucessFull');
+          final PaymentModel paymentModel = PaymentModel(
+            id: const Uuid().v1(),
+            amount: amount!,
+            dateTime: DateTime.now(),
+            message: 'Wallet Top up',
+          );
 
-        await merchantRepo.deductUserWallet(amount);
-        await merchantRepo.addPaymentHistory(paymentModel);
+          String id = await merchantRepo.makePayment(0, cardPayment: true);
+          await merchantRepo.addPaymentHistory(paymentModel);
 
-        CustomNavigationService().goBack();
+          CustomNavigationService().goBack();
+          CustomNavigationService().goBack();
+          CustomNavigationService().navigateTo(
+            RouteName.orderStatus,
+            argument: id,
+          );
+          CustomSnackBarService.showSuccessSnackBar('Payment SucessFull');
+        } else {
+          CustomSnackBarService.showSuccessSnackBar('Payment SucessFull');
+          final PaymentModel paymentModel = PaymentModel(
+            id: const Uuid().v1(),
+            amount: amount!,
+            dateTime: DateTime.now(),
+            message: 'Wallet Top up',
+          );
+
+          await merchantRepo.deductUserWallet(amount);
+          await merchantRepo.addPaymentHistory(paymentModel);
+
+          CustomNavigationService().goBack();
+        }
       } else {
-        CustomSnackBarService.showSuccessSnackBar('Error Occured In Payment');
+        CustomSnackBarService.showErrorSnackBar('Error Occured In Payment');
         CustomNavigationService().goBack();
         throw Exception();
       }
     } catch (e, s) {
       debugPrint(e.toString());
       debugPrint(s.toString());
-      CustomSnackBarService.showSuccessSnackBar('Error: ${e.toString()}');
+      CustomSnackBarService.showErrorSnackBar('Error: ${e.toString()}');
     }
   }
 
@@ -115,6 +141,7 @@ class PaymentRepo {
     required int price,
     required BuildContext context,
     required String userEmail,
+    bool isForFood = false,
   }) async {
     final Charge charge = Charge()
       ..amount = (price * 100).toInt()
@@ -134,10 +161,13 @@ class PaymentRepo {
         response.reference,
         context: context,
         amount: price,
+        isForFood: isForFood,
       );
     } else {
       debugPrint('error');
-      throw Exception('An Error Occurred Please Try Again!');
+      CustomSnackBarService.showErrorSnackBar(
+        'An Error Occurred Please Try Again!',
+      );
     }
   }
 
@@ -145,6 +175,7 @@ class PaymentRepo {
     required int price,
     required BuildContext context,
     required String userEmail,
+    bool isForFood = false,
   }) async {
     final Charge charge = Charge()
       ..amount = (price * 100).toInt()
@@ -164,6 +195,7 @@ class PaymentRepo {
         response.reference,
         context: context,
         amount: price,
+        isForFood: isForFood,
       );
     } else {
       debugPrint('error');
@@ -191,8 +223,6 @@ class PaymentRepo {
       acceptUSSDPayment: false,
       acceptAccountPayment: false,
     );
-
-    
 
     try {
       final ChargeResponse response =

@@ -15,9 +15,12 @@ import 'package:food_dash_app/features/food/UI/widgets/header_widget.dart';
 import 'package:food_dash_app/features/food/repo/food_repo.dart';
 import 'package:food_dash_app/features/food/repo/local_database_repo.dart';
 import 'package:food_dash_app/features/payment/repo/payment_repo.dart';
+import 'package:get/get.dart';
 
 class WalletScreen extends StatelessWidget {
-  const WalletScreen({Key? key}) : super(key: key);
+  const WalletScreen({Key? key, this.amount}) : super(key: key);
+
+  final int? amount;
 
   @override
   Widget build(BuildContext context) {
@@ -38,12 +41,6 @@ class WalletScreen extends StatelessWidget {
               ),
               color: Colors.white,
             ),
-            // SizedBox(height: sizerSp(10)),
-            // WalletOptionItemWidget(
-            //   title: 'Top card to Wallet',
-            //   callback: () {},
-            //   // color: Colors,
-            // ),
             SizedBox(height: sizerSp(10)),
             WalletOptionItemWidget(
               title: 'Payment history',
@@ -60,7 +57,10 @@ class WalletScreen extends StatelessWidget {
 class FundWalletDetailsWidget extends StatelessWidget {
   const FundWalletDetailsWidget({
     Key? key,
+    this.amount,
   }) : super(key: key);
+
+  final int? amount;
 
   static final PaymentRepo paymentRepo = locator<PaymentRepo>();
   static final LocaldatabaseRepo localdatabaseRepo =
@@ -85,9 +85,10 @@ class FundWalletDetailsWidget extends StatelessWidget {
           SizedBox(height: sizerSp(10)),
           CustomTextField(
             textEditingController: textEditingController,
-            hintText: 'Enter Amount',
+            hintText: amount == null ? 'Enter Amount' : amount.toString(),
             labelText: 'Amount',
             textInputType: TextInputType.number,
+            enable: false,
           ),
           SizedBox(height: sizerSp(20)),
           CustomTextWidget(
@@ -98,17 +99,26 @@ class FundWalletDetailsWidget extends StatelessWidget {
           SizedBox(height: sizerSp(20)),
           InkWell(
             onTap: () async {
-              if (textEditingController.text.trim().isEmpty) {
+              if (textEditingController.text.trim().isEmpty && amount == null) {
                 CustomSnackBarService.showWarningSnackBar(
-                    'Please Enter Amount!');
+                  'Please Enter Amount!',
+                );
                 return;
               }
-              paymentRepo.chargeCard(
-                price: int.parse(textEditingController.text.trim()),
+
+              await paymentRepo.chargeCard(
+                price: amount ?? int.parse(textEditingController.text.trim()),
                 context: context,
+                isForFood: amount != null ? true : false,
                 userEmail:
                     (await localdatabaseRepo.getUserDataFromLocalDB())!.email,
               );
+
+              if (amount != null) {
+                Get.back();
+                Get.back();
+              }
+
               // paymentRepo.useFlutterWave(
               //   context,
               //   int.parse(textEditingController.text.trim()),
@@ -137,6 +147,7 @@ class FundWalletDetailsWidget extends StatelessWidget {
                 return;
               }
               paymentRepo.chargeBank(
+                isForFood: amount != null ? true : false,
                 price: int.parse(textEditingController.text.trim()),
                 context: context,
                 userEmail:
@@ -217,7 +228,7 @@ class WalletBalanceWidget extends StatelessWidget {
         AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot,
       ) {
         final UserDetailsModel userDetails = UserDetailsModel.fromMap(
-          snapshot.data!.data() ?? <String, dynamic>{},
+          snapshot.data?.data() ?? <String, dynamic>{},
         );
         return Container(
           padding: EdgeInsets.all(sizerSp(10.0)),

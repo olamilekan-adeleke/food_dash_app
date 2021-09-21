@@ -537,7 +537,7 @@ class CartItemWidget extends StatelessWidget {
     return Card(
       elevation: 5.0,
       child: SizedBox(
-        width: size.width,
+        width: size.width - sizerSp(20),
         height: sizerSp(80),
         child: Padding(
           padding: const EdgeInsets.all(5.0),
@@ -560,20 +560,26 @@ class CartItemWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   SizedBox(height: sizerSp(10.0)),
-                  CustomTextWidget(
-                    text: cartItem.name,
-                    fontSize: sizerSp(13),
-                    overflow: TextOverflow.ellipsis,
-                    fontWeight: FontWeight.bold,
-                    maxLines: 1,
+                  SizedBox(
+                    width: size.width * 0.50,
+                    child: CustomTextWidget(
+                      text: cartItem.name,
+                      fontSize: sizerSp(13),
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.bold,
+                      maxLines: 2,
+                    ),
                   ),
                   SizedBox(height: sizerSp(2.0)),
-                  CustomTextWidget(
-                    text: cartItem.fastFoodName ?? 'Restaurant name',
-                    fontSize: sizerSp(12),
-                    overflow: TextOverflow.ellipsis,
-                    fontWeight: FontWeight.w300,
-                    maxLines: 1,
+                  SizedBox(
+                    width: size.width * 0.50,
+                    child: CustomTextWidget(
+                      text: cartItem.fastFoodName ?? 'Restaurant name',
+                      fontSize: sizerSp(12),
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.w300,
+                      maxLines: 1,
+                    ),
                   ),
                   SizedBox(height: sizerSp(2.0)),
                   CustomTextWidget(

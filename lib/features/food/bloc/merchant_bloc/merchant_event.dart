@@ -76,8 +76,8 @@ class GetFavouritesItemEvents extends MerchantEvent {}
 
 // make payment for food order event
 class MakePaymentEvent extends MerchantEvent {
-  const MakePaymentEvent(this.password, this.devlieryFee);
-  final String password;
+  const MakePaymentEvent(this.devlieryFee, {this.cardPayment = false});
+  final bool cardPayment;
   final int devlieryFee;
 }
 

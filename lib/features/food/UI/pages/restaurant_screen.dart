@@ -222,7 +222,7 @@ class MerchantList extends StatelessWidget {
                         ),
                         SizedBox(height: sizerSp(10)),
                         CustomTextWidget(
-                          text: 'See Meun',
+                          text: 'See Menu',
                           fontSize: sizerSp(10),
                           fontWeight: FontWeight.bold,
                           textAlign: TextAlign.center,

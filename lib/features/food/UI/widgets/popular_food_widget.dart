@@ -188,10 +188,16 @@ class ItemWidget extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: sizerSp(5)),
-                  CustomTextWidget(
-                    text: foodProduct.name,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
+                    child: CustomTextWidget(
+                      text: foodProduct.name,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   SizedBox(height: sizerSp(2)),
                   Padding(

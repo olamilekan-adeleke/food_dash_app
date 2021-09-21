@@ -132,8 +132,10 @@ class MerchantRepo {
   }) async {
     final List<FoodProductModel> merchants = <FoodProductModel>[];
 
-    Query<Map<String, dynamic>> query =
-        foodCollectionRef.orderBy('likes_count', descending: true).limit(limit);
+    Query<Map<String, dynamic>> query = foodCollectionRef
+        .orderBy('name')
+        .orderBy('likes_count', descending: true)
+        .limit(limit);
 
     if (lastFoodProduct != null) {
       query = query.startAfter(
@@ -284,7 +286,7 @@ class MerchantRepo {
     yield* userCollectionRef.doc(userUid).snapshots();
   }
 
-  Future<String> sendOrder(int deliveryFee) async {
+  Future<String> sendOrder(int deliveryFee, {bool directPay = false}) async {
     final String id = const Uuid().v1();
     int totalPrice = 0;
     List<CartModel> items = <CartModel>[];
@@ -365,31 +367,28 @@ class MerchantRepo {
     }
   }
 
-  Future<String> makePayment(String password, int deliveryFee) async {
+  Future<String> makePayment(int deliveryFee,
+      {bool cardPayment = false}) async {
     String id = '';
 
     try {
-      final bool isAuthenticated =
-          await authenticationRepo.authenticateUser(password);
-
-      if (isAuthenticated) {
+      // final bool isAuthenticated =
+      //     await authenticationRepo.authenticateUser(password);
+      if (cardPayment == false) {
         await checkUserWalletBalance();
-
-        id = await sendOrder(deliveryFee);
-
-        if (localdatabaseRepo.showFood.value) {
-          await localdatabaseRepo.clearCartItem();
-        } else {
-          await localdatabaseRepo.clearMarketCartItem();
-        }
-
-        CustomSnackBarService.showSuccessSnackBar(
-            'Paymennt Successful, Order has been placed!');
-      } else {
-        CustomSnackBarService.showErrorSnackBar(
-            'Opps, An Error Occured, Please Try Again!');
-        throw Exception('Opps, An Error Occured, Please Try Again!');
       }
+
+      id = await sendOrder(deliveryFee);
+
+      if (localdatabaseRepo.showFood.value) {
+        await localdatabaseRepo.clearCartItem();
+      } else {
+        await localdatabaseRepo.clearMarketCartItem();
+      }
+
+      CustomSnackBarService.showSuccessSnackBar(
+        'Paymennt Successful, Order has been placed!',
+      );
     } catch (err, s) {
       debugPrint(err.toString());
       debugPrint(s.toString());

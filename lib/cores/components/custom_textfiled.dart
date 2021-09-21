@@ -15,6 +15,7 @@ class CustomTextField extends StatefulWidget {
     this.isPassword = false,
     this.maxLine = 1,
     this.textInputAction,
+    this.enable = true,
     this.onDone,
   }) : super(key: key);
 
@@ -26,6 +27,7 @@ class CustomTextField extends StatefulWidget {
   final Function()? onDone;
   final TextInputType textInputType;
   final bool isPassword;
+  final bool enable;
   final int? maxLine;
   final TextInputAction? textInputAction;
 
@@ -41,6 +43,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       valueListenable: obscureText,
       builder: (BuildContext context, bool value, dynamic child) {
         return TextFormField(
+          enabled: widget.enable,
           maxLines: widget.maxLine,
           cursorColor: kcPrimaryColor,
           style: GoogleFonts.raleway(),

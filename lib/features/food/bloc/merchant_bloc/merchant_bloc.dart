@@ -104,7 +104,7 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
       try {
         yield GetPopularFoodLoadingState();
         final List<FoodProductModel> foodProducts = await merchantRepo
-            .getTopFoodProduct(lastFoodProduct: lastFoodProduct);
+            .getTopFoodProduct(lastFoodProduct: lastFavFoodProduct);
         if (foodProducts.isNotEmpty) lastFavFoodProduct = foodProducts.last;
         hasMoreFavFood = foodProducts.length == merchantRepo.limit;
         yield GetPopularFoodLoadedState(foodProducts);
@@ -219,8 +219,10 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
     } else if (event is MakePaymentEvent) {
       try {
         yield MakePaymentLoadingState();
-        final String id =
-            await merchantRepo.makePayment(event.password, event.devlieryFee);
+        final String id = await merchantRepo.makePayment(
+          event.devlieryFee,
+          cardPayment: event.cardPayment,
+        );
         yield MakePaymentLoadedState(id);
       } catch (e, s) {
         debugPrint(e.toString());

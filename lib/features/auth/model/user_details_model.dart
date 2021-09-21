@@ -17,7 +17,7 @@ class UserDetailsModel {
 
   factory UserDetailsModel.fromMap(Map<String, dynamic>? map) {
     return UserDetailsModel(
-      uid: map!['uid'] as String,
+      uid: map!['uid'].toString(),
       email: map['email'] as String,
       fullName: map['full_name'] as String,
       address: map['address'] != null ? map['address'] as String : null,
