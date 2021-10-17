@@ -136,52 +136,52 @@ class SelectedMarketItmePage extends StatelessWidget {
             ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              BlocConsumer<MerchantBloc, MerchantState>(
-                listener: (BuildContext context, MerchantState state) {
-                  if (state is AddFoodProductToCartLoadedState) {
-                    if (toCart) {
-                      CustomNavigationService().navigateTo(RouteName.cartPage);
-                    }
-                  }
-                },
-                builder: (BuildContext context, MerchantState state) {
-                  if (state is AddFoodProductToCartLoadingState) {
-                    return const CustomButton.loading();
-                  }
+              // BlocConsumer<MerchantBloc, MerchantState>(
+              //   listener: (BuildContext context, MerchantState state) {
+              //     if (state is AddFoodProductToCartLoadedState) {
+              //       if (toCart) {
+              //         CustomNavigationService().navigateTo(RouteName.cartPage);
+              //       }
+              //     }
+              //   },
+              //   builder: (BuildContext context, MerchantState state) {
+              //     if (state is AddFoodProductToCartLoadingState) {
+              //       return const CustomButton.loading();
+              //     }
 
-                  return ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(sizerSp(20)),
-                      bottomRight: Radius.circular(sizerSp(20)),
-                    ),
-                    child: CustomButton.smallSized(
-                      text: 'Add And Proceed To Check Out',
-                      width: sizerWidth(45),
-                      onTap: () {
-                        final CartModel cart = CartModel(
-                          category: marketItem.category,
-                          id: marketItem.id,
-                          count: 1,
-                          description: marketItem.description,
-                          image: marketItem.images.first,
-                          name: marketItem.name,
-                          price: marketItem.price,
-                          fastFoodName: '',
-                          fastFoodId: '',
-                        );
+              //     return ClipRRect(
+              //       borderRadius: BorderRadius.only(
+              //         topRight: Radius.circular(sizerSp(20)),
+              //         bottomRight: Radius.circular(sizerSp(20)),
+              //       ),
+              //       child: CustomButton.smallSized(
+              //         text: 'Add And Proceed To Check Out',
+              //         width: sizerWidth(45),
+              //         onTap: () {
+              //           final CartModel cart = CartModel(
+              //             category: marketItem.category,
+              //             id: marketItem.id,
+              //             count: 1,
+              //             description: marketItem.description,
+              //             image: marketItem.images.first,
+              //             name: marketItem.name,
+              //             price: marketItem.price,
+              //             fastFoodName: '',
+              //             fastFoodId: '',
+              //           );
 
-                        toCart = true;
+              //           toCart = true;
 
-                        BlocProvider.of<MerchantBloc>(context)
-                            .add(AddFoodProductToCartEvents(cart));
-                      },
-                    ),
-                  );
-                },
-              ),
-              //
+              //           BlocProvider.of<MerchantBloc>(context)
+              //               .add(AddMarketItemProductToCartEvents(cart));
+              //         },
+              //       ),
+              //     );
+              //   },
+              // ),
+              // //
               BlocConsumer<MerchantBloc, MerchantState>(
                 listener: (BuildContext context, MerchantState state) {},
                 builder: (BuildContext context, MerchantState state) {
@@ -211,7 +211,7 @@ class SelectedMarketItmePage extends StatelessWidget {
                         );
 
                         BlocProvider.of<MerchantBloc>(context)
-                            .add(AddFoodProductToCartEvents(cart));
+                            .add(AddMarketItemProductToCartEvents(cart));
 
                         toCart = false;
                       },
