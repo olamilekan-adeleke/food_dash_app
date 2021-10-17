@@ -31,92 +31,52 @@ class _PopularFoodWidgetsState extends State<PopularFoodWidgets> {
   List<FoodProductModel> foodList = <FoodProductModel>[];
   late ScrollController _controller;
 
-  void _scrollListener() {
-    final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
-    debugPrint(_controller.position.atEdge.toString());
-    debugPrint('dddd');
-    if (_controller.position.pixels >= _controller.position.maxScrollExtent) {
-      if (merchantBloc.hasMoreFavFood == true &&
-          merchantBloc.foodFavBusy == false) {
-        merchantBloc.add(GetPopularFoodEvents());
-      }
-    }
-  }
+  // void _scrollListener() {
+  //   final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+  //   debugPrint(_controller.position.atEdge.toString());
+  //   debugPrint('dddd');
+  //   if (_controller.position.pixels >= _controller.position.maxScrollExtent) {
+  //     if (merchantBloc.hasMoreFavFood == true &&
+  //         merchantBloc.foodFavBusy == false) {
+  //       merchantBloc.add(GetPopularFoodEvents());
+  //     }
+  //   }
+  // }
 
-  @override
-  void initState() {
-    _controller = ScrollController();
-    _controller.addListener(_scrollListener);
-    BlocProvider.of<MerchantBloc>(context).add(GetPopularFoodEvents());
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   _controller = ScrollController();
+  //   _controller.addListener(_scrollListener);
+  //   BlocProvider.of<MerchantBloc>(context).add(GetPopularFoodEvents());
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: BlocConsumer<MerchantBloc, MerchantState>(
-        listener: (BuildContext context, MerchantState state) {
-          if (state is GetPopularFoodLoadedState) {
-            foodList.addAll(state.foodList);
-            log(foodList.toString());
-          } else if (state is GetPopularFoodErrorState) {
-            CustomSnackBarService.showErrorSnackBar(state.message);
-          }
-        },
-        builder: (BuildContext context, MerchantState state) {
-          if (state is GetPopularFoodLoadingState && foodList.isEmpty) {
-            return const Center(child: CustomLoadingIndicatorWidget());
-          } else if (state is GetPopularFoodErrorState && foodList.isEmpty) {
-            return CustomErrorWidget(
-              message: state.message,
-              callback: () => BlocProvider.of<MerchantBloc>(context)
-                  .add(GetPopularFoodEvents()),
-            );
-          }
-
-          return Stack(
-            children: <Widget>[
-              foodItemWidget(),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: BlocConsumer<MerchantBloc, MerchantState>(
-                  listener: (BuildContext context, MerchantState state) {},
-                  builder: (BuildContext context, MerchantState state) {
-                    if (state is GetPopularFoodLoadingState) {
-                      return Container(
-                        padding: const EdgeInsets.all(5),
-                        margin: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade600,
-                          borderRadius: BorderRadius.circular(sizerSp(3)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
-                            SizedBox(
-                              height: 18,
-                              width: 18,
-                              child: CupertinoActivityIndicator(),
-                            ),
-                            SizedBox(width: 20),
-                            CustomTextWidget(
-                              text: 'Loading More',
-                              textColor: Colors.white,
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    return Container();
-                  },
-                ),
-              ),
-            ],
+    return BlocConsumer<MerchantBloc, MerchantState>(
+      listener: (BuildContext context, MerchantState state) {
+        if (state is GetPopularFoodLoadedState) {
+          foodList.addAll(state.foodList);
+          log(foodList.toString());
+        } else if (state is GetPopularFoodLoadingState) {
+          log('loading food');
+        } else if (state is GetPopularFoodErrorState) {
+          CustomSnackBarService.showErrorSnackBar(state.message);
+        }
+      },
+      builder: (BuildContext context, MerchantState state) {
+        if (state is GetPopularFoodLoadingState && foodList.isEmpty) {
+          return const Center(child: CustomLoadingIndicatorWidget());
+        } else if (state is GetPopularFoodErrorState && foodList.isEmpty) {
+          return CustomErrorWidget(
+            message: state.message,
+            callback: () => BlocProvider.of<MerchantBloc>(context)
+                .add(GetPopularFoodEvents()),
           );
-        },
-      ),
+        }
+
+        return foodItemWidget();
+      },
     );
   }
 
@@ -127,8 +87,7 @@ class _PopularFoodWidgetsState extends State<PopularFoodWidgets> {
         BlocProvider.of<MerchantBloc>(context).add(GetPopularFoodEvents());
       },
       child: StaggeredGridView.countBuilder(
-        controller: _controller,
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         crossAxisCount: 4,
         staggeredTileBuilder: (int index) {
