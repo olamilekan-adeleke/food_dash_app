@@ -18,14 +18,14 @@ class UserDetailsModel {
   factory UserDetailsModel.fromMap(Map<String, dynamic>? map) {
     return UserDetailsModel(
       uid: map!['uid'].toString(),
-      email: map['email'] as String,
-      fullName: map['full_name'] as String,
+      email: map['email'].toString(),
+      fullName: map['full_name'].toString(),
       address: map['address'] != null ? map['address'] as String : null,
       region: map['region'] != null ? map['region'] as String : null,
       walletBalance: map['wallet_balance'] != null
           ? double.parse(map['wallet_balance'].toString())
           : 0.0,
-      phoneNumber: map['phone_number'] as int,
+      phoneNumber: map['phone_number'] != null ? map['phone_number'] as int : 0,
       profilePicUrl: map['profile_pic_url'] != null
           ? map['profile_pic_url'] as String
           : null,
