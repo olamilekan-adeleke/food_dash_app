@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:food_dash_app/cores/components/loading_indicator.dart';
 import 'package:food_dash_app/cores/utils/locator.dart';
 import 'package:stacked_services/stacked_services.dart';
-
 
 class CustomNavigationService {
   static final NavigationService _navigationService =
@@ -18,7 +18,23 @@ class CustomNavigationService {
     return _navigationService.replaceWith(routeName, arguments: argument);
   }
 
-  bool goBack() {
-    return _navigationService.back();
+  Future<bool> goBack() async {
+    return await _navigationService.back();
+  }
+
+  Future<void> show() async {
+    Navigator.pop(Get.overlayContext!);
+    Get.defaultDialog(
+      title: 'Loading Please Wait...',
+      onWillPop: () async => false,
+      barrierDismissible: false,
+      content: Container(
+        child: CustomLoadingIndicatorWidget(),
+      ),
+    );
+  }
+
+  void popShow() {
+    Navigator.pop(Get.overlayContext!);
   }
 }

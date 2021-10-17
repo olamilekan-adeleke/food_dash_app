@@ -38,7 +38,12 @@ class PaymentRepo {
     return 'ChargedFrom${platform}_${DateTime.now().microsecondsSinceEpoch}';
   }
 
-  Future<String> createAccessCode(String skTest, String _getReference) async {
+  Future<String> createAccessCode(
+    String skTest,
+    String _getReference,
+    int amount,
+    String email,
+  ) async {
     final Map<String, String> headers = <String, String>{
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -46,8 +51,8 @@ class PaymentRepo {
     };
 
     final Map<String, dynamic> data = <String, dynamic>{
-      'amount': 600,
-      'email': 'johnsonoye34@gmail.com',
+      'amount': amount,
+      'email': email,
       'reference': _getReference
     };
 
@@ -83,6 +88,10 @@ class PaymentRepo {
         'Authorization': 'Bearer $skTest',
       };
 
+      if (isForFood) {
+        await CustomNavigationService().show();
+      }
+
       final http.Response response = await http.get(
         Uri.parse('https://api.paystack.co/transaction/verify/$reference'),
         headers: headers,
@@ -98,18 +107,22 @@ class PaymentRepo {
             id: const Uuid().v1(),
             amount: amount!,
             dateTime: DateTime.now(),
-            message: 'Wallet Top up',
+            message: 'Food Purchase',
           );
 
           String id = await merchantRepo.makePayment(0, cardPayment: true);
           await merchantRepo.addPaymentHistory(paymentModel);
 
-          CustomNavigationService().goBack();
-          CustomNavigationService().goBack();
-          CustomNavigationService().navigateTo(
+          await CustomNavigationService().goBack();
+          await CustomNavigationService().goBack();
+          await CustomNavigationService().goBack();
+          await CustomNavigationService().navigateTo(
             RouteName.orderStatus,
             argument: id,
           );
+
+          CustomNavigationService().popShow();
+
           CustomSnackBarService.showSuccessSnackBar('Payment SucessFull');
         } else {
           CustomSnackBarService.showSuccessSnackBar('Payment SucessFull');
@@ -143,10 +156,17 @@ class PaymentRepo {
     required String userEmail,
     bool isForFood = false,
   }) async {
+    bool result = false;
+
     final Charge charge = Charge()
       ..amount = (price * 100).toInt()
       ..reference = _getReference()
-      ..accessCode = await createAccessCode(secretKey, _getReference())
+      ..accessCode = await createAccessCode(
+        secretKey,
+        _getReference(),
+        (price * 100).toInt(),
+        userEmail,
+      )
       ..email = userEmail;
 
     final CheckoutResponse response = await Config.paystackPlugin.checkout(
@@ -180,7 +200,12 @@ class PaymentRepo {
     final Charge charge = Charge()
       ..amount = (price * 100).toInt()
       ..reference = _getReference()
-      ..accessCode = await createAccessCode(secretKey, _getReference())
+      ..accessCode = await createAccessCode(
+        secretKey,
+        _getReference(),
+        (price * 100).toInt(),
+        userEmail,
+      )
       ..email = userEmail;
 
     final CheckoutResponse response = await Config.paystackPlugin.checkout(

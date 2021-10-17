@@ -32,7 +32,7 @@ class UserDetailsModel {
       dateJoined:
           map['date_joined'] != null ? map['date_joined'] as Timestamp : null,
     );
-  }
+  } // 507850785078507812
 
   factory UserDetailsModel.fromJson(String source) =>
       UserDetailsModel.fromMap(json.decode(source) as Map<String, dynamic>);

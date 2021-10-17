@@ -109,11 +109,13 @@ class AuthenticateUserScreen extends StatelessWidget {
                   child: BlocConsumer<MerchantBloc, MerchantState>(
                     listener: (BuildContext context, MerchantState state) {
                       if (state is MakePaymentLoadedState) {
-                        CustomNavigationService().goBack();
-                        CustomNavigationService().navigateTo(
-                          RouteName.orderStatus,
-                          argument: state.id,
-                        );
+                        // CustomNavigationService().goBack();
+                        // CustomNavigationService().goBack();
+                        // CustomNavigationService().goBack();
+                        // CustomNavigationService().navigateRecplace(
+                        //   RouteName.orderStatus,
+                        //   argument: state.id,
+                        // );
                       }
                     },
                     builder: (BuildContext context, MerchantState state) {
@@ -129,10 +131,10 @@ class AuthenticateUserScreen extends StatelessWidget {
                               : await localdatabaseRepo
                                   .getTotalMarketCartItemPrice();
 
-                          show(context);
+                          // show(context);
                           CustomButtomModalService.showModal(
                             FundWalletDetailsWidget(
-                              amount: fee,
+                              amount: fee + amount,
                             ),
                           );
                         },
