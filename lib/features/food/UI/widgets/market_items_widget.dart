@@ -181,7 +181,7 @@ class ItemWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   SizedBox(
-                    height: sizerSp(100),
+                    height: sizerSp(90),
                     width: double.infinity,
                     child: CarouselSlider(
                       options: CarouselOptions(
@@ -213,29 +213,29 @@ class ItemWidget extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
                     child: CustomTextWidget(
                       text: marketItem.name,
-                      fontSize: sizerSp(12),
+                      fontSize: sizerSp(11),
                       fontWeight: FontWeight.bold,
                       maxLines: 1,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  SizedBox(height: sizerSp(2)),
+                  // SizedBox(height: sizerSp(2)),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
                     child: CustomTextWidget(
                       text: marketItem.description,
-                      fontSize: sizerSp(11),
+                      fontSize: sizerSp(10),
                       fontWeight: FontWeight.w300,
                       maxLines: 2,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  SizedBox(height: sizerSp(5)),
+                  SizedBox(height: sizerSp(2)),
                   CustomTextWidget(
                     text: '\u20A6 ${currencyFormatter(marketItem.price)}',
-                    fontSize: sizerSp(14),
+                    fontSize: sizerSp(12),
                     fontWeight: FontWeight.bold,
                     textColor: kcPrimaryColor,
                     maxLines: 1,

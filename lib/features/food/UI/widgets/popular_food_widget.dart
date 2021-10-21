@@ -135,7 +135,7 @@ class ItemWidget extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   SizedBox(
-                    height: sizerSp(100),
+                    height: sizerSp(90),
                     width: double.infinity,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(sizerSp(5.0)),
@@ -145,34 +145,35 @@ class ItemWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: sizerSp(5)),
+                  SizedBox(height: sizerSp(3)),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
                     child: CustomTextWidget(
                       text: foodProduct.name,
-                      fontSize: sizerSp(12),
+                      fontSize: sizerSp(11),
                       fontWeight: FontWeight.bold,
                       maxLines: 1,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  SizedBox(height: sizerSp(2)),
+                  // SizedBox(height: sizerSp(2)),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: sizerSp(5)),
                     child: CustomTextWidget(
                       text: foodProduct.description,
-                      fontSize: sizerSp(11),
+                      fontSize: sizerSp(10),
                       fontWeight: FontWeight.w300,
                       maxLines: 2,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  SizedBox(height: sizerSp(5)),
+                  SizedBox(height: sizerSp(2)),
+                  // const Spacer(),
                   CustomTextWidget(
                     text: '\u20A6 ${currencyFormatter(foodProduct.price)}',
-                    fontSize: sizerSp(14),
+                    fontSize: sizerSp(12),
                     fontWeight: FontWeight.bold,
                     textColor: kcPrimaryColor,
                     maxLines: 1,
