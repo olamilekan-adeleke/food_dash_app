@@ -38,11 +38,12 @@ exports.OnNewOrderCreated = functions.firestore
       "Your Order Was Succseffuly Made!",
       sendToCustomer
     );
-    await sendNotificationToUser(
-      "riders",
-      "A New Order Was Just Made!. Login to accept order",
-      sendToCustomer
-    );
+
+    // await sendNotificationToUser(
+    //   "riders",
+    //   "A New Order Was Just Made!. Login to accept order",
+    //   sendToCustomer
+    // );
 
     // / update user noticfication
     await saveDataToUserNotification(userId, docId, dataToSave)
@@ -55,6 +56,7 @@ exports.OnNewOrderCreated = functions.firestore
         return { msg: "error in execution: notification not saved" };
       });
 
+    // update like count
     if (type === "food") {
       // / add order to favourite
       items.forEach(async (element) => {
@@ -72,6 +74,48 @@ exports.OnNewOrderCreated = functions.firestore
 
     // update item fee
     await incrementTotalOrderAmountCount(itemFee);
+
+    return Promise.resolve();
+  });
+
+exports.OnNewOrderCreatedUpdateShopStat = functions.firestore
+  .document("/orders/{ordersID}")
+  .onUpdate(async (snapshot, context) => {
+    if (snapshot.after.data() === snapshot.before.data()) {
+      return Promise.resolve();
+    }
+
+    console.log(context);
+
+    const data = snapshot.after.data();
+    const userId = data.user_details.uid;
+    const orderId = data.id;
+    const docId = uuidv4();
+    const items = data.items;
+    const itemFee = data.items_fee;
+    const type = data.type;
+
+    if (data.order_status !== "enroute") {
+      return Promise.resolve();
+    }
+
+    if (type === "food") {
+      // trying to update shop owner stat
+      // / add order to favourite
+      items.forEach(async (element) => {
+        const FastFoodId = element.fast_food_id;
+        const foodAmount = element.price;
+
+        const dataTo = {
+          wallet_balance: admin.firestore.FieldValue.increment(foodAmount),
+        };
+
+        await updateShopWallet(FastFoodId, dataTo);
+        await updateShopTotalNumberOfSales(FastFoodId);
+      });
+    } else if (type === "market") {
+      // ? to do this, first go add the fast food name and fast food id the documnet/order data
+    }
 
     return Promise.resolve();
   });
@@ -532,4 +576,40 @@ async function sendNotificationToAll(heading, body, data) {
       console.log(error);
       return { msg: "error in execution: notification not sent" };
     });
+}
+
+async function updateShopWallet(docId, data) {
+  return await admin
+    .firestore()
+    .collection("restaurants")
+    .doc(docId)
+    .update(data);
+}
+
+async function updateShopTotalNumberOfSales(docId) {
+  const d = new Date();
+
+  const day = d.getDate();
+  const month = d.getMonth() + 1; // Since getMonth() returns month from 0-11 not 1-12
+  const year = d.getFullYear();
+  var _day = d.getDay();
+  const weekOfMonth = Math.ceil((day - 1 - _day) / 7) + 1;
+
+  return await admin
+    .firestore()
+    .collection("restaurants")
+    .doc(docId)
+    .collection("stat")
+    .doc(year.toString())
+    .collection("per_month_stat")
+    .doc(month.toString())
+    .set(
+      {
+        month_total: admin.firestore.FieldValue.increment(1),
+        [`week_${weekOfMonth}_total`]: admin.firestore.FieldValue.increment(1),
+        [`day_${day}_total`]: admin.firestore.FieldValue.increment(1),
+      },
+      { merge: true }
+    );
+  // .update(data);
 }
