@@ -111,7 +111,7 @@ exports.OnNewOrderCreatedUpdateShopStat = functions.firestore
         };
 
         await updateShopWallet(FastFoodId, dataTo);
-        await updateShopTotalNumberOfSales(FastFoodId);
+        await updateShopTotalNumberOfSales(FastFoodId, foodAmount);
       });
     } else if (type === "market") {
       // ? to do this, first go add the fast food name and fast food id the documnet/order data
@@ -586,7 +586,7 @@ async function updateShopWallet(docId, data) {
     .update(data);
 }
 
-async function updateShopTotalNumberOfSales(docId) {
+async function updateShopTotalNumberOfSales(docId, amount) {
   const d = new Date();
 
   const day = d.getDate();
@@ -605,9 +605,17 @@ async function updateShopTotalNumberOfSales(docId) {
     .doc(month.toString())
     .set(
       {
-        month_total: admin.firestore.FieldValue.increment(1),
-        [`week_${weekOfMonth}_total`]: admin.firestore.FieldValue.increment(1),
-        [`day_${day}_total`]: admin.firestore.FieldValue.increment(1),
+        month_total_sales: admin.firestore.FieldValue.increment(1),
+        [`week_${weekOfMonth}_total__sales`]:
+          admin.firestore.FieldValue.increment(1),
+        [`day_${day}_total__sales`]: admin.firestore.FieldValue.increment(1),
+
+        // for amount sold
+        month_total_amount: admin.firestore.FieldValue.increment(amount),
+        [`week_${weekOfMonth}_total__amount`]:
+          admin.firestore.FieldValue.increment(amount),
+        [`day_${day}_total__amount`]:
+          admin.firestore.FieldValue.increment(amount),
       },
       { merge: true }
     );
