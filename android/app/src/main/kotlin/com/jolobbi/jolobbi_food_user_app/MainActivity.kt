@@ -1,4 +1,4 @@
-package com.example.food_dash_app
+package com.jolobbi.jolobbi_food_user_app
 
 import io.flutter.embedding.android.FlutterActivity
 

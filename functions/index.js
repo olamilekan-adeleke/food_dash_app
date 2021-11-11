@@ -39,11 +39,11 @@ exports.OnNewOrderCreated = functions.firestore
       sendToCustomer
     );
 
-    // await sendNotificationToUser(
-    //   "riders",
-    //   "A New Order Was Just Made!. Login to accept order",
-    //   sendToCustomer
-    // );
+    await sendNotificationToUser(
+      "riders",
+      "A New Order Was Just Made!. Login to accept order",
+      sendToCustomer
+    );
 
     // / update user noticfication
     await saveDataToUserNotification(userId, docId, dataToSave)
@@ -606,15 +606,15 @@ async function updateShopTotalNumberOfSales(docId, amount) {
     .set(
       {
         month_total_sales: admin.firestore.FieldValue.increment(1),
-        [`week_${weekOfMonth}_total__sales`]:
+        [`week_${weekOfMonth}_total_sales`]:
           admin.firestore.FieldValue.increment(1),
-        [`day_${day}_total__sales`]: admin.firestore.FieldValue.increment(1),
+        [`day_${day}_total_sales`]: admin.firestore.FieldValue.increment(1),
 
         // for amount sold
         month_total_amount: admin.firestore.FieldValue.increment(amount),
-        [`week_${weekOfMonth}_total__amount`]:
+        [`week_${weekOfMonth}_total_amount`]:
           admin.firestore.FieldValue.increment(amount),
-        [`day_${day}_total__amount`]:
+        [`day_${day}_total_amount`]:
           admin.firestore.FieldValue.increment(amount),
       },
       { merge: true }
