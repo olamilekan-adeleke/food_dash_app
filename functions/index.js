@@ -549,11 +549,3 @@ async function sendNotificationToAll(heading, body, data) {
     });
 }
 
-async function updateShopWallet(docId, data) {
-  return await admin
-    .firestore()
-    .collection("restaurants")
-    .doc(docId)
-    .update(data);
-}
-
