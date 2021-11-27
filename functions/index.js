@@ -357,13 +357,3 @@ exports.sendOutNotificationToEveryOne = functions.https.onRequest(
  * @param {data} data data.
  * @return {any} any.
  */
-async function saveDataToUserNotification(userId, docId, data) {
-  return await admin
-    .firestore()
-    .collection("users")
-    .doc(userId)
-    .collection("notifications")
-    .doc(`${docId}`)
-    .set(data);
-}
-
