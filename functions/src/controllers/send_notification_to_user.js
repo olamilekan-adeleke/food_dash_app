@@ -1,4 +1,4 @@
-const admin = require("./firebase_");
+const admin = require("../../firebase_");
 
 const sendNotificationToUser = async (userId, body, data) => {
   const payload = {

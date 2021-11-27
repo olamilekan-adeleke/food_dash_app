@@ -1,4 +1,4 @@
-const admin = require("./firebase_");
+const admin = require("../../firebase_");
 
 const saveDataToUserNotification = async (userId, docId, data) => {
   return await admin

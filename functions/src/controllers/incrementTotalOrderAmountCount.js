@@ -1,6 +1,6 @@
-const admin = require("./firebase_");
+const admin = require("../../firebase_");
 
-const incrementTotalOrderAmountCount = async amount => {
+const incrementTotalOrderAmountCount = async (amount) => {
   const d = new Date();
 
   const day = d.getDate(); // Day		[dd]	(1 - 31)
@@ -22,6 +22,5 @@ const incrementTotalOrderAmountCount = async amount => {
       { merge: true }
     );
 };
-
 
 module.exports = incrementTotalOrderAmountCount;

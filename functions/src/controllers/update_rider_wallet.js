@@ -1,4 +1,4 @@
-const admin = require("./firebase_");
+const admin = require("../../firebase_");
 
 const updateRiderWallet = async (riderId, amount) => {
   return await admin

@@ -1,4 +1,4 @@
-const admin = require("./firebase_");
+const admin = require("../../firebase_");
 
 const addDataToPopular = async (docId, data) => {
   return await admin

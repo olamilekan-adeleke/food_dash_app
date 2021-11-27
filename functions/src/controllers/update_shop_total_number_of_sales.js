@@ -1,4 +1,4 @@
-const admin = require("./firebase_");
+const admin = require("../../firebase_");
 
 const updateShopTotalNumberOfSales = async (docId, amount) => {
   const d = new Date();
