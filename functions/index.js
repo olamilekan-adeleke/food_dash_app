@@ -367,10 +367,3 @@ async function saveDataToUserNotification(userId, docId, data) {
     .set(data);
 }
 
-/**
- * Add two numbers.
- */
-async function getRiderFee() {
-  return await admin.firestore().collection("constants").doc("rider_fee").get();
-}
-
