@@ -388,28 +388,3 @@ async function updateRiderWallet(riderId, amount) {
     .update({ wallet_balance: admin.firestore.FieldValue.increment(amount) });
 }
 
-/**
- * Add two numbers.
- * @param {userId} userId id.
- * @param {docid} docId id.
- * @param {data} data data.
- * @return {any} any.
- */
-async function saveDataToRiderNotification(riderId, docId, data) {
-  return await admin
-    .firestore()
-    .collection("rider")
-    .doc(riderId)
-    .collection("notifications")
-    .doc(`${docId}`)
-    .set(data);
-}
-
-/**
- * Add two numbers.
- * @param {docid} docId id.
- * @param {data} data data.
- * @return {any} any.
- */
-
-
