@@ -2,8 +2,8 @@
 
 const functions = require("firebase-functions");
 const { v4: uuidv4 } = require("uuid");
-const admin = require("firebase-admin");
-admin.initializeApp();
+const {admin} = require("./firebase_");
+
 
 exports.OnNewOrderCreated = functions.firestore
   .document("/orders/{ordersID}")
