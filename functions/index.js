@@ -374,17 +374,3 @@ async function getRiderFee() {
   return await admin.firestore().collection("constants").doc("rider_fee").get();
 }
 
-/**
- * Add two numbers.
- * @param {riderId} userId id.
- * @param {amount} amount.
- * @return {any} any.
- */
-async function updateRiderWallet(riderId, amount) {
-  return await admin
-    .firestore()
-    .collection("rider")
-    .doc(riderId)
-    .update({ wallet_balance: admin.firestore.FieldValue.increment(amount) });
-}
-
