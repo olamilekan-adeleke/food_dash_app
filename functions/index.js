@@ -452,49 +452,5 @@ async function incrementTotalOrderCount() {
  *  @param {string} path the path.
  * @param {string} data The data.
  */
-async function incrementCompletedOrderCount() {
-  const d = new Date();
 
-  const day = d.getDate(); // Day		[dd]	(1 - 31)
-  const month = d.getMonth() + 1; // Month	[mm]	(1 - 12)
-  const year = d.getFullYear(); // Year		[yyyy]
-
-  return await admin
-    .firestore()
-    .collection("constants")
-    .doc("metrics")
-    .collection(`${year.toString()}`)
-    .doc(`${month.toString()}`)
-    .collection("days")
-    .doc(`${day.toString()}`)
-    .set(
-      {
-        total_completed_order: admin.firestore.FieldValue.increment(1),
-      },
-      { merge: true }
-    );
-}
-
-/**
- * save data to firestore
- *  @param {string} path the path.
- * @param {string} data The data.
- */
-
-/**
- * Add two numbers.
- * @param {userId} userId id.
- * @param {body} body body.
- * @param {data} data data.
- * @return {any} any.
- */
-
-
-/**
- * Add two numbers.
- * @param {userId} userId id.
- * @param {heading} heading heading.
- * @param {data} data data.
- * @return {any} any.
- */
 
