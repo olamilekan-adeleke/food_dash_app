@@ -1,3 +1,5 @@
+const admin = require("./firebase_");
+
 const sendNotificationToUser = async (userId, body, data) => {
   const payload = {
     notification: {
@@ -24,7 +26,6 @@ const sendNotificationToUser = async (userId, body, data) => {
       console.log(error);
       return { msg: "error in execution: notification not sent" };
     });
-}
-
+};
 
 module.exports = sendNotificationToUser;
