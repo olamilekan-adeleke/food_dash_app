@@ -1,4 +1,4 @@
-const admin = require("./firebase_");
+const admin = require("../../firebase_");
 const sendNotificationToUser = require("../controllers/send_notification_to_user");
 
 const OnNewOrderCreatedUpdateShopStat = async (snapshot, context) => {

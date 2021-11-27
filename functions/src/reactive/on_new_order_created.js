@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
-const admin = require("./firebase_");
+const admin = require("../../firebase_");
 const sendNotificationToUser = require("../controllers/send_notification_to_user");
 const saveDataToUserNotification = require("../controllers/save_data_to_user_notification_collection");
 const addDataToPopular = require("../controllers/add_data_to_popular");
