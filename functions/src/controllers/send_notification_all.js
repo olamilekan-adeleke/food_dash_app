@@ -1,3 +1,5 @@
+const admin = require("./firebase_");
+
 const sendNotificationToAll = async (heading, body, data) => {
   const payload = {
     notification: {
