@@ -411,24 +411,5 @@ async function saveDataToRiderNotification(riderId, docId, data) {
  * @param {data} data data.
  * @return {any} any.
  */
-async function addDataToPopular(docId, data) {
-  return await admin
-    .firestore()
-    .collection("food_items")
-    .doc(docId)
-    .update(data);
-}
-
-/**
- * save data to firestore
- *  @param {string} path the path.
- * @param {string} data The data.
- */
-
-/**
- * save data to firestore
- *  @param {string} path the path.
- * @param {string} data The data.
- */
 
 
