@@ -1,6 +1,7 @@
 const functions = require("firebase-functions");
 const { v4: uuidv4 } = require("uuid");
 const admin = require("./firebase_");
+const sendNotificationToAllUserHttpFunction = require("./src/https/send_notification_to_all_user_http_funtion");
 
 exports.OnNewOrderCreated = functions.firestore
   .document("/orders/{ordersID}")
@@ -327,33 +328,5 @@ exports.OnOrderStatusChange = functions.firestore
   });
 
 exports.sendOutNotificationToEveryOne = functions.https.onRequest(
-  async (req, res) => {
-    const { heading, body } = req.body;
-
-    const payloadSetting = {
-      data_to_send: "msg_from_the_cloud",
-      click_action: "FLUTTER_NOTIFICATION_CLICK",
-    };
-
-    try {
-      await sendNotificationToAll(heading, body, payloadSetting);
-      res
-        .status(200)
-        .json({ status: "success", msg: "Notification Sent to all users" });
-    } catch (error) {
-      console.log(error);
-      res.status(400).json({
-        status: "fail",
-        msg: " Error Occurred!, Notification  Not Sent to all users",
-      });
-    }
-  }
+  sendNotificationToAllUserHttpFunction
 );
-
-/**
- * Add two numbers.
- * @param {userId} userId id.
- * @param {docid} docId id.
- * @param {data} data data.
- * @return {any} any.
- */
