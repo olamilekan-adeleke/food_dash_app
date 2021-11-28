@@ -20,7 +20,6 @@ const OnNewOrderCreatedUpdateShopStat = async (snapshot, context) => {
     click_action: "FLUTTER_NOTIFICATION_CLICK",
     order_id: `${orderId}`,
   };
-  const notificationUser = "Order has been Comfrimed by you!!";
 
   if (data.order_status !== "enroute") {
     return Promise.resolve();

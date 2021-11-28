@@ -206,7 +206,7 @@ class SelectedMarketItmePage extends StatelessWidget {
                           image: marketItem.images.first,
                           name: marketItem.name,
                           price: marketItem.price,
-                          fastFoodName: '',
+                          fastFoodName: marketItem.name,
                           fastFoodId: '',
                         );
 
