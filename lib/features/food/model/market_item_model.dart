@@ -15,7 +15,7 @@ class MarketItemModel {
       id: map['id'],
       name: map['name'],
       description: map['description'],
-      images: List<String>.from(map['images']),
+      images: List<String>.from(map['images'] ?? map['image']),
       category: map['category'],
       price: map['price'],
     );
