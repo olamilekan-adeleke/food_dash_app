@@ -24,6 +24,7 @@ class SelectedFoodPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    foodProduct!.ingredientsList.sort();
 
     return CustomScaffoldWidget(
       body: ListView(
@@ -107,9 +108,35 @@ class SelectedFoodPage extends StatelessWidget {
                   // textColor: kcPrimaryColor,
                 ),
                 SizedBox(height: sizerSp(10.0)),
-                CustomTextWidget(
-                  text: foodProduct!.description,
-                  fontWeight: FontWeight.w300,
+                SizedBox(
+                  width: sizerWidth(90),
+                  // height: sizerSp(10),
+                  child: Wrap(
+                    runSpacing: sizerSp(5),
+                    spacing: sizerSp(5),
+                    verticalDirection: VerticalDirection.down,
+                    // scrollDirection: Axis.horizontal,
+                    // physics: const BouncingScrollPhysics(),
+                    children: <Widget>[
+                      ...foodProduct!.ingredientsList.map((String e) {
+                        return Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: sizerSp(10),
+                            vertical: sizerSp(5),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(sizerSp(20)),
+                            color: Colors.grey.shade200,
+                          ),
+                          child: CustomTextWidget(
+                            text: e,
+                            fontWeight: FontWeight.w300,
+                            fontSize: sizerSp(13),
+                          ),
+                        );
+                      }).toList(),
+                    ],
+                  ),
                 ),
                 SizedBox(height: sizerSp(20.0)),
               ],
