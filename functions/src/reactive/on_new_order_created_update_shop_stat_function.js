@@ -21,6 +21,16 @@ const OnNewOrderCreatedUpdateShopStat = async (snapshot, context) => {
     order_id: `${orderId}`,
   };
 
+  items.forEach(async (element) => {
+    const FastFoodId = element.fast_food_id;
+
+    await sendNotificationToUser(
+      FastFoodId,
+      `Now Order of ${element.fast_food_name} has just been made!`,
+      sendData
+    );
+  });
+
   if (data.order_status !== "enroute") {
     return Promise.resolve();
   }
