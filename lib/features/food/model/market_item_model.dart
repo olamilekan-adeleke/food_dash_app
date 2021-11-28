@@ -3,6 +3,7 @@ import 'dart:convert';
 class MarketItemModel {
   MarketItemModel({
     required this.id,
+    required this.shopId,
     required this.name,
     required this.description,
     required this.images,
@@ -13,6 +14,7 @@ class MarketItemModel {
   factory MarketItemModel.fromMap(Map<String, dynamic> map) {
     return MarketItemModel(
       id: map['id'],
+      shopId: map['fast_food_id'],
       name: map['name'],
       description: map['description'],
       images: List<String>.from(map['images'] ?? map['image']),
@@ -27,6 +29,7 @@ class MarketItemModel {
   String toJson() => json.encode(toMap());
 
   final String id;
+  final String shopId;
   final String name;
   final String description;
   final List<String> images;

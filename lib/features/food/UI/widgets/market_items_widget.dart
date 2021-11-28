@@ -283,7 +283,7 @@ class ItemWidget extends StatelessWidget {
                           name: marketItem.name,
                           price: marketItem.price,
                           fastFoodName: marketItem.name,
-                          fastFoodId: marketItem.name,
+                          fastFoodId: marketItem.shopId,
                         );
 
                         BlocProvider.of<MerchantBloc>(context)

@@ -207,7 +207,7 @@ class SelectedMarketItmePage extends StatelessWidget {
                           name: marketItem.name,
                           price: marketItem.price,
                           fastFoodName: marketItem.name,
-                          fastFoodId: '',
+                          fastFoodId: marketItem.shopId,
                         );
 
                         BlocProvider.of<MerchantBloc>(context)
