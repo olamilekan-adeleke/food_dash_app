@@ -100,6 +100,18 @@ class SelectedFoodPage extends StatelessWidget {
                   fontWeight: FontWeight.w300,
                 ),
                 SizedBox(height: sizerSp(20.0)),
+                CustomTextWidget(
+                  text: 'Ingredients',
+                  fontWeight: FontWeight.bold,
+                  fontSize: kfsExtraLarge,
+                  // textColor: kcPrimaryColor,
+                ),
+                SizedBox(height: sizerSp(10.0)),
+                CustomTextWidget(
+                  text: foodProduct!.description,
+                  fontWeight: FontWeight.w300,
+                ),
+                SizedBox(height: sizerSp(20.0)),
               ],
             ),
           ),

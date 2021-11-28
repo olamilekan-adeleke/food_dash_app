@@ -10,6 +10,7 @@ class FoodProductModel {
     required this.price,
     required this.fastFoodname,
     required this.fastFoodId,
+    required this.ingredientsList,
   });
 
   factory FoodProductModel.fromMap(
@@ -25,6 +26,9 @@ class FoodProductModel {
       fastFoodname: map['fast_food_name'] as String,
       price: map['price'] as int,
       fastFoodId: map['fast_food_id'] as String,
+      ingredientsList: map['ingredients_list'] != null
+          ? List<String>.from(map['ingredients_list'])
+          : [],
     );
   }
 
@@ -36,6 +40,7 @@ class FoodProductModel {
   final int price;
   final String fastFoodname;
   final String fastFoodId;
+  final List<String> ingredientsList;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -46,7 +51,9 @@ class FoodProductModel {
       'category': category,
       'price': price,
       'fast_food_name': fastFoodname,
-      'fast_food_id': fastFoodId
+      'fast_food_id': fastFoodId,
+      'ingredients_list': ingredientsList,
+
     };
   }
 
