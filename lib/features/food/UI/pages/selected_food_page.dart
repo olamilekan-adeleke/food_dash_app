@@ -115,8 +115,6 @@ class SelectedFoodPage extends StatelessWidget {
                     runSpacing: sizerSp(5),
                     spacing: sizerSp(5),
                     verticalDirection: VerticalDirection.down,
-                    // scrollDirection: Axis.horizontal,
-                    // physics: const BouncingScrollPhysics(),
                     children: <Widget>[
                       ...foodProduct!.ingredientsList.map((String e) {
                         return Container(
