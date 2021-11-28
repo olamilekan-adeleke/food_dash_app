@@ -2,8 +2,9 @@ const { v4: uuidv4 } = require("uuid");
 const admin = require("../../firebase_");
 const sendNotificationToUser = require("../controllers/send_notification_to_user");
 const saveDataToUserNotification = require("../controllers/save_data_to_user_notification_collection");
-const saveDataToRiderNotification = require("../controllers/save_data_to_rider_notification_collection");
+const saveDataToRiderNotification = require("../controllers/save_data_to_rider_notification_collection.");
 const incrementCompletedOrderCount = require("../controllers/incrementTotalOrderAmountCount");
+// functions/src/controllers/save_data_to_rider_notification_collection..js
 const getRiderFee = require("../controllers/get_rider_fee");
 const updateRiderWallet = require("../controllers/update_rider_wallet");
 
