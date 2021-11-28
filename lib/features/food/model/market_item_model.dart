@@ -14,7 +14,7 @@ class MarketItemModel {
   factory MarketItemModel.fromMap(Map<String, dynamic> map) {
     return MarketItemModel(
       id: map['id'],
-      shopId: map['fast_food_id'],
+      shopId: map['fast_food_id'] ?? '',
       name: map['name'],
       description: map['description'],
       images: List<String>.from(map['images'] ?? map['image']),
@@ -65,6 +65,7 @@ class MarketItemModel {
       'price': price,
       'search_key': searchKey.toSet().toList(),
       'count': 0,
+      'fast_food_id': shopId,
     };
   }
 }

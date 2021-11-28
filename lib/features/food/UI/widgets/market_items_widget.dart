@@ -272,6 +272,8 @@ class ItemWidget extends StatelessWidget {
                       return const CustomLoadingIndicatorWidget();
                     }
 
+                    // log(marketItem.toMap().toString());
+
                     return InkWell(
                       onTap: () {
                         final CartModel cart = CartModel(
