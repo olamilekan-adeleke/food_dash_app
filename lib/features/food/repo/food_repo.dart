@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -6,15 +7,19 @@ import 'package:food_dash_app/cores/utils/currency_formater.dart';
 import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/features/auth/model/user_details_model.dart';
 import 'package:food_dash_app/features/auth/repo/auth_repo.dart';
+import 'package:food_dash_app/features/food/controller/locatiom_controller.dart';
 import 'package:food_dash_app/features/food/model/cart_model.dart';
 import 'package:food_dash_app/features/food/model/food_product_model.dart';
 import 'package:food_dash_app/features/food/model/market_item_model.dart';
 import 'package:food_dash_app/features/food/model/merchant_model.dart';
 import 'package:food_dash_app/features/food/model/order_model.dart';
 import 'package:food_dash_app/features/food/model/paymaent_history.dart';
+import 'package:food_dash_app/features/food/repo/api.dart';
 import 'package:food_dash_app/features/food/repo/local_database_repo.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
 class MerchantRepo {
   static AuthenticationRepo authenticationRepo =
@@ -32,13 +37,13 @@ class MerchantRepo {
       FirebaseFirestore.instance.collection('orders');
   static final CollectionReference<Map<String, dynamic>> riderCollectionRef =
       FirebaseFirestore.instance.collection('riders');
-
   static final CollectionReference<Map<String, dynamic>>
       constantsCollectionRef =
       FirebaseFirestore.instance.collection('constants');
-
   static final CollectionReference<Map<String, dynamic>> marketRef =
       FirebaseFirestore.instance.collection('market');
+
+  final LocationController locationController = Get.find<LocationController>();
 
   final int limit = 7;
 
@@ -534,32 +539,153 @@ class MerchantRepo {
   }
 
   Future<int> getDeliveryFee() async {
-    final UserDetailsModel userDetails = await authenticationRepo.getUser();
-    final String? region = userDetails.region?.split('-')[1].trim() ?? null;
-    final String? location = userDetails.region?.split('-')[0].trim() ?? null;
+    List<CartModel> items = <CartModel>[];
 
-    if (region == null || location == null) {
-      throw 'Location Not Found! \nPlease Select a location.';
+    try {
+      UserDetailsModel? userDetails =
+          await localdatabaseRepo.getUserDataFromLocalDB();
+      final int pricePerKm = await getPricePerKm();
+
+      if (userDetails == null || userDetails.location == null) {
+        throw 'Error, something went wrong! \n Please try updating your address';
+      }
+
+      if (localdatabaseRepo.showFood.value) {
+        items = await localdatabaseRepo.getAllItemInCart();
+      } else {
+        items = await localdatabaseRepo.getAllMarketItemInCart();
+      }
+
+      final List<String> allShopsId =
+          items.map((CartModel e) => e.fastFoodId ?? '').toSet().toList();
+
+      log(allShopsId.toString());
+
+      int price = 0;
+
+      for (String shopId in allShopsId) {
+        // get shop name by id
+        final String? shopNameById = items
+            .where((element) => element.fastFoodId == shopId)
+            .toList()
+            .first
+            .fastFoodName;
+
+        // get shop location place Id
+        final String currentShopPlaceId =
+            await getShopLocationIdByShopId(shopId, shopNameById ?? '');
+
+        price += await getDistancePriceBetweenShopToUserLocation(
+          currentShopPlaceId,
+          pricePerKm,
+        );
+      }
+
+      return price;
+    } catch (e, s) {
+      log(s.toString());
+      throw e;
     }
-
-    log(userDetails.region!);
-
-    final DocumentSnapshot<Map<String, dynamic>> data =
-        await constantsCollectionRef.doc('delivery_prices').get();
-
-    log(data.data().toString());
-    final Map<String, dynamic> allRegionPriceMap =
-        data.data() as Map<String, dynamic>;
-
-    final Map<String, dynamic> regionPriceMap = allRegionPriceMap[region];
-    final int locationPriceFormRegion = regionPriceMap[location] as int;
-
-    return locationPriceFormRegion;
   }
 
   Future<void> completeOrder(String id, bool status) async {
     await orderCollectionRef
         .doc(id)
         .update(<String, dynamic>{'pay_status': status ? 'confrim' : 'cancel'});
+  }
+
+  Future<int> getDistancePriceBetweenShopToUserLocation(
+    String shopPlaceId,
+    int pricePerKm,
+  ) async {
+    try {
+      UserDetailsModel? userDetails =
+          await localdatabaseRepo.getUserDataFromLocalDB();
+
+      final int result = await getDistanceBetwenTwoLocation(
+        shopPlaceId,
+        userDetails!.location!.placeId,
+      );
+
+      return result * pricePerKm;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<int> getDistanceBetwenTwoLocation(
+    String origin,
+    String destination,
+  ) async {
+    final String apiKey = GOOGLE_API_kEY;
+
+    try {
+      final String url = 'https://maps.googleapis.com/maps/api/directions/json?'
+          'key=$apiKey'
+          '&origin=place_id:$origin'
+          '&destination=place_id:$destination'
+          '&region=ng';
+
+      http.Request request = createGetRequest(url);
+
+      http.StreamedResponse response = await request.send();
+
+      final String data = await response.stream.bytesToString();
+      log(data.toString());
+      final Map<String, dynamic> result = json.decode(data);
+
+      // log(response.toString());
+
+      if (response.statusCode == 200) {
+        // final Map<String, dynamic> result = json.decode(data);
+
+        log(result.toString());
+
+        if (result['status'] == 'OK') {
+          final List<Map<String, dynamic>> routes =
+              List<Map<String, dynamic>>.from(result['routes']);
+          final int distanceInKilometer =
+              routes.first['legs'][0]['distance']['value'];
+
+          return distanceInKilometer;
+        }
+        if (result['status'] == 'ZERO_RESULTS') {
+          throw 'Location not found!';
+        }
+        throw result['error_message'] ?? result['status'];
+      } else {
+        throw result['error_message'] ?? result['status'];
+      }
+    } catch (e, s) {
+      log(e.toString());
+      log(s.toString());
+      throw e.toString();
+    }
+  }
+
+  http.Request createGetRequest(String url) {
+    return http.Request('GET', Uri.parse(url));
+  }
+
+  Future<int> getPricePerKm() async {
+    final DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+        await constantsCollectionRef.doc('delivery_fee_per_kilometer').get();
+
+    return (documentSnapshot.data())!['fee'] ?? 0;
+  }
+
+  Future<String> getShopLocationIdByShopId(String id, String shopName) async {
+    final DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+        await restaurantCollectionRef.doc(id).get();
+
+    final String? placeId = (documentSnapshot.data())?['location']?['placeId'];
+
+    if (placeId == null) {
+      throw 'Shop $shopName location data was not found and delivery price '
+          'could not be calculated. \nPlease try again or remove itme form'
+          ' $shopName store';
+    }
+
+    return placeId;
   }
 }
