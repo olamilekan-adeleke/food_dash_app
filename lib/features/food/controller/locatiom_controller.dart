@@ -45,7 +45,7 @@ class LocationController extends GetxController {
 
   void selectLocation(Suggestion suggestion) {
     selectedSuggestion = Rx<Suggestion>(suggestion);
-    locationController.text = '${suggestion.title} - ${suggestion.description}';
+    locationController.text = '${suggestion.description}';
     Get.back();
   }
 

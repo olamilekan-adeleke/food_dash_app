@@ -74,7 +74,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 Widget? child,
               ) {
                 EditAddressScreen.address.text = userDetails?.address ?? '';
-                EditAddressScreen.location.text =
+                locationController.locationController.text =
                     userDetails?.location?.description ?? '';
 
                 return Column(
@@ -88,7 +88,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                     ),
                     SizedBox(height: sizerSp(10.0)),
                     CustomTextField(
-                      textEditingController: EditAddressScreen.location,
+                      textEditingController:
+                          locationController.locationController,
                       hintText: 'Tap to select location',
                       labelText: 'Location',
                       enable: false,
