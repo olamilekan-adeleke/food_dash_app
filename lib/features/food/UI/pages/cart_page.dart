@@ -568,7 +568,7 @@ class CartItemWidget extends StatelessWidget {
                       fontSize: sizerSp(13),
                       overflow: TextOverflow.ellipsis,
                       fontWeight: FontWeight.bold,
-                      maxLines: 2,
+                      maxLines: 1,
                     ),
                   ),
                   SizedBox(height: sizerSp(2.0)),

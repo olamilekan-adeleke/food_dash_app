@@ -571,6 +571,8 @@ class MerchantRepo {
       final List<String> allShopsId =
           items.map((CartModel e) => e.fastFoodId ?? '').toSet().toList();
 
+      final int numberOfShop = allShopsId.length;
+
       log(allShopsId.toString());
 
       double price = 0;
@@ -586,6 +588,15 @@ class MerchantRepo {
         // get shop location place Id
         final String currentShopPlaceId =
             await getShopLocationIdByShopId(shopId, shopNameById ?? '');
+
+        if (numberOfShop > 1) {
+          final double amount = await getDistancePriceBetweenShopToUserLocation(
+            currentShopPlaceId,
+            pricePerKm,
+          );
+
+          price += (amount * 0.8);
+        }
 
         price += await getDistancePriceBetweenShopToUserLocation(
           currentShopPlaceId,
