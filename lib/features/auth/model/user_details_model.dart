@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:food_dash_app/features/food/model/location_details.dart';
 
 class UserDetailsModel {
   UserDetailsModel({
@@ -12,6 +13,7 @@ class UserDetailsModel {
     this.address,
     this.region,
     this.dateJoined,
+    this.location,
     required this.walletBalance,
   });
 
@@ -31,6 +33,9 @@ class UserDetailsModel {
           : null,
       dateJoined:
           map['date_joined'] != null ? map['date_joined'] as Timestamp : null,
+      location: map['location'] != null
+          ? Suggestion.fromMap(Map<String, dynamic>.from(map['location']))
+          : null,
     );
   } // 507850785078507812
 
@@ -46,6 +51,7 @@ class UserDetailsModel {
   final String? profilePicUrl;
   final Timestamp? dateJoined;
   final double? walletBalance;
+  final Suggestion? location;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -57,6 +63,7 @@ class UserDetailsModel {
       'date_joined': dateJoined,
       'address': address,
       'region': region,
+      'location': location,
     };
   }
 
@@ -69,6 +76,7 @@ class UserDetailsModel {
       'profile_pic_url': profilePicUrl,
       'address': address,
       'region': region,
+      'location': location,
     };
   }
 
@@ -84,6 +92,7 @@ class UserDetailsModel {
     String? profilePicUrl,
     Timestamp? dateJoined,
     double? walletBalance,
+    Suggestion? location,
   }) {
     return UserDetailsModel(
       uid: uid ?? this.uid,
@@ -95,6 +104,7 @@ class UserDetailsModel {
       walletBalance: walletBalance ?? this.walletBalance,
       address: address ?? this.address,
       region: region ?? this.region,
+      location: location ?? this.location,
     );
   }
 }

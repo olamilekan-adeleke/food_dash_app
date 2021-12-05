@@ -17,6 +17,8 @@ class CustomTextField extends StatefulWidget {
     this.textInputAction,
     this.enable = true,
     this.onDone,
+    this.onTap,
+    this.onChange,
   }) : super(key: key);
 
   final TextEditingController textEditingController;
@@ -30,6 +32,8 @@ class CustomTextField extends StatefulWidget {
   final bool enable;
   final int? maxLine;
   final TextInputAction? textInputAction;
+  final Function()? onTap;
+  final Function()? onChange;
 
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
@@ -42,36 +46,44 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return ValueListenableBuilder<bool>(
       valueListenable: obscureText,
       builder: (BuildContext context, bool value, dynamic child) {
-        return TextFormField(
-          enabled: widget.enable,
-          maxLines: widget.maxLine,
-          cursorColor: kcPrimaryColor,
-          style: GoogleFonts.raleway(),
-          controller: widget.textEditingController,
-          autocorrect: widget.autoCorrect,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: const BorderSide(color: Colors.red),
-              borderRadius: BorderRadius.circular(sizerSp(5.0)),
+        return GestureDetector(
+          onTap: () => widget.onTap!(),
+          child: TextFormField(
+            enabled: widget.enable,
+            maxLines: widget.maxLine,
+            cursorColor: kcPrimaryColor,
+            style: GoogleFonts.raleway(),
+            controller: widget.textEditingController,
+            autocorrect: widget.autoCorrect,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.red),
+                borderRadius: BorderRadius.circular(sizerSp(5.0)),
+              ),
+              hintText: widget.hintText,
+              // labelText: widget.labelText,
+              suffixIcon: widget.isPassword == false
+                  ? const SizedBox()
+                  : IconButton(
+                      icon: const Icon(Icons.remove_red_eye_outlined),
+                      onPressed: () => obscureText.value = !obscureText.value,
+                    ),
             ),
-            hintText: widget.hintText,
-            // labelText: widget.labelText,
-            suffixIcon: widget.isPassword == false
-                ? const SizedBox()
-                : IconButton(
-                    icon: const Icon(Icons.remove_red_eye_outlined),
-                    onPressed: () => obscureText.value = !obscureText.value,
-                  ),
+            keyboardType: widget.textInputType,
+            obscureText: value,
+            validator: (String? val) => widget.validator!(val?.trim()),
+            textInputAction: widget.textInputAction,
+            onFieldSubmitted: (_) {
+              if (widget.onDone != null) {
+                widget.onDone!();
+              }
+            },
+            onChanged: (_) {
+              if (widget.onChange == null) return;
+
+              widget.onChange!();
+            },
           ),
-          keyboardType: widget.textInputType,
-          obscureText: value,
-          validator: (String? val) => widget.validator!(val?.trim()),
-          textInputAction: widget.textInputAction,
-          onFieldSubmitted: (_) {
-            if (widget.onDone != null) {
-              widget.onDone!();
-            }
-          },
         );
       },
     );
