@@ -13,12 +13,16 @@ import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/features/auth/bloc/auth_bloc/auth_bloc.dart';
 import 'package:food_dash_app/features/auth/model/user_details_model.dart';
 import 'package:food_dash_app/features/food/UI/widgets/header_widget.dart';
+import 'package:food_dash_app/features/food/controller/locatiom_controller.dart';
 import 'package:food_dash_app/features/food/repo/local_database_repo.dart';
+import 'package:get/get.dart';
 
 class EditAddressScreen extends StatefulWidget {
   const EditAddressScreen({Key? key}) : super(key: key);
 
   static final TextEditingController address = TextEditingController(text: '');
+  static final TextEditingController location = TextEditingController(text: '');
+
   static final LocaldatabaseRepo localdatabaseRepo =
       locator<LocaldatabaseRepo>();
   static final ValueNotifier<String> selectedVal = ValueNotifier<String>('');
@@ -29,9 +33,11 @@ class EditAddressScreen extends StatefulWidget {
 
 class _EditAddressScreenState extends State<EditAddressScreen> {
   List<String> addresses = <String>[];
+  final LocationController locationController = Get.find<LocationController>();
+
   @override
   void initState() {
-    BlocProvider.of<AuthBloc>(context).add(GetAddressDataEvent());
+    // BlocProvider.of<AuthBloc>(context).add(GetAddressDataEvent());
 
     super.initState();
   }
@@ -67,7 +73,10 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 UserDetailsModel? userDetails,
                 Widget? child,
               ) {
-                EditAddressScreen.address.text = userDetails!.address ?? '';
+                EditAddressScreen.address.text = userDetails?.address ?? '';
+                EditAddressScreen.location.text =
+                    userDetails?.location?.description ?? '';
+
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -79,13 +88,22 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                     ),
                     SizedBox(height: sizerSp(10.0)),
                     CustomTextField(
-                      textEditingController: EditAddressScreen.address,
-                      hintText: 'Enter Location',
+                      textEditingController: EditAddressScreen.location,
+                      hintText: 'Tap to select location',
                       labelText: 'Location',
                       enable: false,
                       maxLine: null,
+                      onTap: () {
+                        locationController.goToLocationPage();
+                      },
                     ),
                     SizedBox(height: sizerSp(20.0)),
+                    CustomTextWidget(
+                      text: 'Enter addres in details',
+                      fontWeight: FontWeight.bold,
+                      fontSize: sizerSp(15),
+                    ),
+                    SizedBox(height: sizerSp(10.0)),
                     CustomTextField(
                       textEditingController: EditAddressScreen.address,
                       hintText: 'Enter Address',

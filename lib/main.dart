@@ -12,7 +12,7 @@ Future<void> main() async {
   Config.setUpSnackBarConfig();
   await Firebase.initializeApp();
   await Config.setUpHiveLocalDB();
-  RequestCompletionListener();
+  // RequestCompletionListener();
   // FakeMarketPlace().init();
   runApp(MyApp());
 }
