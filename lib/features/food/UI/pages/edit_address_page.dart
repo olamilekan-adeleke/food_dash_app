@@ -6,7 +6,6 @@ import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
 import 'package:food_dash_app/cores/components/custom_text_widget.dart';
 import 'package:food_dash_app/cores/components/custom_textfiled.dart';
 import 'package:food_dash_app/cores/components/error_widget.dart';
-import 'package:food_dash_app/cores/constants/location_list.dart';
 import 'package:food_dash_app/cores/utils/locator.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/sizer_utils.dart';
