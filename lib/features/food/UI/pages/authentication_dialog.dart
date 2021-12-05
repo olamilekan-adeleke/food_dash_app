@@ -165,7 +165,7 @@ class AuthenticateUserScreen extends StatelessWidget {
                       return CustomButton(
                         onTap: () {
                           BlocProvider.of<MerchantBloc>(context)
-                              .add(MakePaymentEvent(fee));
+                              .add(MakePaymentEvent(fee, false));
                         },
                         text: 'Wallet',
                         textFontWeight: FontWeight.bold,

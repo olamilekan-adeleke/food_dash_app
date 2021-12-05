@@ -76,9 +76,14 @@ class GetFavouritesItemEvents extends MerchantEvent {}
 
 // make payment for food order event
 class MakePaymentEvent extends MerchantEvent {
-  const MakePaymentEvent(this.devlieryFee, {this.cardPayment = false});
+  const MakePaymentEvent(
+    this.devlieryFee,
+    this.isWalletTop, {
+    this.cardPayment = false,
+  });
   final bool cardPayment;
   final int devlieryFee;
+  final bool isWalletTop;
 }
 
 // rate rider

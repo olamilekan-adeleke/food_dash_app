@@ -221,7 +221,9 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         yield MakePaymentLoadingState();
         final String id = await merchantRepo.makePayment(
           event.devlieryFee,
+          event.isWalletTop,
           cardPayment: event.cardPayment,
+          
         );
         yield MakePaymentLoadedState(id);
       } catch (e, s) {
