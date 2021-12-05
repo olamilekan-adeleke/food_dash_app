@@ -498,7 +498,8 @@ class _CartItemPriceWidgetState extends State<CartItemPriceWidget> {
                               }
 
                               CustomButtomModalService.showModal(
-                                  AuthenticateUserScreen(fee!));
+                                AuthenticateUserScreen(allProductPrice + fee!),
+                              );
                             }
                           },
                         ),

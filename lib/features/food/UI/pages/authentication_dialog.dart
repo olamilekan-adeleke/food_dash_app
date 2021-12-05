@@ -20,6 +20,7 @@ import 'package:get_it/get_it.dart';
 
 class AuthenticateUserScreen extends StatelessWidget {
   const AuthenticateUserScreen(this.fee, {Key? key}) : super(key: key);
+
   static final TextEditingController textEditingController =
       TextEditingController(text: '');
   static final LocaldatabaseRepo localdatabaseRepo =
@@ -125,16 +126,16 @@ class AuthenticateUserScreen extends StatelessWidget {
 
                       return CustomButton(
                         onTap: () async {
-                          final bool state = localdatabaseRepo.showFood.value;
-                          final int amount = state
-                              ? await localdatabaseRepo.getTotalCartItemPrice()
-                              : await localdatabaseRepo
-                                  .getTotalMarketCartItemPrice();
+                          // final bool state = localdatabaseRepo.showFood.value;
+                          // final int amount = state
+                          //     ? await localdatabaseRepo.getTotalCartItemPrice()
+                          //     : await localdatabaseRepo
+                          //         .getTotalMarketCartItemPrice();
 
                           // show(context);
                           CustomButtomModalService.showModal(
                             FundWalletDetailsWidget(
-                              amount: fee + amount,
+                              amount: fee,
                               enabled: false,
                             ),
                           );

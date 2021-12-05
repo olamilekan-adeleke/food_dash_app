@@ -87,7 +87,7 @@ class FundWalletDetailsWidget extends StatelessWidget {
           SizedBox(height: sizerSp(10)),
           CustomTextField(
             textEditingController: textEditingController,
-            hintText: amount == null ? 'Enter Amount' : amount.toString(),
+            hintText: amount == null ? 'Enter Amount' : '$amount',
             labelText: 'Amount',
             textInputType: TextInputType.number,
             enable: enabled,
