@@ -25,7 +25,6 @@ class EditAddressScreen extends StatefulWidget {
 
   static final LocaldatabaseRepo localdatabaseRepo =
       locator<LocaldatabaseRepo>();
-  static final ValueNotifier<String> selectedVal = ValueNotifier<String>('');
 
   @override
   _EditAddressScreenState createState() => _EditAddressScreenState();
@@ -193,22 +192,28 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 return CustomButton(
                   text: 'Save',
                   onTap: () async {
-                    print(EditAddressScreen.selectedVal.value);
-
-                    if (EditAddressScreen.selectedVal.value.isEmpty ||
-                        EditAddressScreen.address.text.isEmpty) {
+                    if (EditAddressScreen.address.text.isEmpty) {
                       CustomSnackBarService.showWarningSnackBar(
                           'Enter Address and Select a Region');
 
                       return;
                     }
+                    if (locationController.selectedSuggestion?.value == null) {
+                      CustomSnackBarService.showWarningSnackBar(
+                          'Enter Address and Select a Region');
+
+                      return;
+                    }
+
                     UserDetailsModel? userDetails = await EditAddressScreen
                         .localdatabaseRepo
                         .getUserDataFromLocalDB();
 
                     userDetails = userDetails!.copyWith(
                       address: EditAddressScreen.address.text.trim(),
-                      region: EditAddressScreen.selectedVal.value,
+                      region:
+                          locationController.selectedSuggestion!.value.title,
+                      location: locationController.selectedSuggestion!.value,
                     );
 
                     BlocProvider.of<AuthBloc>(context)

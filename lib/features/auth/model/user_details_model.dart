@@ -63,7 +63,7 @@ class UserDetailsModel {
       'date_joined': dateJoined,
       'address': address,
       'region': region,
-      'location': location,
+      'location': location?.toMap(),
     };
   }
 
@@ -76,7 +76,7 @@ class UserDetailsModel {
       'profile_pic_url': profilePicUrl,
       'address': address,
       'region': region,
-      'location': location,
+      'location': location?.toMap(),
     };
   }
 
