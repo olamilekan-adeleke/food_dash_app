@@ -21,7 +21,7 @@ class FoodProductModel {
       id: documentId,
       name: map['name'] as String,
       description: map['description'] as String,
-      image: map['image'] as String,
+      image: map['image']  ?? map['images'] as String,
       category: map['category'] as String,
       fastFoodname: map['fast_food_name'] as String,
       price: map['price'] as int,
