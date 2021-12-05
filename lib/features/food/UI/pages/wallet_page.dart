@@ -37,7 +37,7 @@ class WalletScreen extends StatelessWidget {
             WalletOptionItemWidget(
               title: 'Top up Wallet',
               callback: () => CustomButtomModalService.showModal(
-                const FundWalletDetailsWidget(),
+                const FundWalletDetailsWidget(enabled: true),
               ),
               color: Colors.white,
             ),
@@ -58,9 +58,11 @@ class FundWalletDetailsWidget extends StatelessWidget {
   const FundWalletDetailsWidget({
     Key? key,
     this.amount,
+    required this.enabled,
   }) : super(key: key);
 
   final int? amount;
+  final bool enabled;
 
   static final PaymentRepo paymentRepo = locator<PaymentRepo>();
   static final LocaldatabaseRepo localdatabaseRepo =
@@ -88,7 +90,7 @@ class FundWalletDetailsWidget extends StatelessWidget {
             hintText: amount == null ? 'Enter Amount' : amount.toString(),
             labelText: 'Amount',
             textInputType: TextInputType.number,
-            enable: false,
+            enable: enabled,
           ),
           SizedBox(height: sizerSp(20)),
           CustomTextWidget(

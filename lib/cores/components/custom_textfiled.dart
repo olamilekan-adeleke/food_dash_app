@@ -47,7 +47,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
       valueListenable: obscureText,
       builder: (BuildContext context, bool value, dynamic child) {
         return GestureDetector(
-          onTap: () => widget.onTap!(),
+          onTap: () {
+            if (widget.onTap == null) return;
+            widget.onTap!();
+          },
           child: TextFormField(
             enabled: widget.enable,
             maxLines: widget.maxLine,

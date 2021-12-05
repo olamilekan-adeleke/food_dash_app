@@ -135,6 +135,7 @@ class AuthenticateUserScreen extends StatelessWidget {
                           CustomButtomModalService.showModal(
                             FundWalletDetailsWidget(
                               amount: fee + amount,
+                              enabled: false,
                             ),
                           );
                         },
