@@ -586,7 +586,38 @@ class CartItemWidget extends StatelessWidget {
                     text: '\u20A6 '
                         '${cartItem.price * cartItem.count}',
                     fontWeight: FontWeight.bold,
-                    fontSize: sizerSp(20),
+                    fontSize: sizerSp(18),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      if (localdatabaseRepo.showFood.value == true) {
+                        localdatabaseRepo.deleteCartItem(index);
+                      } else {
+                        localdatabaseRepo.deleteMarketCartItem(index);
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: sizerSp(4),
+                        vertical: sizerSp(2),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(sizerSp(4)),
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          Icon(Icons.delete, size: sizerSp(12)),
+                          CustomTextWidget(
+                            text: ' Remove',
+                            fontWeight: FontWeight.w400,
+                            fontSize: sizerSp(12),
+                            // textColor: kcGrey400,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
