@@ -72,8 +72,10 @@ class PaymentRepo {
   }
 
   Future<void> _verifyOnServer(
-    String? reference, {
+    String? reference,
+    {
     required BuildContext context,
+    required bool isWalletTop,
     int? amount,
     bool isForFood = false,
   }) async {
@@ -110,7 +112,8 @@ class PaymentRepo {
             message: 'Food Purchase',
           );
 
-          String id = await merchantRepo.makePayment(0, cardPayment: true);
+          String id =
+              await merchantRepo.makePayment(0, isWalletTop, cardPayment: true);
           await merchantRepo.addPaymentHistory(paymentModel);
 
           await CustomNavigationService().goBack();
@@ -133,7 +136,10 @@ class PaymentRepo {
             message: 'Wallet Top up',
           );
 
-          await merchantRepo.deductUserWallet(amount);
+          await merchantRepo.deductUserWallet(
+            amount,
+            isWalletTop,
+          );
           await merchantRepo.addPaymentHistory(paymentModel);
 
           CustomNavigationService().goBack();
@@ -154,6 +160,7 @@ class PaymentRepo {
     required int price,
     required BuildContext context,
     required String userEmail,
+    required bool isWalletTop,
     bool isForFood = false,
   }) async {
     bool result = false;
@@ -182,6 +189,7 @@ class PaymentRepo {
         context: context,
         amount: price,
         isForFood: isForFood,
+        isWalletTop: isWalletTop,
       );
     } else {
       debugPrint('error');
@@ -196,6 +204,7 @@ class PaymentRepo {
     required BuildContext context,
     required String userEmail,
     bool isForFood = false,
+    required bool isWalletTop,
   }) async {
     final Charge charge = Charge()
       ..amount = (price * 100).toInt()
@@ -221,6 +230,7 @@ class PaymentRepo {
         context: context,
         amount: price,
         isForFood: isForFood,
+        isWalletTop: isWalletTop,
       );
     } else {
       debugPrint('error');
@@ -228,72 +238,74 @@ class PaymentRepo {
     }
   }
 
-  Future<void> useFlutterWave(BuildContext context, int amount) async {
-    final UserDetailsModel user = await authenticationRepo.getUser();
-    final String txRef =
-        'REF-${DateTime.now().millisecondsSinceEpoch}-${user.email}_';
+  // Future<void> useFlutterWave(BuildContext context, int amount) async {
+  //   final UserDetailsModel user = await authenticationRepo.getUser();
+  //   final String txRef =
+  //       'REF-${DateTime.now().millisecondsSinceEpoch}-${user.email}_';
 
-    Flutterwave flutterwave = Flutterwave.forUIPayment(
-      context: context,
-      encryptionKey: encrptionKeyFlutterWave,
-      publicKey: publicKeyFlutterWave,
-      currency: currency,
-      amount: amount.toString(),
-      email: user.email,
-      fullName: user.fullName,
-      txRef: txRef,
-      isDebugMode: true,
-      phoneNumber: user.phoneNumber.toString(),
-      acceptCardPayment: true,
-      acceptUSSDPayment: false,
-      acceptAccountPayment: false,
-    );
+  //   Flutterwave flutterwave = Flutterwave.forUIPayment(
+  //     context: context,
+  //     encryptionKey: encrptionKeyFlutterWave,
+  //     publicKey: publicKeyFlutterWave,
+  //     currency: currency,
+  //     amount: amount.toString(),
+  //     email: user.email,
+  //     fullName: user.fullName,
+  //     txRef: txRef,
+  //     isDebugMode: true,
+  //     phoneNumber: user.phoneNumber.toString(),
+  //     acceptCardPayment: true,
+  //     acceptUSSDPayment: false,
+  //     acceptAccountPayment: false,
+  //   );
 
-    try {
-      final ChargeResponse response =
-          await flutterwave.initializeForUiPayments();
-      // ignore: unnecessary_null_comparison
-      if (response == null) {
-        throw 'Transcation not completed!';
-      } else {
-        final bool isSuccessful =
-            checkPaymentIsSuccessful(response, '$amount', txRef);
-        if (isSuccessful) {
-          CustomSnackBarService.showSuccessSnackBar('Payment SucessFull');
-          final PaymentModel paymentModel = PaymentModel(
-            id: const Uuid().v1(),
-            amount: amount,
-            dateTime: DateTime.now(),
-            message: 'Wallet Top up',
-          );
+  //   try {
+  //     final ChargeResponse response =
+  //         await flutterwave.initializeForUiPayments();
+  //     // ignore: unnecessary_null_comparison
+  //     if (response == null) {
+  //       throw 'Transcation not completed!';
+  //     } else {
+  //       final bool isSuccessful =
+  //           checkPaymentIsSuccessful(response, '$amount', txRef);
+  //       if (isSuccessful) {
+  //         CustomSnackBarService.showSuccessSnackBar('Payment SucessFull');
+  //         final PaymentModel paymentModel = PaymentModel(
+  //           id: const Uuid().v1(),
+  //           amount: amount,
+  //           dateTime: DateTime.now(),
+  //           message: 'Wallet Top up',
+  //         );
 
-          await merchantRepo.deductUserWallet(amount);
-          await merchantRepo.addPaymentHistory(paymentModel);
+  //         await merchantRepo.deductUserWallet(amount);
+  //         await merchantRepo.addPaymentHistory(paymentModel);
 
-          CustomNavigationService().goBack();
-        } else {
-          // check message
-          print(response.message);
+  //         CustomNavigationService().goBack();
+  //       } else {
+  //         // check message
+  //         print(response.message);
 
-          // check status
-          print(response.status);
+  //         // check status
+  //         print(response.status);
 
-          // check processor error
-          print(response.data!.processorResponse);
+  //         // check processor error
+  //         print(response.data!.processorResponse);
 
-          CustomSnackBarService.showErrorSnackBar('Error Occured In Payment');
-          CustomNavigationService().goBack();
+  //         CustomSnackBarService.showErrorSnackBar('Error Occured In Payment');
+  //         CustomNavigationService().goBack();
 
-          throw response.message ?? 'An Error Occured!';
-        }
-      }
-    } catch (e, s) {
-      debugPrint(e.toString());
-      debugPrint(s.toString());
-      CustomSnackBarService.showErrorSnackBar('Error: ${e.toString()}');
-    }
-  }
+  //         throw response.message ?? 'An Error Occured!';
+  //       }
+  //     }
+  //   } catch (e, s) {
+  //     debugPrint(e.toString());
+  //     debugPrint(s.toString());
+  //     CustomSnackBarService.showErrorSnackBar('Error: ${e.toString()}');
+  //   }
+  // }
 
+  
+  
   bool checkPaymentIsSuccessful(
     ChargeResponse response,
     String amount,

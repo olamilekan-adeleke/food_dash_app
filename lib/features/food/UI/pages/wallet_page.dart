@@ -114,6 +114,7 @@ class FundWalletDetailsWidget extends StatelessWidget {
                 isForFood: amount != null ? true : false,
                 userEmail:
                     (await localdatabaseRepo.getUserDataFromLocalDB())!.email,
+                isWalletTop: true,
               );
 
               if (amount != null) {
@@ -154,6 +155,7 @@ class FundWalletDetailsWidget extends StatelessWidget {
                 context: context,
                 userEmail:
                     (await localdatabaseRepo.getUserDataFromLocalDB())!.email,
+                isWalletTop: true,
               );
             },
             child: Row(

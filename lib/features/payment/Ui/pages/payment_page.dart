@@ -82,8 +82,9 @@ class PaymentPage extends StatelessWidget {
                         price: allProductPrice,
                         context: context,
                         userEmail:
-                            (await localdatabaseRepo.getUserDataFromLocalDB())
-                                !.email,
+                            (await localdatabaseRepo.getUserDataFromLocalDB())!
+                                .email,
+                        isWalletTop: false,
                       );
                       break;
                     case PaymentType.transfer:
@@ -91,8 +92,9 @@ class PaymentPage extends StatelessWidget {
                         price: allProductPrice,
                         context: context,
                         userEmail:
-                            (await localdatabaseRepo.getUserDataFromLocalDB())
-                                !.email,
+                            (await localdatabaseRepo.getUserDataFromLocalDB())!
+                                .email,
+                        isWalletTop: false,
                       );
                       break;
                     case PaymentType.none:

@@ -324,18 +324,27 @@ class MerchantRepo {
     return id;
   }
 
-  Future<void> deductUserWallet(int amount) async {
+  Future<void> deductUserWallet(int amount, bool isWalletTop) async {
     final String? userUid = authenticationRepo.getUserUid();
-    final int deliveryFee = await getDeliveryFee();
 
-    await userCollectionRef.doc(userUid).update(
-      <String, dynamic>{
-        'wallet_balance': FieldValue.increment((amount + deliveryFee)),
-      },
-    );
+    if (isWalletTop) {
+      await userCollectionRef.doc(userUid).update(
+        <String, dynamic>{
+          'wallet_balance': FieldValue.increment((amount)),
+        },
+      );
+    } else {
+      final int deliveryFee = await getDeliveryFee();
+
+      await userCollectionRef.doc(userUid).update(
+        <String, dynamic>{
+          'wallet_balance': FieldValue.increment((amount + deliveryFee)),
+        },
+      );
+    }
   }
 
-  Future<void> checkUserWalletBalance() async {
+  Future<void> checkUserWalletBalance(bool isWalletTop) async {
     final String? userUid = authenticationRepo.getUserUid();
     int totalPrice = 0;
 
@@ -362,7 +371,7 @@ class MerchantRepo {
         UserDetailsModel.fromMap(documentSnapshot.data());
 
     if (userDetails.walletBalance!.toInt() > totalPrice) {
-      await deductUserWallet(-totalPrice);
+      await deductUserWallet(-totalPrice, isWalletTop);
       await addPaymentHistory(paymentModel);
     } else {
       throw Exception(
@@ -372,15 +381,18 @@ class MerchantRepo {
     }
   }
 
-  Future<String> makePayment(int deliveryFee,
-      {bool cardPayment = false}) async {
+  Future<String> makePayment(
+    int deliveryFee,
+    bool isWalletTop, {
+    bool cardPayment = false,
+  }) async {
     String id = '';
 
     try {
       // final bool isAuthenticated =
       //     await authenticationRepo.authenticateUser(password);
       if (cardPayment == false) {
-        await checkUserWalletBalance();
+        await checkUserWalletBalance(isWalletTop);
       }
 
       id = await sendOrder(deliveryFee);
