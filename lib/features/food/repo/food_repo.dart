@@ -561,7 +561,7 @@ class MerchantRepo {
 
       log(allShopsId.toString());
 
-      int price = 0;
+      double price = 0;
 
       for (String shopId in allShopsId) {
         // get shop name by id
@@ -581,7 +581,11 @@ class MerchantRepo {
         );
       }
 
-      return price;
+      if (price.round() < 200) {
+        return 200;
+      }
+
+      return price.round();
     } catch (e, s) {
       log(s.toString());
       throw e;
@@ -594,7 +598,7 @@ class MerchantRepo {
         .update(<String, dynamic>{'pay_status': status ? 'confrim' : 'cancel'});
   }
 
-  Future<int> getDistancePriceBetweenShopToUserLocation(
+  Future<double> getDistancePriceBetweenShopToUserLocation(
     String shopPlaceId,
     int pricePerKm,
   ) async {
@@ -607,7 +611,8 @@ class MerchantRepo {
         userDetails!.location!.placeId,
       );
 
-      return result * pricePerKm;
+      final double price = (result / 1000) * pricePerKm;
+      return price;
     } catch (e) {
       throw e;
     }
