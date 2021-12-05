@@ -48,13 +48,16 @@ class _HomePageState extends State<HomePage> {
         child: SizedBox(
           height: sizerHeight(98),
           child: RefreshIndicator(
-            onRefresh: () async {},
+            onRefresh: () async {
+              BlocProvider.of<MerchantBloc>(context)
+                  .add(GetPopularFoodEvents());
+            },
             child: Stack(
               children: <Widget>[
                 ListView(
                   controller: _controller,
                   addAutomaticKeepAlives: true,
-                  shrinkWrap: true,
+                  // shrinkWrap: true,
                   physics: const AlwaysScrollableScrollPhysics(),
                   children: <Widget>[
                     SizedBox(height: sizerSp(10)),
