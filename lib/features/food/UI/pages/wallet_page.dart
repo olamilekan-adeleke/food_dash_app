@@ -11,6 +11,7 @@ import 'package:food_dash_app/cores/utils/route_name.dart';
 import 'package:food_dash_app/cores/utils/sizer_utils.dart';
 import 'package:food_dash_app/cores/utils/snack_bar_service.dart';
 import 'package:food_dash_app/features/auth/model/user_details_model.dart';
+import 'package:food_dash_app/features/food/UI/pages/payment_history_screen.dart';
 import 'package:food_dash_app/features/food/UI/widgets/header_widget.dart';
 import 'package:food_dash_app/features/food/repo/food_repo.dart';
 import 'package:food_dash_app/features/food/repo/local_database_repo.dart';
@@ -24,30 +25,30 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScaffoldWidget(
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: sizerSp(10)),
-        child: Column(
-          children: <Widget>[
-            SizedBox(height: sizerSp(10)),
-            const HeaderWidget(iconData: Icons.menu, title: 'Wallet'),
-            SizedBox(height: sizerSp(20)),
-            const WalletBalanceWidget(),
-            SizedBox(height: sizerSp(20)),
-            WalletOptionItemWidget(
-              title: 'Top up Wallet',
-              callback: () => CustomButtomModalService.showModal(
-                const FundWalletDetailsWidget(enabled: true),
+    return SizedBox(
+      height: sizerHeight(100),
+      child: CustomScaffoldWidget(
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: sizerSp(10)),
+          child: Column(
+            children: <Widget>[
+              SizedBox(height: sizerSp(10)),
+              const HeaderWidget(iconData: Icons.menu, title: 'Wallet'),
+              SizedBox(height: sizerSp(20)),
+              const WalletBalanceWidget(),
+              SizedBox(height: sizerSp(20)),
+              WalletOptionItemWidget(
+                title: 'Top up Wallet',
+                callback: () => CustomButtomModalService.showModal(
+                  const FundWalletDetailsWidget(enabled: true),
+                ),
+                color: Colors.white,
               ),
-              color: Colors.white,
-            ),
-            SizedBox(height: sizerSp(10)),
-            WalletOptionItemWidget(
-              title: 'Payment history',
-              callback: () => CustomNavigationService()
-                  .navigateTo(RouteName.paymentHistoryScreen),
-            ),
-          ],
+              
+              SizedBox(height: sizerSp(10)),
+              Expanded(child: PaymentHistoryScreen()),
+            ],
+          ),
         ),
       ),
     );
