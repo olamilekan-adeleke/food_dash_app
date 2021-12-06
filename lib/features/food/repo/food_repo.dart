@@ -559,7 +559,8 @@ class MerchantRepo {
       final int pricePerKm = await getPricePerKm();
 
       if (userDetails == null || userDetails.location == null) {
-        throw 'Error, something went wrong! \n Please try updating your address';
+        throw 'Error, something went wrong! \n'
+        'Please try updating your address';
       }
 
       if (localdatabaseRepo.showFood.value) {
