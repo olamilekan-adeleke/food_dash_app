@@ -132,7 +132,7 @@ class _MarketItemsWidgetsState extends State<MarketItemsWidgets> {
     return StaggeredGridView.countBuilder(
       controller: _controller,
       physics: const AlwaysScrollableScrollPhysics(),
-      shrinkWrap: true,
+      // shrinkWrap: true,
       crossAxisCount: 4,
       staggeredTileBuilder: (int index) {
         return StaggeredTile.fit(2);

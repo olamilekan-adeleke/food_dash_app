@@ -12,7 +12,6 @@ class CustomSnackBarService {
       message: message,
       title: 'Error',
       duration: duration ?? const Duration(seconds: 3),
-      
     );
   }
 
@@ -30,9 +29,7 @@ class CustomSnackBarService {
       variant: SnackBarType.warning,
       message: message,
       title: 'Warning',
-      duration: duration ?? const Duration(milliseconds: 2000),
+      duration: duration ?? const Duration(milliseconds: 3000),
     );
   }
-
-  
 }
