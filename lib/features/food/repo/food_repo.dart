@@ -573,6 +573,11 @@ class MerchantRepo {
 
       final int numberOfShop = allShopsId.length;
 
+      if (numberOfShop > 3) {
+        throw 'Number of fast food you can order from at a given time can not'
+            ' be more than 3, Please remove some item fom cart';
+      }
+
       log(allShopsId.toString());
 
       double price = 0;
@@ -580,7 +585,7 @@ class MerchantRepo {
       for (String shopId in allShopsId) {
         // get shop name by id
         final String? shopNameById = items
-            .where((element) => element.fastFoodId == shopId)
+            .where((CartModel element) => element.fastFoodId == shopId)
             .toList()
             .first
             .fastFoodName;
