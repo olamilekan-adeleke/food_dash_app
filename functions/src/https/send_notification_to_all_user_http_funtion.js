@@ -14,7 +14,7 @@ const sendNotificationToAllUserHttpFunction = async (req, res) => {
         .status(200)
         .json({ status: "success", msg: "Notification Sent to all users" });
     } catch (error) {
-      console.log(error);
+      funtions.logger.error(error);
       res.status(400).json({
         status: "fail",
         msg: " Error Occurred!, Notification  Not Sent to all users",
