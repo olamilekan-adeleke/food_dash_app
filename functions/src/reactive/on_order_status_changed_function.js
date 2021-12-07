@@ -211,6 +211,7 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
         return { msg: "error in execution: notification not saved" };
       });
   }
+
   return Promise.resolve();
 };
 
