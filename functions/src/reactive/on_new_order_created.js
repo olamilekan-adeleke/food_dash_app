@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const admin = require("../../firebase_");
+const functions = require("firebase-functions");
 const sendNotificationToUser = require("../controllers/send_notification_to_user");
 const saveDataToUserNotification = require("../controllers/save_data_to_user_notification_collection");
 const addDataToPopular = require("../controllers/add_data_to_popular");
@@ -7,7 +8,7 @@ const incrementTotalOrderCount = require("../controllers/increment_total_order_c
 const incrementTotalOrderAmountCount = require("../controllers/increment_completed_order_count");
 
 const onNewOrderCreated = async (snapshot, context) => {
-  funtions.logger.log(context);
+  functions.logger.log(context);
   const data = snapshot.data();
   const userId = data.user_details.uid;
   const orderId = data.id;
