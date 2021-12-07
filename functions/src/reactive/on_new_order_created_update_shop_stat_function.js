@@ -57,8 +57,22 @@ const OnNewOrderCreatedUpdateShopStat = async (snapshot, context) => {
       // );
     });
   } else if (type === "market") {
-    // ? to do this, first go add the fast food name and fast food id the documnet/order data
-    
+    items.forEach(async (element) => {
+      const FastFoodId = element.fast_food_id;
+      const foodAmount = element.price;
+
+      const dataTo = {
+        wallet_balance: admin.firestore.FieldValue.increment(foodAmount),
+      };
+
+      await updateShopWallet(FastFoodId, dataTo);
+      await updateShopTotalNumberOfSales(FastFoodId, foodAmount);
+      // await sendNotificationToUser(
+      //   FastFoodId,
+      //   `Now Order of ${element.fast_food_name} has just been made!`,
+      //   sendData
+      // );
+    });
   }
 
   return Promise.resolve();
