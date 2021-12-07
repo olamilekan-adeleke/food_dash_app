@@ -4,10 +4,8 @@ const sendNotificationToUser = require("../controllers/send_notification_to_user
 const saveDataToUserNotification = require("../controllers/save_data_to_user_notification_collection");
 const saveDataToRiderNotification = require("../controllers/save_data_to_rider_notification_collection.");
 const incrementCompletedOrderCount = require("../controllers/incrementTotalOrderAmountCount");
-// functions/src/controllers/save_data_to_rider_notification_collection..js
 const getRiderFee = require("../controllers/get_rider_fee");
 const updateRiderWallet = require("../controllers/update_rider_wallet");
-
 
 const onOrderStatusChangedFunction = async (snapshot, context) => {
   console.log(context);
@@ -38,11 +36,9 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
     body =
       "Your order has been pickup by the rider. Rider has " +
       "picked up your order and is now enroute to your location";
+  } else if (orderStatus === "completed") {
+    body = "Your order has been completed. Login To confrim order!";
   }
-  // else if (orderStatus === "completed") {
-  // body = "Your order has been completed. Login To confrim order!";
-  // }
-
 
   if (data.pay_status === "confrim") {
     const notificationUser = "Order has been Comfrimed by you!!";
@@ -200,23 +196,22 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
     items: items,
   };
 
-  // send out notifications
-  await sendNotificationToUser(userId, body, sendToCustomer);
+  if (body !== undefined) {
+    // send out notifications
+    await sendNotificationToUser(userId, body, sendToCustomer);
 
-  // update user noticfication
-  await saveDataToUserNotification(userId, docId, dataToSave)
-    .then(() => {
-      console.info("succesfully: saved notification data");
-    })
-    .catch((error) => {
-      console.info("error in execution: notification not saved");
-      console.log(error);
-      return { msg: "error in execution: notification not saved" };
-    });
-  
-
+    // update user noticfication
+    await saveDataToUserNotification(userId, docId, dataToSave)
+      .then(() => {
+        console.info("succesfully: saved notification data");
+      })
+      .catch((error) => {
+        console.info("error in execution: notification not saved");
+        console.log(error);
+        return { msg: "error in execution: notification not saved" };
+      });
+  }
   return Promise.resolve();
 };
-
 
 module.exports = onOrderStatusChangedFunction;
