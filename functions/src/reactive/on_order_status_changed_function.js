@@ -42,7 +42,9 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
   // else if (orderStatus === "completed") {
   // body = "Your order has been completed. Login To confrim order!";
   // }
-  else if (data.pay_status === "confrim") {
+
+
+  if (data.pay_status === "confrim") {
     const notificationUser = "Order has been Comfrimed by you!!";
     const notificationRider =
       "User Comfrimed order received! \nYou Will receive your pay soon.";
@@ -107,7 +109,7 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
 
     await sendNotificationToUser(riderId, nnotificationRider, sendToCustomer);
 
-    return Promise.resolve();
+    // return Promise.resolve();
   } else if (data.pay_status === "cancel") {
     const notificationUser = "You marked order has Canceled!";
     const notificationRider = "User has marked order has Canceled!";
@@ -158,7 +160,7 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
         return { msg: "error in execution: notification not saved" };
       });
 
-    return Promise.resolve();
+    // return Promise.resolve();
   } else if (data.pay_status === "pending") {
     const notificationUser =
       "Rider has marked order has completed! please login to confrim";
@@ -186,7 +188,7 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
         return { msg: "error in execution: notification not saved" };
       });
 
-    return Promise.resolve();
+    // return Promise.resolve();
   }
 
   const dataToSave = {
@@ -211,6 +213,7 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
       console.log(error);
       return { msg: "error in execution: notification not saved" };
     });
+  
 
   return Promise.resolve();
 };

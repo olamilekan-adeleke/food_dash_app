@@ -21,15 +21,17 @@ const OnNewOrderCreatedUpdateShopStat = async (snapshot, context) => {
     order_id: `${orderId}`,
   };
 
-  items.forEach(async (element) => {
-    const FastFoodId = element.fast_food_id;
+  if (data.order_status === "accepted") {
+    items.forEach(async (element) => {
+      const FastFoodId = element.fast_food_id;
 
-    await sendNotificationToUser(
-      FastFoodId,
-      `Now Order of ${element.fast_food_name} has just been made!`,
-      sendData
-    );
-  });
+      await sendNotificationToUser(
+        FastFoodId,
+        `New Order of ${element.name} has just been made! - vendor`,
+        sendData
+      );
+    });
+  }
 
   if (data.order_status !== "enroute") {
     return Promise.resolve();
@@ -48,14 +50,15 @@ const OnNewOrderCreatedUpdateShopStat = async (snapshot, context) => {
 
       await updateShopWallet(FastFoodId, dataTo);
       await updateShopTotalNumberOfSales(FastFoodId, foodAmount);
-      await sendNotificationToUser(
-        FastFoodId,
-        `Now Order of ${element.fast_food_name} has just been made!`,
-        sendData
-      );
+      // await sendNotificationToUser(
+      //   FastFoodId,
+      //   `Now Order of ${element.fast_food_name} has just been made!`,
+      //   sendData
+      // );
     });
   } else if (type === "market") {
     // ? to do this, first go add the fast food name and fast food id the documnet/order data
+    
   }
 
   return Promise.resolve();
