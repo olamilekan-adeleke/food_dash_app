@@ -291,7 +291,11 @@ class MerchantRepo {
     yield* userCollectionRef.doc(userUid).snapshots();
   }
 
-  Future<String> sendOrder(int deliveryFee, {bool directPay = false}) async {
+  Future<String> sendOrder(
+    int deliveryFee,
+    bool isWalletTop, {
+    bool directPay = false,
+  }) async {
     final String id = const Uuid().v1();
     int totalPrice = 0;
     List<CartModel> items = <CartModel>[];
@@ -358,7 +362,9 @@ class MerchantRepo {
       id: const Uuid().v1(),
       amount: totalPrice,
       dateTime: DateTime.now(),
-      message: 'Payment for food',
+      message: localdatabaseRepo.showFood.value
+          ? 'Payment for food'
+          : 'Payment for market item(s)',
       paying: false,
     );
 
@@ -395,7 +401,7 @@ class MerchantRepo {
         await checkUserWalletBalance(isWalletTop);
       }
 
-      id = await sendOrder(deliveryFee);
+      id = await sendOrder(deliveryFee, isWalletTop);
 
       if (localdatabaseRepo.showFood.value) {
         await localdatabaseRepo.clearCartItem();
@@ -560,7 +566,7 @@ class MerchantRepo {
 
       if (userDetails == null || userDetails.location == null) {
         throw 'Error, something went wrong! \n'
-        'Please try updating your address';
+            'Please try updating your address';
       }
 
       if (localdatabaseRepo.showFood.value) {
