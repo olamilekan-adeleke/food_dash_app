@@ -8,7 +8,7 @@ const OnNewOrderCreatedUpdateShopStat = async (snapshot, context) => {
     return Promise.resolve();
   }
 
-  console.log(context);
+  functions.logger.log(context);
 
   const data = snapshot.after.data();
   const userId = data.user_details.uid;
@@ -80,10 +80,10 @@ const OnNewOrderCreatedUpdateShopStat = async (snapshot, context) => {
 
     return Promise.resolve();
   } catch (error) {
-    funtions.logger.error(
+    functions.logger.error(
       "error in execution: OnNewOrderCreatedUpdateShopStat"
     );
-    funtions.logger.error(error);
+    functions.logger.error(error);
   }
 };
 

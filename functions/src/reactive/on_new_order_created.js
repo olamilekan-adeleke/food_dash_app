@@ -7,7 +7,7 @@ const incrementTotalOrderCount = require("../controllers/increment_total_order_c
 const incrementTotalOrderAmountCount = require("../controllers/increment_completed_order_count");
 
 const onNewOrderCreated = async (snapshot, context) => {
-  console.log(context);
+  funtions.logger.log(context);
   const data = snapshot.data();
   const userId = data.user_details.uid;
   const orderId = data.id;
@@ -48,12 +48,12 @@ const onNewOrderCreated = async (snapshot, context) => {
     // / update user noticfication
     await saveDataToUserNotification(userId, docId, dataToSave)
       .then(() => {
-        funtions.logger.log("succesfully: saved notification data");
+        functions.logger.log("succesfully: saved notification data");
       })
       .catch((error) => {
-        funtions.logger.error("error in execution: notification not saved");
+        functions.logger.error("error in execution: notification not saved");
 
-        funtions.logger.error(error);
+        functions.logger.error(error);
         // return { msg: "error in execution: notification not saved" };
       });
 
@@ -78,8 +78,8 @@ const onNewOrderCreated = async (snapshot, context) => {
 
     return Promise.resolve();
   } catch (error) {
-    funtions.logger.error("error in execution: onNewOrderCreated");
-    funtions.logger.error(error);
+    functions.logger.error("error in execution: onNewOrderCreated");
+    functions.logger.error(error);
   }
 };
 

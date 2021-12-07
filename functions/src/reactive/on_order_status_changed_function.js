@@ -8,7 +8,7 @@ const getRiderFee = require("../controllers/get_rider_fee");
 const updateRiderWallet = require("../controllers/update_rider_wallet");
 
 const onOrderStatusChangedFunction = async (snapshot, context) => {
-  funtions.logger.error(context);
+  functions.logger.info(context);
   const data = snapshot.after.data();
   const orderStatus = data.order_status;
   const userId = data.user_details.uid;
@@ -73,22 +73,22 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
       // save notification to user
       await saveDataToUserNotification(userId, docId, dataToSaveUser)
         .then(() => {
-          funtions.logger.log("succesfully: saved notification data");
+          functions.logger.log("succesfully: saved notification data");
         })
         .catch((error) => {
-          funtions.logger.log("error in execution: notification not saved");
-          funtions.logger.error(error);
+          functions.logger.log("error in execution: notification not saved");
+          functions.logger.error(error);
           // return { msg: "error in execution: notification not saved" };
         });
 
       // save notification to rider
       await saveDataToRiderNotification(userId, docId, dataToSaveRider)
         .then(() => {
-          funtions.logger.log("succesfully: saved notification data");
+          functions.logger.log("succesfully: saved notification data");
         })
         .catch((error) => {
-          funtions.logger.log("error in execution: notification not saved");
-          funtions.logger.error(error);
+          functions.logger.log("error in execution: notification not saved");
+          functions.logger.error(error);
           // return { msg: "error in execution: notification not saved" };
         });
 
@@ -138,22 +138,22 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
       // save notification to user
       await saveDataToUserNotification(userId, docId, dataToSaveUser)
         .then(() => {
-          funtions.logger.log("succesfully: saved notification data");
+          functions.logger.log("succesfully: saved notification data");
         })
         .catch((error) => {
-          funtions.logger.log("error in execution: notification not saved");
-          funtions.logger.error(error);
+          functions.logger.log("error in execution: notification not saved");
+          functions.logger.error(error);
           // return { msg: "error in execution: notification not saved" };
         });
 
       // save notification to rider
       await saveDataToRiderNotification(userId, docId, dataToSaveRider)
         .then(() => {
-          funtions.logger.log("succesfully: saved notification data");
+          functions.logger.log("succesfully: saved notification data");
         })
         .catch((error) => {
-          funtions.logger.log("error in execution: notification not saved");
-          funtions.logger.error(error);
+          functions.logger.log("error in execution: notification not saved");
+          functions.logger.error(error);
           // return { msg: "error in execution: notification not saved" };
         });
 
@@ -177,11 +177,11 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
       // save notification to user
       await saveDataToRiderNotification(userId, docId, dataToSave)
         .then(() => {
-          funtions.logger.log("succesfully: saved notification data");
+          functions.logger.log("succesfully: saved notification data");
         })
         .catch((error) => {
-          funtions.logger.log("error in execution: notification not saved");
-          funtions.logger.error(error);
+          functions.logger.log("error in execution: notification not saved");
+          functions.logger.error(error);
           // return { msg: "error in execution: notification not saved" };
         });
 
@@ -204,19 +204,19 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
       // update user noticfication
       await saveDataToUserNotification(userId, docId, dataToSave)
         .then(() => {
-          funtions.logger.log("succesfully: saved notification data");
+          functions.logger.log("succesfully: saved notification data");
         })
         .catch((error) => {
-          funtions.logger.log("error in execution: notification not saved");
-          funtions.logger.error(error);
+          functions.logger.log("error in execution: notification not saved");
+          functions.logger.error(error);
           // return { msg: "error in execution: notification not saved" };
         });
     }
 
     return Promise.resolve();
   } catch (error) {
-    funtions.logger.log("error in execution: onOrderStatusChangedFunction");
-    funtions.logger.error(error);
+    functions.logger.log("error in execution: onOrderStatusChangedFunction");
+    functions.logger.error(error);
   }
 };
 

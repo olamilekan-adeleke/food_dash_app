@@ -18,14 +18,14 @@ const sendNotificationToAll = async (heading, body, data) => {
     .messaging()
     .sendToTopic("users", payload, options)
     .then(() => {
-      funtions.logger.log(
+      functions.logger.log(
         "function executed succesfully: sent notification to all user"
       );
       // return {msg: "function executed succesfully"};
     })
     .catch((error) => {
-      funtions.logger.log("error in execution: notification not sent");
-      funtions.logger.error(error);
+      functions.logger.log("error in execution: notification not sent");
+      functions.logger.error(error);
       // return { msg: "error in execution: notification not sent" };
     });
 };

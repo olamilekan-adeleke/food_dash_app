@@ -20,14 +20,14 @@ const sendNotificationToUser = async (userId, body, data) => {
     .then(() => {
       functions.logger.log("function executed succesfully: sent notification");
       // console.info("function executed succesfully: sent notification");
-      // return {msg: "function executed succesfully"};
+      return {msg: "function executed succesfully"};
     })
     .catch((error) => {
       functions.logger.error("error in execution: notification not sent");
       functions.logger.error(error);
       // console.info("error in execution: notification not sent");
       // console.log(error);
-      // return { msg: "error in execution: notification not sent" };
+      return { msg: "error in execution: notification not sent" };
     });
 };
 
