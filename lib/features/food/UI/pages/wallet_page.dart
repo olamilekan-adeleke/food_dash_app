@@ -5,6 +5,7 @@ import 'package:food_dash_app/cores/components/custom_text_widget.dart';
 import 'package:food_dash_app/cores/components/custom_textfiled.dart';
 import 'package:food_dash_app/cores/constants/color.dart';
 import 'package:food_dash_app/cores/utils/buttom_modal.dart';
+import 'package:food_dash_app/cores/utils/currency_formater.dart';
 import 'package:food_dash_app/cores/utils/locator.dart';
 import 'package:food_dash_app/cores/utils/navigator_service.dart';
 import 'package:food_dash_app/cores/utils/route_name.dart';
@@ -37,14 +38,6 @@ class WalletScreen extends StatelessWidget {
               SizedBox(height: sizerSp(20)),
               const WalletBalanceWidget(),
               SizedBox(height: sizerSp(20)),
-              WalletOptionItemWidget(
-                title: 'Top up Wallet',
-                callback: () => CustomButtomModalService.showModal(
-                  const FundWalletDetailsWidget(enabled: true),
-                ),
-                color: Colors.white,
-              ),
-              
               SizedBox(height: sizerSp(10)),
               Expanded(child: PaymentHistoryScreen()),
             ],
@@ -237,7 +230,7 @@ class WalletBalanceWidget extends StatelessWidget {
         );
         return Container(
           padding: EdgeInsets.all(sizerSp(10.0)),
-          width: sizerWidth(80),
+          width: sizerWidth(90),
           height: sizerSp(130),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(sizerSp(10.0)),
@@ -254,17 +247,26 @@ class WalletBalanceWidget extends StatelessWidget {
               ),
               SizedBox(height: sizerSp(10.0)),
               CustomTextWidget(
-                text: '\u20A6 ${userDetails.walletBalance.toString()}',
+                text: '\u20A6 '
+                    '${currencyFormatter(userDetails.walletBalance?.round() ?? 0)}',
                 textColor: Colors.white,
                 fontSize: sizerSp(20.0),
                 fontWeight: FontWeight.bold,
               ),
               // SizedBox(height: sizerSp(5.0)),
-              CustomTextWidget(
-                text: userDetails.fullName,
-                textColor: Colors.white,
-                fontSize: sizerSp(15.0),
-                fontWeight: FontWeight.w300,
+              // CustomTextWidget(
+              //   text: userDetails.fullName,
+              //   textColor: Colors.white,
+              //   fontSize: sizerSp(15.0),
+              //   fontWeight: FontWeight.w300,
+              // ),
+              const Spacer(),
+              WalletOptionItemWidget(
+                title: 'Top up Wallet',
+                callback: () => CustomButtomModalService.showModal(
+                  const FundWalletDetailsWidget(enabled: true),
+                ),
+                color: Colors.white,
               ),
             ],
           ),
