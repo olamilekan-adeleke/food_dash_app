@@ -4,6 +4,7 @@ class MarketItemModel {
   MarketItemModel({
     required this.id,
     required this.shopId,
+    required this.shopName,
     required this.name,
     required this.description,
     required this.images,
@@ -15,6 +16,7 @@ class MarketItemModel {
     return MarketItemModel(
       id: map['id'],
       shopId: map['fast_food_id'] ?? '',
+      shopName: map['fast_food_name'] ?? '',
       name: map['name'],
       description: map['description'],
       images: List<String>.from(map['images'] ?? map['image']),
@@ -30,6 +32,7 @@ class MarketItemModel {
 
   final String id;
   final String shopId;
+  final String shopName;
   final String name;
   final String description;
   final List<String> images;
@@ -66,6 +69,7 @@ class MarketItemModel {
       'search_key': searchKey.toSet().toList(),
       'count': 0,
       'fast_food_id': shopId,
+      'fast_food_name': shopName,
     };
   }
 }

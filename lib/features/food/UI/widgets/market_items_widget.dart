@@ -284,7 +284,7 @@ class ItemWidget extends StatelessWidget {
                           image: marketItem.images.first,
                           name: marketItem.name,
                           price: marketItem.price,
-                          fastFoodName: marketItem.name,
+                          fastFoodName: marketItem.shopName,
                           fastFoodId: marketItem.shopId,
                         );
 
