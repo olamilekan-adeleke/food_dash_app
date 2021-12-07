@@ -14,6 +14,7 @@ import 'package:food_dash_app/features/auth/bloc/auth_bloc/auth_bloc.dart';
 import 'package:food_dash_app/features/auth/model/user_details_model.dart';
 import 'package:food_dash_app/features/food/UI/widgets/header_widget.dart';
 import 'package:food_dash_app/features/food/controller/locatiom_controller.dart';
+import 'package:food_dash_app/features/food/model/location_details.dart';
 import 'package:food_dash_app/features/food/repo/local_database_repo.dart';
 import 'package:get/get.dart';
 
@@ -21,6 +22,7 @@ class EditAddressScreen extends StatefulWidget {
   const EditAddressScreen({Key? key}) : super(key: key);
 
   static final TextEditingController address = TextEditingController(text: '');
+  static final TextEditingController phone = TextEditingController(text: '');
   static final TextEditingController location = TextEditingController(text: '');
 
   static final LocaldatabaseRepo localdatabaseRepo =
@@ -73,8 +75,15 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 Widget? child,
               ) {
                 EditAddressScreen.address.text = userDetails?.address ?? '';
+                EditAddressScreen.phone.text =
+                    '${userDetails?.phoneNumber ?? ''}';
                 locationController.locationController.text =
                     userDetails?.location?.description ?? '';
+
+                if (userDetails?.location != null) {
+                  locationController.selectedSuggestion =
+                      Rx<Suggestion>(userDetails!.location!);
+                }
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,68 +120,23 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       maxLine: null,
                       textInputType: TextInputType.multiline,
                     ),
+                    SizedBox(height: sizerSp(20.0)),
+                    CustomTextWidget(
+                      text: 'Phone number',
+                      fontWeight: FontWeight.bold,
+                      fontSize: sizerSp(15),
+                    ),
                     SizedBox(height: sizerSp(10.0)),
+                    CustomTextField(
+                      textEditingController: EditAddressScreen.phone,
+                      hintText: 'Enter Phone number',
+                      labelText: 'Phone number',
+                      textInputType: TextInputType.number,
+                    ),
                   ],
                 );
               },
             ),
-
-            // BlocConsumer<AuthBloc, AuthState>(
-            //     listener: (BuildContext context, AuthState state) {
-            //   if (state is GetAddressDataLoadedState) {
-            //     addresses = state.address;
-            //   } else if (state is GetAddressDataErrorState) {
-            //     CustomSnackBarService.showErrorSnackBar(state.message);
-            //   }
-            // }, builder: (BuildContext context, AuthState state) {
-            //   if (state is GetAddressDataLoadingState) {
-            //     return const CustomButton.loading();
-            //   } else if (state is GetAddressDataErrorState) {
-            //     return CustomErrorWidget(
-            //       message: state.message,
-            //       callback: () => BlocProvider.of<AuthBloc>(context)
-            //           .add(GetAddressDataEvent()),
-            //     );
-            //   }
-            //   return ValueListenableBuilder<String>(
-            //     valueListenable: EditAddressScreen.selectedVal,
-            //     builder: (
-            //       BuildContext context,
-            //       String value,
-            //       Widget? child,
-            //     ) {
-            //       // return SearchableDropdown<String>.single(
-            //       //   items: locationList
-            //       //       .map(
-            //       //         (String e) => DropdownMenuItem<String>(
-            //       //           child: CustomTextWidget(
-            //       //             text: e,
-            //       //             fontWeight: FontWeight.w200,
-            //       //             fontSize: sizerSp(13),
-            //       //           ),
-            //       //         ),
-            //       //       )
-            //       //       .toList(),
-            //       //   value: value,
-            //       //   hint: 'Select one',
-            //       //   searchHint: 'Select one',
-            //       //   onChanged: (String value) => selectedVal.value = value,
-            //       //   isExpanded: true,
-            //       // );
-
-            //       return DropdownSearch<String>(
-            //         mode: Mode.BOTTOM_SHEET,
-            //         showSelectedItem: true,
-            //         items: addresses,
-            //         // label: 'Menu mode',
-            //         hint: 'Select Region',
-            //         onChanged: (String? val) =>
-            //             EditAddressScreen.selectedVal.value = val ?? '',
-            //         selectedItem: value != '' ? value : null,
-            //       );
-            //     },
-            //   );
-            // }),
 
             const Spacer(),
             BlocConsumer<AuthBloc, AuthState>(
@@ -194,13 +158,23 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                   onTap: () async {
                     if (EditAddressScreen.address.text.isEmpty) {
                       CustomSnackBarService.showWarningSnackBar(
-                          'Enter Address and Select a Region');
+                        'Enter Address',
+                      );
 
                       return;
                     }
-                    if (locationController.selectedSuggestion?.value == null) {
+                    if (EditAddressScreen.phone.text.isEmpty) {
                       CustomSnackBarService.showWarningSnackBar(
-                          'Enter Address and Select a Region');
+                        'Enter a phone number',
+                      );
+
+                      return;
+                    }
+                    if (locationController.selectedSuggestion?.value == null &&
+                        locationController.locationController.text.isEmpty) {
+                      CustomSnackBarService.showWarningSnackBar(
+                        'Enter location',
+                      );
 
                       return;
                     }
@@ -211,8 +185,10 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
 
                     userDetails = userDetails!.copyWith(
                       address: EditAddressScreen.address.text.trim(),
+                      phoneNumber:
+                          int.parse(EditAddressScreen.phone.text.trim()),
                       region:
-                          locationController.selectedSuggestion!.value.title,
+                          locationController.selectedSuggestion?.value.title,
                       location: locationController.selectedSuggestion!.value,
                     );
 
