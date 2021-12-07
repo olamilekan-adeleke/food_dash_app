@@ -99,7 +99,7 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
       // pay rider
       const snapshot = await getRiderFee();
       const percentageFee = snapshot.data().percentage;
-      const fee = (100 * percentageFee) / deliveryFee;
+      const fee = (percentageFee / 100  ) * deliveryFee;
 
       await updateRiderWallet(riderId, fee);
 
