@@ -16,65 +16,71 @@ const onNewOrderCreated = async (snapshot, context) => {
   const itemFee = data.items_fee;
   const type = data.type;
 
-  const sendToCustomer = {
-    data_to_send: "msg_from_the_cloud",
-    click_action: "FLUTTER_NOTIFICATION_CLICK",
-    order_id: `${orderId}`,
-  };
+  try {
+    const sendToCustomer = {
+      data_to_send: "msg_from_the_cloud",
+      click_action: "FLUTTER_NOTIFICATION_CLICK",
+      order_id: `${orderId}`,
+    };
 
-  const dataToSave = {
-    body: "Your Order Was Succseffuly Made!",
-    orderId: `${orderId}`,
-    timestamp: admin.firestore.Timestamp.now(),
-    userId: `${userId}`,
-    id: `${docId}`,
-    items: items,
-  };
+    const dataToSave = {
+      body: "Your Order Was Succseffuly Made!",
+      orderId: `${orderId}`,
+      timestamp: admin.firestore.Timestamp.now(),
+      userId: `${userId}`,
+      id: `${docId}`,
+      items: items,
+    };
 
-  // / send out notifications
-  await sendNotificationToUser(
-    userId,
-    "Your Order Was Succseffuly Made!",
-    sendToCustomer
-  );
+    // / send out notifications
+    await sendNotificationToUser(
+      userId,
+      "Your Order Was Succseffuly Made!",
+      sendToCustomer
+    );
 
-  await sendNotificationToUser(
-    "riders",
-    "A New Order Was Just Made!. Login to accept order",
-    sendToCustomer
-  );
+    await sendNotificationToUser(
+      "riders",
+      "A New Order Was Just Made!. Login to accept order",
+      sendToCustomer
+    );
 
-  // / update user noticfication
-  await saveDataToUserNotification(userId, docId, dataToSave)
-    .then(() => {
-      console.info("succesfully: saved notification data");
-    })
-    .catch((error) => {
-      console.info("error in execution: notification not saved");
-      console.log(error);
-      return { msg: "error in execution: notification not saved" };
-    });
+    // / update user noticfication
+    await saveDataToUserNotification(userId, docId, dataToSave)
+      .then(() => {
+        funtions.logger.log("succesfully: saved notification data");
+      })
+      .catch((error) => {
+        funtions.logger.error("error in execution: notification not saved");
 
-  // update like count
-  if (type === "food") {
-    // / add order to favourite
-    items.forEach(async (element) => {
-      const id = element.id;
-      const dataTo = {
-        likes_count: admin.firestore.FieldValue.increment(1),
-      };
+        funtions.logger.error(error);
+        // return { msg: "error in execution: notification not saved" };
+      });
 
-      await addDataToPopular(id, dataTo);
-    });
+    // update like count
+    if (type === "food") {
+      // / add order to favourite
+      items.forEach(async (element) => {
+        const id = element.id;
+        const dataTo = {
+          likes_count: admin.firestore.FieldValue.increment(1),
+        };
+
+        await addDataToPopular(id, dataTo);
+      });
+    }
+
+    // update total count order count for that day
+    await incrementTotalOrderCount();
+
+    // update item fee
+    await incrementTotalOrderAmountCount(itemFee);
+
+    return Promise.resolve();
+  } catch (error) {
+    funtions.logger.error("error in execution: onNewOrderCreated");
+    funtions.logger.error(error);
   }
-
-  // update total count order count for that day
-  await incrementTotalOrderCount();
-
-  // update item fee
-  await incrementTotalOrderAmountCount(itemFee);
-
-  return Promise.resolve();
 };
 
 module.exports = onNewOrderCreated;
