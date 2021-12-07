@@ -8,7 +8,7 @@ const getRiderFee = require("../controllers/get_rider_fee");
 const updateRiderWallet = require("../controllers/update_rider_wallet");
 
 const onOrderStatusChangedFunction = async (snapshot, context) => {
-  console.log(context);
+  funtions.logger.error(context);
   const data = snapshot.after.data();
   const orderStatus = data.order_status;
   const userId = data.user_details.uid;
@@ -20,149 +20,176 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
 
   let body;
 
-  const sendToCustomer = {
-    data_to_send: "msg_from_the_cloud",
-    click_action: "FLUTTER_NOTIFICATION_CLICK",
-    order_id: `${orderId}`,
-  };
-
-  if (orderStatus === "accepted") {
-    body = "Your order has been accepted by a rider!";
-  } else if (orderStatus === "processing") {
-    body =
-      "Resturant's has received your order and have started working " +
-      " on it. \nRider is on his way to pick up your order!";
-  } else if (orderStatus === "enroute") {
-    body =
-      "Your order has been pickup by the rider. Rider has " +
-      "picked up your order and is now enroute to your location";
-  } else if (orderStatus === "completed") {
-    body = "Your order has been completed. Login To confrim order!";
-  }
-
-  if (data.pay_status === "confrim") {
-    const notificationUser = "Order has been Comfrimed by you!!";
-    const notificationRider =
-      "User Comfrimed order received! \nYou Will receive your pay soon.";
-
-    const dataToSaveUser = {
-      body: notificationUser,
-      orderId: `${orderId}`,
-      timestamp: admin.firestore.Timestamp.now(),
-      userId: `${userId}`,
-      id: `${docId}`,
-      items: items,
+  try {
+    const sendToCustomer = {
+      data_to_send: "msg_from_the_cloud",
+      click_action: "FLUTTER_NOTIFICATION_CLICK",
+      order_id: `${orderId}`,
     };
 
-    const dataToSaveRider = {
-      body: notificationUser,
-      orderId: `${orderId}`,
-      timestamp: admin.firestore.Timestamp.now(),
-      userId: `${userId}`,
-      id: `${docId}`,
-      items: items,
-    };
+    if (orderStatus === "accepted") {
+      body = "Your order has been accepted by a rider!";
+    } else if (orderStatus === "processing") {
+      body =
+        "Resturant's has received your order and have started working " +
+        " on it. \nRider is on his way to pick up your order!";
+    } else if (orderStatus === "enroute") {
+      body =
+        "Your order has been pickup by the rider. Rider has " +
+        "picked up your order and is now enroute to your location";
+    } else if (orderStatus === "completed") {
+      body = "Your order has been completed. Login To confrim order!";
+    }
 
-    // send notification to user
-    await sendNotificationToUser(userId, notificationUser, sendToCustomer);
+    if (data.pay_status === "confrim") {
+      const notificationUser = "Order has been Comfrimed by you!!";
+      const notificationRider =
+        "User Comfrimed order received! \nYou Will receive your pay soon.";
 
-    // send notification to rider
-    await sendNotificationToUser(riderId, notificationRider, sendToCustomer);
+      const dataToSaveUser = {
+        body: notificationUser,
+        orderId: `${orderId}`,
+        timestamp: admin.firestore.Timestamp.now(),
+        userId: `${userId}`,
+        id: `${docId}`,
+        items: items,
+      };
 
-    // save notification to user
-    await saveDataToUserNotification(userId, docId, dataToSaveUser)
-      .then(() => {
-        console.info("succesfully: saved notification data");
-      })
-      .catch((error) => {
-        console.info("error in execution: notification not saved");
-        console.log(error);
-        return { msg: "error in execution: notification not saved" };
-      });
+      const dataToSaveRider = {
+        body: notificationUser,
+        orderId: `${orderId}`,
+        timestamp: admin.firestore.Timestamp.now(),
+        userId: `${userId}`,
+        id: `${docId}`,
+        items: items,
+      };
 
-    // save notification to rider
-    await saveDataToRiderNotification(userId, docId, dataToSaveRider)
-      .then(() => {
-        console.info("succesfully: saved notification data");
-      })
-      .catch((error) => {
-        console.info("error in execution: notification not saved");
-        console.log(error);
-        return { msg: "error in execution: notification not saved" };
-      });
+      // send notification to user
+      await sendNotificationToUser(userId, notificationUser, sendToCustomer);
 
-    // update completed order
-    await incrementCompletedOrderCount(1);
+      // send notification to rider
+      await sendNotificationToUser(riderId, notificationRider, sendToCustomer);
 
-    // pay rider
-    const snapshot = await getRiderFee();
-    const percentageFee = snapshot.data().percentage;
-    const fee = (100 * percentageFee) / deliveryFee;
+      // save notification to user
+      await saveDataToUserNotification(userId, docId, dataToSaveUser)
+        .then(() => {
+          funtions.logger.log("succesfully: saved notification data");
+        })
+        .catch((error) => {
+          funtions.logger.log("error in execution: notification not saved");
+          funtions.logger.error(error);
+          // return { msg: "error in execution: notification not saved" };
+        });
 
-    await updateRiderWallet(riderId, fee);
+      // save notification to rider
+      await saveDataToRiderNotification(userId, docId, dataToSaveRider)
+        .then(() => {
+          funtions.logger.log("succesfully: saved notification data");
+        })
+        .catch((error) => {
+          funtions.logger.log("error in execution: notification not saved");
+          funtions.logger.error(error);
+          // return { msg: "error in execution: notification not saved" };
+        });
 
-    const nnotificationRider = `Account Credited! \nYou received a credit of NGN ${fee} `;
+      // update completed order
+      await incrementCompletedOrderCount(1);
 
-    await sendNotificationToUser(riderId, nnotificationRider, sendToCustomer);
+      // pay rider
+      const snapshot = await getRiderFee();
+      const percentageFee = snapshot.data().percentage;
+      const fee = (100 * percentageFee) / deliveryFee;
 
-    // return Promise.resolve();
-  } else if (data.pay_status === "cancel") {
-    const notificationUser = "You marked order has Canceled!";
-    const notificationRider = "User has marked order has Canceled!";
+      await updateRiderWallet(riderId, fee);
 
-    const dataToSaveUser = {
-      body: notificationUser,
-      orderId: `${orderId}`,
-      timestamp: admin.firestore.Timestamp.now(),
-      userId: `${userId}`,
-      id: `${docId}`,
-      items: items,
-    };
+      const nnotificationRider = `Account Credited! \nYou received a credit of NGN ${fee} `;
 
-    const dataToSaveRider = {
-      body: notificationUser,
-      orderId: `${orderId}`,
-      timestamp: admin.firestore.Timestamp.now(),
-      userId: `${userId}`,
-      id: `${docId}`,
-      items: items,
-    };
+      await sendNotificationToUser(riderId, nnotificationRider, sendToCustomer);
 
-    // send notification to user
-    await sendNotificationToUser(userId, notificationUser, sendToCustomer);
+      // return Promise.resolve();
+    } else if (data.pay_status === "cancel") {
+      const notificationUser = "You marked order has Canceled!";
+      const notificationRider = "User has marked order has Canceled!";
 
-    // send notification to rider
-    await sendNotificationToUser(riderId, notificationRider, sendToCustomer);
+      const dataToSaveUser = {
+        body: notificationUser,
+        orderId: `${orderId}`,
+        timestamp: admin.firestore.Timestamp.now(),
+        userId: `${userId}`,
+        id: `${docId}`,
+        items: items,
+      };
 
-    // save notification to user
-    await saveDataToUserNotification(userId, docId, dataToSaveUser)
-      .then(() => {
-        console.info("succesfully: saved notification data");
-      })
-      .catch((error) => {
-        console.info("error in execution: notification not saved");
-        console.log(error);
-        return { msg: "error in execution: notification not saved" };
-      });
+      const dataToSaveRider = {
+        body: notificationUser,
+        orderId: `${orderId}`,
+        timestamp: admin.firestore.Timestamp.now(),
+        userId: `${userId}`,
+        id: `${docId}`,
+        items: items,
+      };
 
-    // save notification to rider
-    await saveDataToRiderNotification(userId, docId, dataToSaveRider)
-      .then(() => {
-        console.info("succesfully: saved notification data");
-      })
-      .catch((error) => {
-        console.info("error in execution: notification not saved");
-        console.log(error);
-        return { msg: "error in execution: notification not saved" };
-      });
+      // send notification to user
+      await sendNotificationToUser(userId, notificationUser, sendToCustomer);
 
-    // return Promise.resolve();
-  } else if (data.pay_status === "pending") {
-    const notificationUser =
-      "Rider has marked order has completed! please login to confrim";
+      // send notification to rider
+      await sendNotificationToUser(riderId, notificationRider, sendToCustomer);
+
+      // save notification to user
+      await saveDataToUserNotification(userId, docId, dataToSaveUser)
+        .then(() => {
+          funtions.logger.log("succesfully: saved notification data");
+        })
+        .catch((error) => {
+          funtions.logger.log("error in execution: notification not saved");
+          funtions.logger.error(error);
+          // return { msg: "error in execution: notification not saved" };
+        });
+
+      // save notification to rider
+      await saveDataToRiderNotification(userId, docId, dataToSaveRider)
+        .then(() => {
+          funtions.logger.log("succesfully: saved notification data");
+        })
+        .catch((error) => {
+          funtions.logger.log("error in execution: notification not saved");
+          funtions.logger.error(error);
+          // return { msg: "error in execution: notification not saved" };
+        });
+
+      // return Promise.resolve();
+    } else if (data.pay_status === "pending") {
+      const notificationUser =
+        "Rider has marked order has completed! please login to confrim";
+
+      const dataToSave = {
+        body: "Rider has marked order has completed!",
+        orderId: `${orderId}`,
+        timestamp: admin.firestore.Timestamp.now(),
+        userId: `${userId}`,
+        id: `${docId}`,
+        items: items,
+      };
+
+      // send notification to user
+      await sendNotificationToUser(userId, notificationUser, sendToCustomer);
+
+      // save notification to user
+      await saveDataToRiderNotification(userId, docId, dataToSave)
+        .then(() => {
+          funtions.logger.log("succesfully: saved notification data");
+        })
+        .catch((error) => {
+          funtions.logger.log("error in execution: notification not saved");
+          funtions.logger.error(error);
+          // return { msg: "error in execution: notification not saved" };
+        });
+
+      // return Promise.resolve();
+    }
 
     const dataToSave = {
-      body: "Rider has marked order has completed!",
+      body: body,
       orderId: `${orderId}`,
       timestamp: admin.firestore.Timestamp.now(),
       userId: `${userId}`,
@@ -170,49 +197,27 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
       items: items,
     };
 
-    // send notification to user
-    await sendNotificationToUser(userId, notificationUser, sendToCustomer);
+    if (body !== undefined) {
+      // send out notifications
+      await sendNotificationToUser(userId, body, sendToCustomer);
 
-    // save notification to user
-    await saveDataToRiderNotification(userId, docId, dataToSave)
-      .then(() => {
-        console.info("succesfully: saved notification data");
-      })
-      .catch((error) => {
-        console.info("error in execution: notification not saved");
-        console.log(error);
-        return { msg: "error in execution: notification not saved" };
-      });
+      // update user noticfication
+      await saveDataToUserNotification(userId, docId, dataToSave)
+        .then(() => {
+          funtions.logger.log("succesfully: saved notification data");
+        })
+        .catch((error) => {
+          funtions.logger.log("error in execution: notification not saved");
+          funtions.logger.error(error);
+          // return { msg: "error in execution: notification not saved" };
+        });
+    }
 
-    // return Promise.resolve();
+    return Promise.resolve();
+  } catch (error) {
+    funtions.logger.log("error in execution: onOrderStatusChangedFunction");
+    funtions.logger.error(error);
   }
-
-  const dataToSave = {
-    body: body,
-    orderId: `${orderId}`,
-    timestamp: admin.firestore.Timestamp.now(),
-    userId: `${userId}`,
-    id: `${docId}`,
-    items: items,
-  };
-
-  if (body !== undefined) {
-    // send out notifications
-    await sendNotificationToUser(userId, body, sendToCustomer);
-
-    // update user noticfication
-    await saveDataToUserNotification(userId, docId, dataToSave)
-      .then(() => {
-        console.info("succesfully: saved notification data");
-      })
-      .catch((error) => {
-        console.info("error in execution: notification not saved");
-        console.log(error);
-        return { msg: "error in execution: notification not saved" };
-      });
-  }
-
-  return Promise.resolve();
 };
 
 module.exports = onOrderStatusChangedFunction;
