@@ -20,6 +20,8 @@ class SelectedFoodPage extends StatelessWidget {
       : super(key: key);
 
   final FoodProductModel? foodProduct;
+  static bool navigateToCartPage = false;
+  static final ValueNotifier<int> itemCount = ValueNotifier<int>(1);
 
   @override
   Widget build(BuildContext context) {
@@ -84,29 +86,106 @@ class SelectedFoodPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 CustomTextWidget(
-                  text: foodProduct!.name,
+                  text: 'Item Name',
                   fontSize: kfsSuperLarge,
                   fontWeight: FontWeight.bold,
                 ),
-                SizedBox(height: sizerSp(10.0)),
                 CustomTextWidget(
-                  text: 'Price: \u20A6 ${foodProduct!.price}',
-                  fontWeight: FontWeight.bold,
+                  text: foodProduct!.name,
                   fontSize: kfsExtraLarge,
-                  textColor: kcPrimaryColor,
+                  fontWeight: FontWeight.w500,
                 ),
-                SizedBox(height: sizerSp(10.0)),
+                SizedBox(height: sizerSp(20.0)),
+                CustomTextWidget(
+                  text: 'Description',
+                  fontSize: kfsSuperLarge,
+                  fontWeight: FontWeight.bold,
+                ),
                 CustomTextWidget(
                   text: foodProduct!.description,
                   fontWeight: FontWeight.w300,
                 ),
                 SizedBox(height: sizerSp(20.0)),
                 CustomTextWidget(
-                  text: 'Ingredients',
+                  text: 'Price',
+                  fontSize: kfsSuperLarge,
                   fontWeight: FontWeight.bold,
-                  fontSize: kfsExtraLarge,
-                  // textColor: kcPrimaryColor,
                 ),
+                SizedBox(height: sizerSp(5.0)),
+                ValueListenableBuilder<int>(
+                  valueListenable: itemCount,
+                  builder: (_, int value, __) {
+                    return Row(
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            if (itemCount.value > 1) {
+                              itemCount.value--;
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(sizerSp(5)),
+                            decoration: BoxDecoration(
+                              color: itemCount.value <= 1
+                                  ? kcPrimaryColor.withOpacity(0.5)
+                                  : kcPrimaryColor,
+                              borderRadius: BorderRadius.circular(sizerSp(2)),
+                            ),
+                            child: Icon(
+                              Icons.remove,
+                              color: Colors.white,
+                              size: sizerSp(15),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: sizerSp(20.0)),
+                        CustomTextWidget(
+                          text: '${itemCount.value}',
+                          fontWeight: FontWeight.bold,
+                          fontSize: kfsExtraLarge,
+                          textColor: kcPrimaryColor,
+                        ),
+                        SizedBox(width: sizerSp(20.0)),
+                        GestureDetector(
+                          onTap: () {
+                            if (itemCount.value < 10) {
+                              itemCount.value++;
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(sizerSp(5)),
+                            decoration: BoxDecoration(
+                              color: kcPrimaryColor,
+                              borderRadius: BorderRadius.circular(sizerSp(2)),
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: sizerSp(15),
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        CustomTextWidget(
+                          text:
+                              '\u20A6 ${foodProduct!.price * itemCount.value}',
+                          fontWeight: FontWeight.bold,
+                          fontSize: kfsExtraLarge,
+                          textColor: kcPrimaryColor,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                SizedBox(height: sizerSp(20.0)),
+                foodProduct!.ingredientsList.isNotEmpty
+                    ? CustomTextWidget(
+                        text: 'Ingredients',
+                        fontWeight: FontWeight.bold,
+                        fontSize: kfsExtraLarge,
+                        // textColor: kcPrimaryColor,
+                      )
+                    : Container(),
                 SizedBox(height: sizerSp(10.0)),
                 SizedBox(
                   width: sizerWidth(90),
@@ -145,7 +224,8 @@ class SelectedFoodPage extends StatelessWidget {
             children: <Widget>[
               BlocConsumer<MerchantBloc, MerchantState>(
                 listener: (BuildContext context, MerchantState state) {
-                  if (state is AddFoodProductToCartLoadedState) {
+                  if (state is AddFoodProductToCartLoadedState &&
+                      navigateToCartPage == true) {
                     CustomNavigationService().navigateTo(RouteName.cartPage);
                   }
                 },
@@ -166,7 +246,7 @@ class SelectedFoodPage extends StatelessWidget {
                         final CartModel cart = CartModel(
                           category: foodProduct!.category,
                           id: foodProduct!.id,
-                          count: 1,
+                          count: itemCount.value,
                           description: foodProduct!.description,
                           image: foodProduct!.image,
                           name: foodProduct!.name,
@@ -174,6 +254,8 @@ class SelectedFoodPage extends StatelessWidget {
                           fastFoodName: foodProduct!.fastFoodname,
                           fastFoodId: foodProduct!.fastFoodId,
                         );
+
+                        navigateToCartPage = true;
 
                         BlocProvider.of<MerchantBloc>(context)
                             .add(AddFoodProductToCartEvents(cart));
@@ -210,6 +292,8 @@ class SelectedFoodPage extends StatelessWidget {
                           fastFoodName: foodProduct!.fastFoodname,
                           fastFoodId: foodProduct!.fastFoodId,
                         );
+
+                        navigateToCartPage = false;
 
                         BlocProvider.of<MerchantBloc>(context)
                             .add(AddFoodProductToCartEvents(cart));
