@@ -96,7 +96,7 @@ const onOrderStatusChangedFunction = async (snapshot, context) => {
       });
 
     // update completed order
-    await incrementCompletedOrderCount();
+    await incrementCompletedOrderCount(1);
 
     // pay rider
     const snapshot = await getRiderFee();

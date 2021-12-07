@@ -292,7 +292,7 @@ class MerchantRepo {
   }
 
   Future<String> sendOrder(
-    int deliveryFee,
+    int fee,
     bool isWalletTop, {
     bool directPay = false,
   }) async {
@@ -319,7 +319,7 @@ class MerchantRepo {
       items: items,
       userDetails: userDetails!,
       timestamp: Timestamp.now(),
-      deliveryFee: deliveryFee,
+      deliveryFee: (fee - totalPrice), // to get delivery fee
       type: type,
       itemsFee: totalPrice,
     );
