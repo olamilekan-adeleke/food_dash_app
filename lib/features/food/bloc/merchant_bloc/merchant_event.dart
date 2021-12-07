@@ -77,12 +77,12 @@ class GetFavouritesItemEvents extends MerchantEvent {}
 // make payment for food order event
 class MakePaymentEvent extends MerchantEvent {
   const MakePaymentEvent(
-    this.devlieryFee,
+    this.fee,
     this.isWalletTop, {
     this.cardPayment = false,
   });
   final bool cardPayment;
-  final int devlieryFee;
+  final int fee;
   final bool isWalletTop;
 }
 

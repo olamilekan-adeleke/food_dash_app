@@ -72,8 +72,7 @@ class PaymentRepo {
   }
 
   Future<void> _verifyOnServer(
-    String? reference,
-    {
+    String? reference, {
     required BuildContext context,
     required bool isWalletTop,
     int? amount,
@@ -136,10 +135,7 @@ class PaymentRepo {
             message: 'Wallet Top up',
           );
 
-          await merchantRepo.deductUserWallet(
-            amount,
-            isWalletTop,
-          );
+          await merchantRepo.updateUserWallet(amount);
           await merchantRepo.addPaymentHistory(paymentModel);
 
           CustomNavigationService().goBack();
@@ -304,8 +300,6 @@ class PaymentRepo {
   //   }
   // }
 
-  
-  
   bool checkPaymentIsSuccessful(
     ChargeResponse response,
     String amount,

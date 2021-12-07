@@ -220,7 +220,7 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
       try {
         yield MakePaymentLoadingState();
         final String id = await merchantRepo.makePayment(
-          event.devlieryFee,
+          event.fee,
           event.isWalletTop,
           cardPayment: event.cardPayment,
           

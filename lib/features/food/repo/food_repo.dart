@@ -328,39 +328,31 @@ class MerchantRepo {
     return id;
   }
 
-  Future<void> deductUserWallet(int amount, bool isWalletTop) async {
+  Future<void> updateUserWallet(int amount) async {
     final String? userUid = authenticationRepo.getUserUid();
 
-    if (isWalletTop) {
-      await userCollectionRef.doc(userUid).update(
-        <String, dynamic>{
-          'wallet_balance': FieldValue.increment((amount)),
-        },
-      );
-    } else {
-      final int deliveryFee = await getDeliveryFee();
+    // if (isWalletTop) {
+    //   await userCollectionRef.doc(userUid).update(
+    //     <String, dynamic>{
+    //       'wallet_balance': FieldValue.increment((amount)),
+    //     },
+    //   );
+    // } else {
+    // final int deliveryFee = await getDeliveryFee();
 
-      await userCollectionRef.doc(userUid).update(
-        <String, dynamic>{
-          'wallet_balance': FieldValue.increment((amount + deliveryFee)),
-        },
-      );
-    }
+    await userCollectionRef.doc(userUid).update(
+      <String, dynamic>{
+        'wallet_balance': FieldValue.increment((amount)),
+      },
+    );
   }
 
-  Future<void> checkUserWalletBalance(bool isWalletTop) async {
+  Future<void> checkUserWalletBalance(int fee, bool isWalletTop) async {
     final String? userUid = authenticationRepo.getUserUid();
-    int totalPrice = 0;
-
-    if (localdatabaseRepo.showFood.value) {
-      totalPrice = await localdatabaseRepo.getTotalCartItemPrice();
-    } else {
-      totalPrice = await localdatabaseRepo.getTotalMarketCartItemPrice();
-    }
 
     final PaymentModel paymentModel = PaymentModel(
       id: const Uuid().v1(),
-      amount: totalPrice,
+      amount: fee,
       dateTime: DateTime.now(),
       message: localdatabaseRepo.showFood.value
           ? 'Payment for food'
@@ -376,8 +368,8 @@ class MerchantRepo {
     final UserDetailsModel userDetails =
         UserDetailsModel.fromMap(documentSnapshot.data());
 
-    if (userDetails.walletBalance!.toInt() > totalPrice) {
-      await deductUserWallet(-totalPrice, isWalletTop);
+    if (userDetails.walletBalance!.toInt() >= fee) {
+      await updateUserWallet(-fee);
       await addPaymentHistory(paymentModel);
     } else {
       throw Exception(
@@ -388,7 +380,7 @@ class MerchantRepo {
   }
 
   Future<String> makePayment(
-    int deliveryFee,
+    int fee,
     bool isWalletTop, {
     bool cardPayment = false,
   }) async {
@@ -398,10 +390,10 @@ class MerchantRepo {
       // final bool isAuthenticated =
       //     await authenticationRepo.authenticateUser(password);
       if (cardPayment == false) {
-        await checkUserWalletBalance(isWalletTop);
+        await checkUserWalletBalance(fee, isWalletTop);
       }
 
-      id = await sendOrder(deliveryFee, isWalletTop);
+      id = await sendOrder(fee, isWalletTop);
 
       if (localdatabaseRepo.showFood.value) {
         await localdatabaseRepo.clearCartItem();
