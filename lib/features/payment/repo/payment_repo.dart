@@ -115,15 +115,16 @@ class PaymentRepo {
               await merchantRepo.makePayment(0, isWalletTop, cardPayment: true);
           await merchantRepo.addPaymentHistory(paymentModel);
 
-          await CustomNavigationService().goBack();
-          await CustomNavigationService().goBack();
-          await CustomNavigationService().goBack();
-          await CustomNavigationService().navigateTo(
+          // await CustomNavigationService().goBack();
+          // await CustomNavigationService().goBack();
+          // await CustomNavigationService().goBack();
+          // await CustomNavigationService().navigateTo(RouteName.hometab);
+          CustomNavigationService().popShow();
+          await CustomNavigationService().clearTillFirstAndShow(
             RouteName.orderStatus,
             argument: id,
           );
 
-          CustomNavigationService().popShow();
 
           CustomSnackBarService.showSuccessSnackBar('Payment SucessFull');
         } else {

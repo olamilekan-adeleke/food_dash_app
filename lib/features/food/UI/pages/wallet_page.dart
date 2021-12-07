@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:food_dash_app/cores/components/custom_scaffold_widget.dart';
@@ -66,6 +68,8 @@ class FundWalletDetailsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log(amount.toString());
+
     return Container(
       padding: EdgeInsets.all(sizerSp(10)),
       color: Colors.white,

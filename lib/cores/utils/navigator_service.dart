@@ -13,6 +13,15 @@ class CustomNavigationService {
     return _navigationService.navigateTo(routeName, arguments: argument);
   }
 
+  Future<dynamic>? clearTillFirstAndShow(String routeName, {dynamic argument}) {
+    debugPrint(routeName);
+
+    return _navigationService.clearTillFirstAndShow(
+      routeName,
+      arguments: argument,
+    );
+  }
+
   Future<dynamic>? navigateRecplace(String routeName, {dynamic argument}) {
     debugPrint(routeName);
     return _navigationService.replaceWith(routeName, arguments: argument);
