@@ -294,7 +294,7 @@ class SelectedFoodPage extends StatelessWidget {
                           final CartModel cart = CartModel(
                             category: foodProduct!.category,
                             id: foodProduct!.id,
-                            count: 1,
+                            count: itemCount.value,
                             description: foodProduct!.description,
                             image: foodProduct!.image,
                             name: foodProduct!.name,
